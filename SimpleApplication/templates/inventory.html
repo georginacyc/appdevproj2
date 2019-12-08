@@ -3,9 +3,23 @@
 {% block content %}
 <h1 class="display-4">Inventory</h1>
 
+<ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link active" data-toggle="tab" href="#viewinvoices">View Invoice</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="tab" href="#createinvoices">Create Invoices</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="tab" href="#stock">View Stock On Hand</a>
+  </li>
+</ul>
+
 <hr>
-<div>
-    <table class="table table-striped">
+<!-- Tab panes -->
+<div class="tab-content">
+  <div class="tab-pane container-fluid active" id="viewinvoices">
+      <table class="table table-striped">
         <thead>
         <tr>
             <th>S/N</th>
@@ -82,7 +96,17 @@
             <td><a href="#" class="btn btn-danger">Delete</a></td>
         </tr>
         </tbody>
-    </table>
+      </table>
+  </div>
+    <div class="tab-pane container-fluid" id="createinvoices">
+      <p>form</p>
+  </div>
+
+  <div class="tab-pane container-fluid" id="stock">
+      <p>display stock on hand</p>
+  </div>
 </div>
+
+
 
 {% endblock %}
