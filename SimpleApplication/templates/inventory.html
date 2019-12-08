@@ -1,22 +1,88 @@
-{% extends "base.html" %}
+{% extends "staffbase.html" %}
 {% block title %}Inventory{% endblock %}
 {% block content %}
 <h1 class="display-4">Inventory</h1>
 
-<div class="row">
-    <div class="col-4">New Stock Shipment</div>
-    <div class="col-4">View Stock On Hand</div>
-    <div class="col-4">View Items</div>
-</div>
-<div class="row">
-    <div class="col-4">.col-4</div>
-    <div class="col-4">.col-4</div>
-    <div class="col-4">.col-4</div>
-</div>
-<div class="row">
-    <div class="col-4">.col-4</div>
-    <div class="col-4">.col-4</div>
-    <div class="col-4">.col-4</div>
+<hr>
+<div>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>S/N</th>
+            <th>Invoice Number</th>
+            <th>Item Serial</th>
+            <th>Item Name</th>
+            <th>Item Category</th>
+            <th>Item Cost</th>
+            <th>Item Price</th>
+            <th>Item Quantity</th>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>1</td>
+            <td>234567890</td>
+            <td>12345</td>
+            <td>Plain Top</td>
+            <td>Tops</td>
+            <td>7.00</td>
+            <td>10.00</td>
+            <td>100</td>
+            <td><a href="#" class="btn btn-info">Edit</a></td>
+            <td><a href="#" class="btn btn-danger">Delete</a></td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>234567891</td>
+            <td>23456</td>
+            <td>Denim Jeans</td>
+            <td>Bottoms</td>
+            <td>10.00</td>
+            <td>20.00</td>
+            <td>100</td>
+            <td><a href="#" class="btn btn-info">Edit</a></td>
+            <td><a href="#" class="btn btn-danger">Delete</a></td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>234567892</td>
+            <td>23896</td>
+            <td>Denim shorts</td>
+            <td>Bottoms</td>
+            <td>5.00</td>
+            <td>15.00</td>
+            <td>300</td>
+            <td><a href="#" class="btn btn-info">Edit</a></td>
+            <td><a href="#" class="btn btn-danger">Delete</a></td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>234567893</td>
+            <td>22356</td>
+            <td>Corduroy Jacket</td>
+            <td>Outerwear</td>
+            <td>20.00</td>
+            <td>55.00</td>
+            <td>100</td>
+            <td><a href="#" class="btn btn-info">Edit</a></td>
+            <td><a href="#" class="btn btn-danger">Delete</a></td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>234567894</td>
+            <td>22567</td>
+            <td>Frill Blouse</td>
+            <td>Tops</td>
+            <td>7.00</td>
+            <td>15.00</td>
+            <td>50</td>
+            <td><a href="#" class="btn btn-info">Edit</a></td>
+            <td><a href="#" class="btn btn-danger">Delete</a></td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 
 {% endblock %}
