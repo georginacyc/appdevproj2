@@ -63,6 +63,10 @@ def retrieveUsers():
 def salesReports():
     return render_template('salesReports.html')
 
+@app.route('/item')
+def item():
+    return render_template('item.html')
+
 @app.route('/createNewReport')
 def createNewReport():
     return render_template('create.html')
