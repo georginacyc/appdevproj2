@@ -1,20 +1,7 @@
-{% extends "staffbase.html" %}
+{% extends "staffBase.html" %}
 {% block title %}Inventory{% endblock %}
 {% block content %}
-<h1 class="display-4">Inventory</h1>
-
-<ul class="nav nav-tabs">
-  <li class="nav-item">
-    <a class="nav-link active" data-toggle="tab" href="#viewinvoices">View Invoice</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" data-toggle="tab" href="#createinvoices">Create Invoices</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" data-toggle="tab" href="#stock">View Stock On Hand</a>
-  </li>
-</ul>
-
+{% include 'includes/_staffInventoryNav.html' %}
 <hr>
 <!-- Tab panes -->
 <div class="tab-content">
