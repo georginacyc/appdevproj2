@@ -63,9 +63,18 @@ def retrieveUsers():
 def salesReports():
     return render_template('salesReports.html')
 
-@app.route('/item')
-def item():
-    return render_template('item.html')
+
+@app.route('/itempage')
+def itempage():
+    return render_template('itempage.html')
+
+@app.route('/viewItem')
+def viewItem():
+    return render_template('itempage.html')
+
+@app.route('/createItem')
+def createItem():
+    return render_template('createItem.html')
 
 @app.route('/createNewReport')
 def createNewReport():
