@@ -1,0 +1,30 @@
+{% extends "staffbase.html" %}
+{% block title %}Item{% endblock %}
+{% block content %}
+<h1 class="display-4">Create Item</h1>
+<form action="/action_page.php" method="get">
+<div class="creationForm">
+    <p>Select Gender:</p>
+    <input list="itemGender" name="itemGender" required>
+        <datalist id="itemGender">
+            <option value="Male">
+            <option value="Female">
+        </datalist>
+    <br><br>
+    <p>Select Clothing Type:</p>
+    <input list="itemCategory" name="itemCategory" required>
+        <datalist id="itemCategory">
+            <option value="Top">
+            <option value="Bottom">
+        </datalist>
+    <br><br>
+    <p>Enter item serial number:</p>
+    <input type="text" name="itemSerial" pattern="/[TB]/i /[MF]/i [0-9]+" minlength="10" maxlength="10" required>
+    <br><br>
+    <p>Enter item name:</p>
+    <input type="text" name="itemName" pattern="[a-zA-Z]+" minlength="10" maxlength="10" required>
+    <br><br><br><br>
+    <input type="submit">
+</div>
+</form>
+{% endblock %}
