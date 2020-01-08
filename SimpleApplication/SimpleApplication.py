@@ -1,6 +1,6 @@
 from flask import Flask, render_template,request,redirect,url_for
-from forms import CreateUserForm
-import shelve, User
+from forms import CreateUserForm, CreateItemForm
+import shelve, User, itemclass
 
 app = Flask(__name__)
 
@@ -78,12 +78,21 @@ def createItem():
 
 @app.route('/itemCreation')
 def itemCreation():
-    itemDict = {}
-    db = shelve.open('storage.db','w')
-    itemDict = db['Items']
-    db.close()
+    createItemForm = CreateItemForm(request.form)
 
-    return render_template('itemCreation.html')
+    if request.method == 'POST' and createItemForm.validate():
+        itemsDict = {}
+        db = shelve.open('storage.db', 'w')
+        try:
+            itemsDict = db['Items']
+        except:
+            print("Error in retrieving Items from storage.db.")
+            item = itemclass.item(createItemForm.itemName.data,createItemForm.itemCategory.data, createItemForm.itemGender.data,createItemForm.itemSerial.data)
+            itemsDict[item.get_userID()] = item
+            db['Items'] = itemsDict
+            db.close()
+        return redirect(url_for('home'))
+    return render_template('itemCreation.html', form=createItemForm)
 
 @app.route('/createNewReport')
 def createNewReport():
