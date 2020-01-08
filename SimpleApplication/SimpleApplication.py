@@ -76,6 +76,15 @@ def viewItem():
 def createItem():
     return render_template('createItem.html')
 
+@app.route('/itemCreation')
+def itemCreation():
+    itemDict = {}
+    db = shelve.open('storage.db','w')
+    itemDict = db['Items']
+    db.close()
+
+    return render_template('itemCreation.html')
+
 @app.route('/createNewReport')
 def createNewReport():
     return render_template('create.html')
