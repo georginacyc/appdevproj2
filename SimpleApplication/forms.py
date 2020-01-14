@@ -8,6 +8,6 @@ class CreateUserForm(Form):
 
 class CreateItemForm(Form):
     itemName=StringField("Item Name", [validators.Length(min=1, max=150),validators.DataRequired()])
-    itemCategory=RadioField("Item Type",choices=[("T","Top"),("B","Bottom")],default="T")
+    itemCategory=SelectField("Item Type",[validators.DataRequired()],choices=[('', 'Select'),("T","Top"),("B","Bottom")],default=" ")
     itemGender = SelectField('Item Gender', [validators.DataRequired()],choices=[('', 'Select'), ('F', 'Female'), ('M', 'Male')],default='')
     itemSerial = TextAreaField('Item Serial', [validators.DataRequired()])

@@ -4,7 +4,6 @@ import shelve, User, itemclass
 
 app = Flask(__name__)
 
-
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -76,21 +75,22 @@ def viewItem():
 def createItem():
     return render_template('createItem.html')
 
-@app.route('/itemCreation')
+@app.route('/itemCreation', methods=['GET', 'POST'])
 def itemCreation():
     createItemForm = CreateItemForm(request.form)
 
     if request.method == 'POST' and createItemForm.validate():
         itemsDict = {}
-        db = shelve.open('storage.db', 'w')
+        db = shelve.open('storage.db', 'c')
         try:
             itemsDict = db['Items']
         except:
             print("Error in retrieving Items from storage.db.")
-            item = itemclass.item(createItemForm.itemName.data,createItemForm.itemCategory.data, createItemForm.itemGender.data,createItemForm.itemSerial.data)
-            itemsDict[item.get_userID()] = item
+            item = itemclass.Item(createItemForm.itemName.data,createItemForm.itemCategory.data, createItemForm.itemGender.data,createItemForm.itemSerial.data)
+            itemsDict[item.get_itemSerial()] = item
             db['Items'] = itemsDict
-            db.close()
+            print(db['Items'])
+        db.close()
         return redirect(url_for('home'))
     return render_template('itemCreation.html', form=createItemForm)
 

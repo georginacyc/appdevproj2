@@ -1,11 +1,11 @@
 class Item:
-    def __init__(self,itemSerial,itemName,itemCategory,itemGender,itemCost,itemPrice):
+    def __init__(self,itemSerial,itemName,itemCategory,itemGender):
         self.__itemSerial = itemSerial
         self.__itemName = itemName
         self.__itemCategory = itemCategory
         self.__itemGender = itemGender
-        self.__itemCost = itemCost
-        self.__itemPrice = itemPrice
+        self.__itemCost = 0
+        self.__itemPrice = 0
         self.__itemQuantity = 0
 
     #get attributes
