@@ -8,18 +8,18 @@
   {{ render_field(form.itemName, class="form-control") }}
  </div>
  <div class="form-group">
+  {{ render_field(form.itemSerial, class="form-check") }}
+ </div>
+ <div class="form-group">
   {{ render_field(form.itemCategory, class="form-check") }}
  </div>
  <div class="form-group">
-  {{ render_field(form.itemGender, class="form-check") }}
+  {{ render_field(form.itemGender, class="form-control") }}
  </div>
  <div class="form-group">
-  {{ render_field(form.itemSerial, class="form-control") }}
- </div>
-  <div class="form-group">
   {{ render_field(form.itemCost, class="form-control") }}
  </div>
-  <div class="form-group">
+ <div class="form-group">
   {{ render_field(form.itemPrice, class="form-control") }}
  </div>
  <div id="prof">
@@ -29,7 +29,7 @@
 </form>
 <script>
  function itemSubmit(){
- alert("Item has been submitted, returning to main menu")
+ alert("Item has been added, returning to view")
  }
 </script>
 {% endblock %}
