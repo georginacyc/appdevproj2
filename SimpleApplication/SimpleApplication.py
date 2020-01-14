@@ -97,14 +97,13 @@ def itemCreation():
             itemclass.Item.countID = db['itemcount']
         except:
             print("Error in retrieving Items from storage.db.")
-            item = itemclass.Item(createItemForm.itemName.data, createItemForm.itemCategory.data,
-                                  createItemForm.itemGender.data, createItemForm.itemSerial.data, createItemForm.itemCost.data,createItemForm.itemPrice.data)
-            itemsDict[item.get_itemSerial()] = item
-            db['Items'] = itemsDict
-            db['itemcount']=itemclass.Item.countID
-            print(db['Items'])
-            db.close()
-            return redirect(url_for('itempage'))
+        item = itemclass.Item(createItemForm.itemSerial.data,createItemForm.itemName.data,createItemForm.itemCategory.data, createItemForm.itemGender.data, createItemForm.itemCost.data,createItemForm.itemPrice.data)
+        itemsDict[item.get_itemCount()] = item
+        db['Items'] = itemsDict
+        db['itemcount']=itemclass.Item.countID
+        print(db['Items'])
+        db.close()
+
         return redirect(url_for('itempage'))
     return render_template('itemCreation.html', form=createItemForm)
 
