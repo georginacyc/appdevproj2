@@ -2,6 +2,7 @@ class Item:
     countID = 0
     def __init__(self,itemSerial,itemName,itemCategory,itemGender,itemCost,itemPrice):
         self.__class__.countID +=1
+        self.__itemCount = self.__class__.countID
         self.__itemSerial = itemSerial
         self.__itemName = itemName
         self.__itemCategory = itemCategory
@@ -11,6 +12,8 @@ class Item:
         self.__itemQuantity = 0
 
     #get attributes
+    def get_itemCount(self):
+        return self.__itemCount
 
     def get_itemSerial(self):
         return self.__itemSerial

@@ -51,23 +51,19 @@ def createUser():
         return redirect(url_for('home'))
     return render_template('createUser.html', form=createUserForm)
 
+@app.route('/deleteItem/<int:id>/',methods=['GET','POST'])
+def deleteItem(id):
 
-@app.route('/retrieveUsers')
-def retrieveUsers():
-    usersDict = {}
-    db = shelve.open('storage.db', 'r')
-    usersDict = db['Users']
+    itemDict = {}
+    db  = shelve.open("storage.db","w")
+    itemDict =db["Items"]
+
+    itemDict.pop(id) #action of removing the record
+    db["Items"] = itemDict #put back to persistence
     db.close()
-    usersList = []
-    for key in usersDict:
-        user = usersDict.get(key)
-        usersList.append(user)
-    return render_template('retrieveUsers.html', usersList=usersList, count=len(usersList))
 
-
-@app.route('/salesReports')
-def salesReports():
-    return render_template('salesReports.html')
+    #after we delete succesfully
+    return redirect(url_for(itempage))
 
 
 @app.route('/itempage')
@@ -117,6 +113,9 @@ def itemCreation():
 def createNewReport():
     return render_template('create.html')
 
+@app.route('/salesReports')
+def salesReports():
+    return render_template('salesReports.html')
 
 if __name__ == '__main__':
     app.run()
