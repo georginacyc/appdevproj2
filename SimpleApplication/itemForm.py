@@ -4,7 +4,7 @@ from wtforms import Form, StringField, SelectField, TextAreaField, validators, V
 def serialcheck(form,field):
     if len(field.data) == 10:
         if field.data[-2] == 'T' or field.data[-2] == 'B':
-            if field.data[-1] == 'M' or field.date[-1] == 'F':
+            if field.data[-1] == 'M' or field.data[-1] == 'F':
                 return field.data
             else:
                 raise ValidationError('Last character must be Item Gender (M/F) ')
@@ -21,5 +21,5 @@ class CreateItemForm(Form):
     itemGender = SelectField('Gender', [validators.DataRequired()],choices=[('', 'Select'), ('F', 'Female'), ('M', 'Male')],default='')
     itemCost = FloatField('Item Cost',[validators.DataRequired()])
     itemPrice = FloatField('Item Price',[validators.DataRequired()])
-    itemQuantity = IntegerField('Item Quantity',[validators.DataRequired()])
+    itemQuantity = 0
 

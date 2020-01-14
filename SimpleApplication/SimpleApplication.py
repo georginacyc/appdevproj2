@@ -1,6 +1,7 @@
 from flask import Flask, render_template,request,redirect,url_for
-from forms import CreateUserForm, CreateItemForm
-import shelve, User, itemclass
+from forms import CreateUserForm
+from itemForm import CreateItemForm, serialcheck
+import shelve, User, itemclass, itemForm
 
 app = Flask(__name__)
 
@@ -71,10 +72,6 @@ def itempage():
 def viewItem():
     return render_template('itempage.html')
 
-@app.route('/createItem')
-def createItem():
-    return render_template('createItem.html')
-
 @app.route('/itemCreation', methods=['GET', 'POST'])
 def itemCreation():
     createItemForm = CreateItemForm(request.form)
@@ -90,7 +87,8 @@ def itemCreation():
             itemsDict[item.get_itemSerial()] = item
             db['Items'] = itemsDict
             print(db['Items'])
-        db.close()
+            db.close()
+            return redirect(url_for('home'))
         return redirect(url_for('home'))
     return render_template('itemCreation.html', form=createItemForm)
 

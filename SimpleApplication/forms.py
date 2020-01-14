@@ -11,3 +11,4 @@ class CreateItemForm(Form):
     itemCategory=SelectField("Item Type",[validators.DataRequired()],choices=[('', 'Select'),("T","Top"),("B","Bottom")],default=" ")
     itemGender = SelectField('Item Gender', [validators.DataRequired()],choices=[('', 'Select'), ('F', 'Female'), ('M', 'Male')],default='')
     itemSerial = TextAreaField('Item Serial', [validators.DataRequired()])
+    itemCost = TextAreaField('Item Cost',[validators.DataRequired()])

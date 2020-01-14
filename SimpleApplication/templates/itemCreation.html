@@ -16,8 +16,20 @@
  <div class="form-group">
   {{ render_field(form.itemSerial, class="form-control") }}
  </div>
+  <div class="form-group">
+  {{ render_field(form.itemCost, class="form-control") }}
+ </div>
+  <div class="form-group">
+  {{ render_field(form.itemPrice, class="form-control") }}
+ </div>
  <div id="prof">
  </div>
- <input type="submit" value="Submit" class="btn btn-primary"/>
+ <input onclick="itemSubmit()" type="submit" value="Submit" class="btn btn-primary"/>
+
 </form>
+<script>
+ function itemSubmit(){
+ alert("Item has been submitted, returning to main menu")
+ }
+</script>
 {% endblock %}
