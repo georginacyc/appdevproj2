@@ -63,7 +63,7 @@ def deleteItem(id):
     db.close()
 
     #after we delete succesfully
-    return redirect(url_for(itempage))
+    return render_template('itempage.html')
 
 
 @app.route('/itempage')
