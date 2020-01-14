@@ -98,12 +98,14 @@ def itemCreation():
         db = shelve.open('storage.db', 'c')
         try:
             itemsDict = db['Items']
+            itemclass.Item.countID = db['itemcount']
         except:
             print("Error in retrieving Items from storage.db.")
             item = itemclass.Item(createItemForm.itemName.data, createItemForm.itemCategory.data,
-                                  createItemForm.itemGender.data, createItemForm.itemSerial.data)
+                                  createItemForm.itemGender.data, createItemForm.itemSerial.data, createItemForm.itemCost.data,createItemForm.itemPrice.data)
             itemsDict[item.get_itemSerial()] = item
             db['Items'] = itemsDict
+            db['itemcount']=itemclass.Item.countID
             print(db['Items'])
             db.close()
             return redirect(url_for('itempage'))

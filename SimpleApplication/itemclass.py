@@ -1,5 +1,7 @@
 class Item:
+    countID = 0
     def __init__(self,itemSerial,itemName,itemCategory,itemGender,itemCost,itemPrice):
+        self.__class__.countID +=1
         self.__itemSerial = itemSerial
         self.__itemName = itemName
         self.__itemCategory = itemCategory
