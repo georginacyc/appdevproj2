@@ -1,4 +1,4 @@
-from wtforms import Form, StringField, SelectField, TextAreaField, validators, ValidationError, FloatField,IntegerField
+from wtforms import Form, StringField, SelectField, validators, ValidationError, FloatField
 
 
 def serialcheck(form,field):
@@ -15,11 +15,11 @@ def serialcheck(form,field):
 
 
 class CreateItemForm(Form):
-    itemSerial = StringField("Item Serial",[validators.DataRequired(),serialcheck])
     itemName = StringField("Item Name",[validators.Length(min=1, max=150),validators.DataRequired()])
+    itemSerial = StringField("Item Serial",[validators.DataRequired(),serialcheck])
     itemCategory = SelectField("Category",[validators.DataRequired()],choices=[('', 'Select'), ('T', 'Tops'), ('B', 'Bottoms')],default='')
-    itemGender = SelectField('Gender', [validators.DataRequired()],choices=[('', 'Select'), ('F', 'Female'), ('M', 'Male')],default='')
-    itemCost = FloatField('Item Cost',[validators.DataRequired()])
-    itemPrice = FloatField('Item Price',[validators.DataRequired()])
+    itemGender = SelectField("Gender", [validators.DataRequired()],choices=[('', 'Select'), ('F', 'Female'), ('M', 'Male')],default='')
+    itemCost = FloatField("Item Cost",[validators.DataRequired()])
+    itemPrice = FloatField("Item Price",[validators.DataRequired()])
     itemQuantity = 0
 
