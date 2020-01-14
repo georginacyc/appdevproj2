@@ -3,8 +3,8 @@ class Item:
     def __init__(self,itemSerial,itemName,itemCategory,itemGender,itemCost,itemPrice):
         self.__class__.countID +=1
         self.__itemCount = self.__class__.countID
-        self.__itemSerial = itemSerial
         self.__itemName = itemName
+        self.__itemSerial = itemSerial
         self.__itemCategory = itemCategory
         self.__itemGender = itemGender
         self.__itemCost = itemCost
@@ -15,16 +15,16 @@ class Item:
     def get_itemCount(self):
         return self.__itemCount
 
-    def get_itemSerial(self):
-        return self.__itemSerial
     def get_itemName(self):
         return self.__itemName
+    def get_itemSerial(self):
+        return self.__itemSerial
     def get_itemCategory(self):
         return self.__itemCategory
     def get_itemGender(self):
         return self.__itemGender
     def get_itemCost(self):
-        return self.__itemCategory
+        return self.__itemCost
     def get_itemPrice(self):
         return self.__itemPrice
     def get_itemQuantity(self):

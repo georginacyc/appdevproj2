@@ -23,8 +23,8 @@
                  <th>Item Gender</th>
                  <th>Item Cost</th>
                  <th>Item Price</th>
-                 <th></th>
-                 <th></th>
+                 <th>Update</th>
+                 <th>Delete</th>
             </tr>
         </thead>
         <tbody>
@@ -32,11 +32,7 @@
                 <tr>
                      <td>{{ item.get_itemName() }}</td>
                      <td>{{ item.get_itemSerial() }}</td>
-                     {% if item.get_itemCategory() == "T" %}
-                     <td>Tops</td>
-                     {% elif item.get_itemCategory() == "B" %}
-                     <td>Bottoms</td>
-                     {% endif %}
+                     <td>{{ item.get_itemCategory() }}</td>
                      <td>{{ item.get_itemGender() }}</td>
                      <td>{{ item.get_itemCost() }}</td>
                      <td>{{ item.get_itemPrice() }}</td>
