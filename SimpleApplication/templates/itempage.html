@@ -36,7 +36,7 @@
                      <td>{{ item.get_itemGender() }}</td>
                      <td>{{ item.get_itemCost() }}</td>
                      <td>{{ item.get_itemPrice() }}</td>
-                     <td><a class="btn btn-warning">Update</a></td>
+                     <td><a href="/updateItem/{{item.get_itemCount()}}" class="btn btn-warning">Update</a></td>
                      <td><form action= "{{url_for('deleteItem', id=item.get_itemCount())}}" method="POST">
                             <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?')">
                         </form></td>

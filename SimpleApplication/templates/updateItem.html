@@ -1,0 +1,32 @@
+{% extends "staffbase.html" %}
+{% block title %}Update Item{% endblock %}
+{% block content %}
+{% from "includes/_formHelper.html" import render_field %}
+<h1 class="display-4">Update Item</h1>
+
+<form method="POST" action="">
+    <div class="form-group">
+        {{ render_field(form.itemName, class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ render_field(form.itemSerial, class="form-check") }}
+    </div>
+    <div class="form-group">
+        {{ render_field(form.itemCategory, class="form-check") }}
+    </div>
+    <div class="form-group">
+        {{ render_field(form.itemGender, class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ render_field(form.itemCost, class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ render_field(form.itemPrice, class="form-control") }}
+    </div>
+    <div id="prof">
+    </div>
+    <input onclick="itemSubmit()" type="submit" value="Submit" class="btn btn-primary"/>
+
+</form>
+{% endblock %}
+
