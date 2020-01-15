@@ -7,7 +7,7 @@ from invoiceForm import CreateInvoiceForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, itemclass, itemForm, staffClass, os, uuid
 
-UPLOAD_FOLDER='templates/includes/productimages'
+UPLOAD_FOLDER='templates/includes/productimages/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
@@ -109,7 +109,7 @@ def deleteItem(id):
     #after we delete succesfully
     return redirect(url_for('itempage'))
 
-@app.route('/updateItem/<int:id>/',methods=['GET','POST'])
+@app.route('/updateItem/<id>/',methods=['GET','POST'])
 def updateItem(id):
     updateItemForm = CreateItemForm(request.form)
     if request.method == 'POST' and updateItemForm.validate():
@@ -178,7 +178,6 @@ def itemCreation():
         itemsDict[item.get_itemSerial()] = item
         db['Items'] = itemsDict
         db['itemcount']=itemclass.Item.countID
-        print(db['Items'])
         db.close()
 
         def upload_file():
@@ -287,6 +286,19 @@ def createNewReport():
 @app.route('/salesReports')
 def salesReports():
     return render_template('salesReports.html')
+
+@app.route('/catalogueHis')
+def catalogueHis():
+    itemDict = {}
+    db = shelve.open('storage.db', 'r')
+    itemDict = db['Items']
+    db.close()
+
+    itemList = []
+    for key in itemDict:
+        item = itemDict.get(key)
+        itemList.append(item)
+    return render_template('catalogueHis.html', itemList=itemList, count=len(itemList))
 
 if __name__ == '__main__':
     app.run()
