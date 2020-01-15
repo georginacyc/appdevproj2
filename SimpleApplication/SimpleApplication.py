@@ -122,7 +122,7 @@ def retrieveUsers():
 
  return render_template('retrieveUsers.html', usersList=usersList, count=len(usersList))
 
-@app.route('/deleteItem/<int:id>/',methods=['GET','POST'])
+@app.route('/deleteItem/<id>/',methods=['GET','POST'])
 def deleteItem(id):
 
     itemDict = {}
