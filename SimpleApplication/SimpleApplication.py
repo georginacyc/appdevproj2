@@ -77,7 +77,7 @@ def createInvoice():
             invoiceclass.Invoice.countID = db['Invoicecount']
         except:
             print("Error in retrieving Invoice from storage.db.")
-        invoice = invoiceclass.Invoice(createInvoiceForm.invoiceNumber.data,createInvoiceForm.invoiceDate.data,createInvoiceForm.shipmentDate.data,createInvoiceForm.shipmentStatus.data,createInvoiceForm.receivedDate.data)
+        invoice = invoiceclass.Invoice(createInvoiceForm.invoiceDate.data, createInvoiceForm.shipmentDate.data, createInvoiceForm.shipmentStatus.data,createInvoiceForm.receivedDate.data, )
         invoiceDict[invoice.get_invoiceCount()] = invoice
         db['Invoice'] = invoiceDict
         db['invoicecount']=invoiceclass.Invoice.countID
