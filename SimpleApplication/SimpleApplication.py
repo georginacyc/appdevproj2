@@ -163,11 +163,11 @@ def createStaff():
 def staffAccount():
     render_template('staffAccount.html')
 
-@app.route('/tempLogin', method=['GET', 'POST'])
-def login():
-    loginForm = LogInForm(request.form)
-
-    if request.method == 'POST' and loginForm.validate():
+# @app.route('/tempLogin', method=['GET', 'POST'])
+# def login():
+#     loginForm = LogInForm(request.form)
+#
+#     if request.method == 'POST' and loginForm.validate():
 
 
 @app.route('/createNewReport')

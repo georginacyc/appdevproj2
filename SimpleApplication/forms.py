@@ -25,6 +25,6 @@ class CreateStaffForm(Form):
     address = TextAreaField("Address", [validators.DataRequired()])
 
 class LogInForm(Form):
-    email = Email("Email", [validators.InputRequired()], render_kw={"placeholder": "johndoe@domain.com"})
+    # email = Email("Email", [validators.InputRequired()], render_kw={"placeholder": "johndoe@domain.com"})
     password = PasswordField("Password", [validators.InputRequired()], render_kw={"placeholder": "password"})
 
