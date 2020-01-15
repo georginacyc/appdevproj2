@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
-from forms import CreateUserForm
+from forms import CreateUserForm, CreateStaffForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, itemclass, itemForm
+import shelve, User, itemclass, itemForm, staffClass
 
 app = Flask(__name__)
 
@@ -109,21 +109,26 @@ def itemCreation():
 
 @app.route('/createStaff', methods=['GET', 'POST'])
 def createStaff():
-    CreateStaffForm = CreateStaffForm(request.form)
+    createStaffForm = CreateStaffForm(request.form)
 
-    if request.method == 'POST' and creatStaffForm.validate():
-        itemsDict = {}
+    if request.method == 'POST' and createStaffForm.validate():
+        staffDict = {}
         db = shelve.open('storage.db', 'w')
         try:
             staffDict = db['Staff']
         except:
-            print("Error in retrieving Items from storage.db.")
-            staff = staffClass.Staff(createStaffForm.fname.data,createStaffForm.lname.data, createStaffForm.gender.data,createStaffForm.hp.data, createStaffForm.dob.data, createStaffForm.password.data, createStaffForm.address.data)
-            staffDict[staff.get_email()] = staff
-            db['Staff'] = staffDict
-            db.close()
-        return redirect(url_for('home'))
+            print("Error in retrieving Staff from storage.db.")
+        staff = staffClass.Staff(createStaffForm.fname.data,createStaffForm.lname.data, createStaffForm.gender.data,createStaffForm.hp.data, createStaffForm.dob.data, createStaffForm.password.data, createStaffForm.address.data)
+
+        staffDict[staff.get_email()] = staff
+        db['Staff'] = staffDict
+        db.close()
+        return redirect(url_for('staffAccount'))
     return render_template('createStaff.html', form=createStaffForm)
+
+@app.route('/staffAccount')
+def staffAccount():
+    render_template('staffAccount.html')
 
 @app.route('/createNewReport')
 def createNewReport():
