@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
+from werkzeug.utils import secure_filename
 
 import invoiceclass
 from forms import CreateUserForm, CreateStaffForm, LogInForm
@@ -46,6 +47,14 @@ def staffHome():
 
 @app.route('/inventory')
 def inventory():
+    return render_template('inventory.html')
+
+@app.route('/viewinvoices')
+def viewInvoices():
+    return redirect(url_for('inventory'))
+
+@app.route('/createInvoice',methods=['GET','POST'])
+def createInvoice():
     createInvoiceForm = CreateInvoiceForm(request.form)
 
     if request.method == 'POST' and createInvoiceForm.validate():
@@ -65,10 +74,6 @@ def inventory():
 
         return redirect(url_for('inventory'))
     return render_template('createInvoice.html', form=createInvoiceForm)
-
-@app.route('/viewinvoices')
-def viewInvoices():
-    return redirect(url_for('inventory'))
 
 @app.route('/createUser', methods=['GET', 'POST'])
 def createUser():
