@@ -52,6 +52,11 @@ def inventory():
 def viewInvoices():
     return redirect(url_for('inventory'))
 
+@app.route('/viewStock')
+def viewStock():
+    return render_template('viewStock.html')
+
+
 @app.route('/createInvoice',methods=['GET','POST'])
 def createInvoice():
     createInvoiceForm = CreateInvoiceForm(request.form)

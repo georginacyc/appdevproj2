@@ -1,0 +1,35 @@
+{% extends "staffbase.html" %}
+{% block title %}Item{% endblock %}
+{% block content %}
+{% include 'includes/_staffInventoryNav.html' %}
+
+<div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                 <th>Item Name</th>
+                 <th>Item Serial</th>
+                 <th>Item Category</th>
+                 <th>Item Gender</th>
+                 <th>Quantity</th>
+                 <th>Status</th>
+                 <th>Request Stock</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in itemList %}
+                <tr>
+                     <td>{{ item.get_itemName() }}</td>
+                     <td>{{ item.get_itemSerial() }}</td>
+                     <td>{{ item.get_itemCategory() }}</td>
+                     <td>{{ item.get_itemGender() }}</td>
+                     <td>{{ item.get_itemQuantity() }}</td>
+                     <td>{{ item.get_itemStockStatus() }}</td>
+                     <td><a href="/updateItem/{{item.get_itemSerial()}}" class="btn btn-warning">Update</a></td>
+
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
