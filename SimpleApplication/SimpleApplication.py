@@ -4,10 +4,25 @@ import invoiceclass
 from forms import CreateUserForm, CreateStaffForm, LogInForm
 from invoiceForm import CreateInvoiceForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, itemclass, itemForm, staffClass
+import shelve, User, itemclass, itemForm, staffClass, os, uuid
+
+UPLOAD_FOLDER='templates/includes/productimages'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
 
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+def retrieveFiles():
+    entries = os.listdir(app.config['UPLOAD_FOLDER'])
+    fileList = []
+    for entry in entries:
+        fileList.append(entry)
+    return fileList
 
 @app.route('/')
 def home():
@@ -155,14 +170,36 @@ def itemCreation():
         except:
             print("Error in retrieving Items from storage.db.")
         item = itemclass.Item(createItemForm.itemSerial.data,createItemForm.itemName.data,createItemForm.itemCategory.data, createItemForm.itemGender.data, createItemForm.itemCost.data,createItemForm.itemPrice.data)
-        itemsDict[item.get_itemCount()] = item
+        itemsDict[item.get_itemSerial()] = item
         db['Items'] = itemsDict
         db['itemcount']=itemclass.Item.countID
         print(db['Items'])
         db.close()
 
+        def upload_file():
+            if request.method == 'POST':
+                # check if the post request has the file part
+                if 'file' not in request.files:
+                    flash('No file part')
+                    return redirect(request.url)
+                file = request.files['file']
+                # if user does not select file, browser also
+                # submit an empty part without filename
+                if file.filename == '':
+                    flash('No selected file')
+                    return redirect(request.url)
+                if file and allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+
+                    # added uuid to make the filename unique. Otherwise, file with same names will override.
+                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], str(uuid.uuid4()) + filename))
+
+                    return render_template('itemCreation.html', fileList=retrieveFiles())
+            return render_template('home.html', fileList=retrieveFiles())
         return redirect(url_for('itempage'))
     return render_template('itemCreation.html', form=createItemForm)
+
+
 
 @app.route('/createStaff', methods=['GET', 'POST'])
 def createStaff():
