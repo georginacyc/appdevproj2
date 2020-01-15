@@ -38,7 +38,29 @@ def inventory():
 def viewInvoices():
     return redirect(url_for('inventory'))
 
+@app.route(('/createInvoice'))
+def createInvoice():
+    createInvoiceForm = CreateInvoiceForm(request.form)
 
+    if request.method == 'POST' and createInvoiceForm.validate():
+        invoiceDict = {}
+        db = shelve.open('storage.db', 'c')
+        try:
+            invoiceDict = db['Invoice']
+            invoiceclass.Invoice.countID = db['Invoicecount']
+        except:
+            print("Error in retrieving Invoice from storage.db.")
+        invoice = invoiceclass.Invoice(createInvoiceForm.invoiceNumber.data, createInvoiceForm.invoiceDate.data,
+                                       createInvoiceForm.shipmentDate.data, createInvoiceForm.shipmentStatus.data,
+                                       createInvoiceForm.receivedDate.data)
+        invoiceDict[invoice.get_invoiceCount()] = invoice
+        db['Invoice'] = invoiceDict
+        db['invoicecount'] = invoiceclass.Invoice.countID
+        print(db['Invoice'])
+        db.close()
+
+        return redirect(url_for('inventory'))
+    return render_template('createInvoice.html', form=createInvoiceForm)
 
 
 
