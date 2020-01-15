@@ -200,14 +200,13 @@ def itemCreation():
     return render_template('itemCreation.html', form=createItemForm)
 
 
-
 @app.route('/createStaff', methods=['GET', 'POST'])
 def createStaff():
     createStaffForm = CreateStaffForm(request.form)
 
     if request.method == 'POST' and createStaffForm.validate():
         staffDict = {}
-        db = shelve.open('storage.db', 'w')
+        db = shelve.open('storage.db', 'c')
         try:
             staffDict = db['Staff']
         except:
@@ -217,20 +216,64 @@ def createStaff():
         staffDict[staff.get_email()] = staff
         db['Staff'] = staffDict
         db.close()
-        return redirect(url_for('staffAccount'))
+        return redirect(url_for('staffHome'))
     return render_template('createStaff.html', form=createStaffForm)
+
 
 @app.route('/staffAccount')
 def staffAccount():
     render_template('staffAccount.html')
 
-# @app.route('/tempLogin', method=['GET', 'POST'])
-# def login():
-#     loginForm = LogInForm(request.form)
-#
-#     if request.method == 'POST' and loginForm.validate():
+
+@app.route('/tempLogin', methods=['GET', 'POST'])
+def login():
+    loginForm = LogInForm(request.form)
+    email = False
+    pw = False
+
+    if request.method == 'POST' and loginForm.validate():
+        userDict = {}
+        logged = {}
+        db = shelve.open('storage.db', 'c')
+        try:
+            userDict = db['Staff']
+            db['Logged'] = {}
+        except:
+            print("Error in retrieving Staff from storage.db")
+        for x in userDict:
+            if x == loginForm.email.data:
+                email = True
+                if x.get_password() == loginForm.password.data:
+                    pw = True
+                    logged[login.Form.email.data] = x.get_fname()
 
 
+        if email == True and pw == True:
+            print("Successfully logged in!")
+            return redirect(url_for('staffHome'))
+        else:
+            print("Invalid credentials. Please try again.")
+    return render_template('tempLogin.html', form=loginForm)
+
+@app.route('/tempStaffAccounts')
+def staffAccounts():
+    usersDict = {}
+
+    try:
+        db = shelve.open("storage.db", "r")
+        usersDict = db["Staff"]
+    except:
+        print("db error")
+    else:
+        db.close()
+
+    #  loop through dict to save in list
+    usersList = []
+    for key in usersDict:
+        user = usersDict.get(key)
+        usersList.append(user)
+
+    return render_template("tempStaffAccountList.html", usersList=usersList, count=len(usersList))
 
 @app.route('/createNewReport')
 def createNewReport():
