@@ -54,8 +54,16 @@ def viewInvoices():
 
 @app.route('/viewStock')
 def viewStock():
-    return render_template('viewStock.html')
+    itemDict = {}
+    db = shelve.open('storage.db', 'r')
+    itemDict = db['Items']
+    db.close()
 
+    itemList = []
+    for key in itemDict:
+        item = itemDict.get(key)
+        itemList.append(item)
+    return render_template('viewStock.html', itemList=itemList, count=len(itemList))
 
 @app.route('/createInvoice',methods=['GET','POST'])
 def createInvoice():
