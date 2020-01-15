@@ -10,7 +10,7 @@ class Item:
         self.__itemCost = itemCost
         self.__itemPrice = itemPrice
         self.__itemQuantity = 0
-        self.__itemStockStatus = self.set_itemStockStatus()
+        self.set_itemStockStatus()
 
     #get attributes
     def get_itemCount(self):
@@ -54,7 +54,7 @@ class Item:
         quantity = self.__itemQuantity
         if quantity>30:
             self.__itemStockStatus = "In Stock"
-        elif quantity<=30:
+        elif 30 >= quantity > 0:
             self.__itemStockStatus = "Low on Stock"
         elif quantity == 0:
             self.__itemStockStatus = "Out of Stock"

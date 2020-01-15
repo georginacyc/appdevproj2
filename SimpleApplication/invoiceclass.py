@@ -27,6 +27,7 @@ class Invoice:
     def get_receivedDate(self):
         return self.__receivedDate
 
+
 #setter
 
     def set_invoiceDate(self,invoiceDate):
