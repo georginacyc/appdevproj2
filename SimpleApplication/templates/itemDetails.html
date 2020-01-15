@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Item{% endblock %}
+{% block content %}
+
+<div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                 <th>Item Photo</th>
+                 <th>Item Name</th>
+                 <th>Item Serial</th>
+                 <th>Item Category</th>
+                 <th>Item Gender</th>
+                 <th>Item Price</th>
+                 <th></th>
+                 <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in itemList %}
+                <tr>
+                     <td>Photo goes here</td>
+                     <td>{{ item.get_itemName() }}</td>
+                     <td>{{ item.get_itemSerial() }}</td>
+                     <td>{{ item.get_itemCategory() }}</td>
+                     <td>{{ item.get_itemGender() }}</td>
+                     <td>${{ item.get_itemPrice() }}</td>
+                     <td>
+                            <input type="submit" value="Add to Cart" class="btn btn-success" onclick="return confirm('Add this item to cart?')">
+                     </td>
+
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
