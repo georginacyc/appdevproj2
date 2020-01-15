@@ -4,10 +4,25 @@ import invoiceclass
 from forms import CreateUserForm, CreateStaffForm, LogInForm
 from invoiceForm import CreateInvoiceForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, itemclass, itemForm, staffClass
+import shelve, User, itemclass, itemForm, staffClass, os, uuid
+
+UPLOAD_FOLDER='templates/includes/productimages'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
 
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+def retrieveFiles():
+    entries = os.listdir(app.config['UPLOAD_FOLDER'])
+    fileList = []
+    for entry in entries:
+        fileList.append(entry)
+    return fileList
 
 @app.route('/')
 def home():
@@ -31,15 +46,6 @@ def staffHome():
 
 @app.route('/inventory')
 def inventory():
-    return render_template('inventory.html')
-
-
-@app.route('/viewinvoices')
-def viewInvoices():
-    return redirect(url_for('inventory'))
-
-@app.route(('/createInvoice'))
-def createInvoice():
     createInvoiceForm = CreateInvoiceForm(request.form)
 
     if request.method == 'POST' and createInvoiceForm.validate():
@@ -50,19 +56,19 @@ def createInvoice():
             invoiceclass.Invoice.countID = db['Invoicecount']
         except:
             print("Error in retrieving Invoice from storage.db.")
-        invoice = invoiceclass.Invoice(createInvoiceForm.invoiceNumber.data, createInvoiceForm.invoiceDate.data,
-                                       createInvoiceForm.shipmentDate.data, createInvoiceForm.shipmentStatus.data,
-                                       createInvoiceForm.receivedDate.data)
+        invoice = invoiceclass.Invoice(createInvoiceForm.invoiceNumber.data,createInvoiceForm.invoiceDate.data,createInvoiceForm.shipmentDate.data,createInvoiceForm.shipmentStatus.data,createInvoiceForm.receivedDate.data)
         invoiceDict[invoice.get_invoiceCount()] = invoice
         db['Invoice'] = invoiceDict
-        db['invoicecount'] = invoiceclass.Invoice.countID
+        db['invoicecount']=invoiceclass.Invoice.countID
         print(db['Invoice'])
         db.close()
 
         return redirect(url_for('inventory'))
     return render_template('createInvoice.html', form=createInvoiceForm)
 
-
+@app.route('/viewinvoices')
+def viewInvoices():
+    return redirect(url_for('inventory'))
 
 @app.route('/createUser', methods=['GET', 'POST'])
 def createUser():
@@ -84,22 +90,21 @@ def createUser():
         return redirect(url_for('home'))
     return render_template('createUser.html', form=createUserForm)
 
-
-@app.route('/deleteItem/<int:id>/', methods=['GET', 'POST'])
+@app.route('/deleteItem/<int:id>/',methods=['GET','POST'])
 def deleteItem(id):
-    itemDict = {}
-    db = shelve.open("storage.db", "w")
-    itemDict = db["Items"]
 
-    itemDict.pop(id)  # action of removing the record
-    db["Items"] = itemDict  # put back to persistence
+    itemDict = {}
+    db  = shelve.open("storage.db","w")
+    itemDict =db["Items"]
+
+    itemDict.pop(id) #action of removing the record
+    db["Items"] = itemDict #put back to persistence
     db.close()
 
-    # after we delete succesfully
+    #after we delete succesfully
     return redirect(url_for('itempage'))
 
-
-@app.route('/updateItem/<int:id>/', methods=['GET', 'POST'])
+@app.route('/updateItem/<int:id>/',methods=['GET','POST'])
 def updateItem(id):
     updateItemForm = CreateItemForm(request.form)
     if request.method == 'POST' and updateItemForm.validate():
@@ -131,8 +136,7 @@ def updateItem(id):
         updateItemForm.itemGender.data = item.get_itemGender()
         updateItemForm.itemCost.data = item.get_itemCost()
         updateItemForm.itemPrice.data = item.get_itemPrice()
-        return render_template('updateItem.html', form=updateItemForm)
-
+        return render_template('updateItem.html',form=updateItemForm)
 
 @app.route('/itempage')
 def itempage():
@@ -165,17 +169,36 @@ def itemCreation():
             itemclass.Item.countID = db['itemcount']
         except:
             print("Error in retrieving Items from storage.db.")
-        item = itemclass.Item(createItemForm.itemSerial.data, createItemForm.itemName.data,
-                              createItemForm.itemCategory.data, createItemForm.itemGender.data,
-                              createItemForm.itemCost.data, createItemForm.itemPrice.data)
-        itemsDict[item.get_itemCount()] = item
+        item = itemclass.Item(createItemForm.itemSerial.data,createItemForm.itemName.data,createItemForm.itemCategory.data, createItemForm.itemGender.data, createItemForm.itemCost.data,createItemForm.itemPrice.data)
+        itemsDict[item.get_itemSerial()] = item
         db['Items'] = itemsDict
-        db['itemcount'] = itemclass.Item.countID
+        db['itemcount']=itemclass.Item.countID
         print(db['Items'])
         db.close()
 
+        def upload_file():
+            if request.method == 'POST':
+                # check if the post request has the file part
+                if 'file' not in request.files:
+                    flash('No file part')
+                    return redirect(request.url)
+                file = request.files['file']
+                # if user does not select file, browser also
+                # submit an empty part without filename
+                if file.filename == '':
+                    flash('No selected file')
+                    return redirect(request.url)
+                if file and allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+
+                    # added uuid to make the filename unique. Otherwise, file with same names will override.
+                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], str(uuid.uuid4()) + filename))
+
+                    return render_template('itemCreation.html', fileList=retrieveFiles())
+            return render_template('home.html', fileList=retrieveFiles())
         return redirect(url_for('itempage'))
     return render_template('itemCreation.html', form=createItemForm)
+
 
 
 @app.route('/createStaff', methods=['GET', 'POST'])
@@ -189,9 +212,7 @@ def createStaff():
             staffDict = db['Staff']
         except:
             print("Error in retrieving Staff from storage.db.")
-        staff = staffClass.Staff(createStaffForm.fname.data, createStaffForm.lname.data, createStaffForm.gender.data,
-                                 createStaffForm.hp.data, createStaffForm.dob.data, createStaffForm.password.data,
-                                 createStaffForm.address.data)
+        staff = staffClass.Staff(createStaffForm.fname.data,createStaffForm.lname.data, createStaffForm.gender.data,createStaffForm.hp.data, createStaffForm.dob.data, createStaffForm.password.data, createStaffForm.address.data)
 
         staffDict[staff.get_email()] = staff
         db['Staff'] = staffDict
@@ -199,11 +220,9 @@ def createStaff():
         return redirect(url_for('staffAccount'))
     return render_template('createStaff.html', form=createStaffForm)
 
-
 @app.route('/staffAccount')
 def staffAccount():
     render_template('staffAccount.html')
-
 
 # @app.route('/tempLogin', method=['GET', 'POST'])
 # def login():
@@ -212,15 +231,14 @@ def staffAccount():
 #     if request.method == 'POST' and loginForm.validate():
 
 
+
 @app.route('/createNewReport')
 def createNewReport():
     return render_template('create.html')
 
-
 @app.route('/salesReports')
 def salesReports():
     return render_template('salesReports.html')
-
 
 if __name__ == '__main__':
     app.run()
