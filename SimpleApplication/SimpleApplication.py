@@ -65,6 +65,39 @@ def deleteItem(id):
     #after we delete succesfully
     return redirect(url_for('itempage'))
 
+@app.route('/updateItem/<int:id>/',methods=['GET','POST'])
+def updateItem(id):
+    updateItemForm = CreateItemForm(request.form)
+    if request.method == 'POST' and updateItemForm.validate():
+        itemDict = {}
+        db = shelve.open('storage.db', 'w')
+        itemDict = db['Items']
+
+        item = itemDict.get(id)
+        item.set_itemName(updateItemForm.itemName.data)
+        item.set_itemSerial(updateItemForm.itemSerial.data)
+        item.set_itemCategory(updateItemForm.itemCategory.data)
+        item.set_itemGender(updateItemForm.itemGender.data)
+        item.set_itemCost(updateItemForm.itemCost.data)
+        item.set_itemPrice(updateItemForm.itemPrice.data)
+
+        db['Items'] = itemDict
+        db.close()
+        return redirect(url_for('itempage'))
+    else:
+        itemDict = {}
+        db = shelve.open('storage.db', 'r')
+        itemDict = db['Items']
+        db.close()
+
+        item = itemDict.get(id)
+        updateItemForm.itemName.data = item.get_itemName()
+        updateItemForm.itemSerial.data = item.get_itemSerial()
+        updateItemForm.itemCategory.data = item.get_itemCategory()
+        updateItemForm.itemGender.data = item.get_itemGender()
+        updateItemForm.itemCost.data = item.get_itemCost()
+        updateItemForm.itemPrice.data = item.get_itemPrice()
+        return render_template('updateItem.html',form=updateItemForm)
 
 @app.route('/itempage')
 def itempage():
