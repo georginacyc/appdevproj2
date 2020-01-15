@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
-
 import invoiceclass
 from forms import CreateUserForm, CreateStaffForm, LogInForm
 from invoiceForm import CreateInvoiceForm
@@ -299,6 +298,18 @@ def catalogueHis():
         item = itemDict.get(key)
         itemList.append(item)
     return render_template('catalogueHis.html', itemList=itemList, count=len(itemList))
+
+@app.route('/itemDetails/<id>/',methods=['GET','POST'])
+def itemDetails(id):
+    itemDict = {}
+    db = shelve.open('storage.db', 'r')
+    itemDict = db['Items']
+    db.close()
+
+    itemList = []
+    item = itemDict.get(id)
+    itemList.append(item)
+    return render_template('itemDetails.html', itemList=itemList, count=len(itemList))
 
 if __name__ == '__main__':
     app.run()
