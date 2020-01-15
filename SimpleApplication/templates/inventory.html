@@ -3,6 +3,43 @@
 {% block content %}
 {% include 'includes/_staffInventoryNav.html' %}
 <hr>
+<div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>S/N</th>
+                <th>Invoice Number</th>
+                <th>Item Serial</th>
+                <th>Item Name</th>
+                <th>Item Category</th>
+                <th>Item Cost</th>
+                <th>Item Price</th>
+                <th>Item Quantity</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in itemList %}
+                <tr>
+                    <td>{{</td>
+                     <td>{{ item.get_itemName() }}</td>
+                     <td>{{ item.get_itemSerial() }}</td>
+                     <td>{{ item.get_itemCategory() }}</td>
+                     <td>{{ item.get_itemGender() }}</td>
+                     <td>{{ item.get_itemCost() }}</td>
+                     <td>{{ item.get_itemPrice() }}</td>
+                     <td><a href="/updateItem/{{item.get_itemCount()}}" class="btn btn-warning">Update</a></td>
+                     <td><form action= "{{url_for('deleteItem', id=item.get_itemCount())}}" method="POST">
+                            <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?')">
+                        </form></td>
+
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
 <!-- Tab panes -->
 <div class="tab-content">
   <div class="tab-pane container-fluid active" id="viewinvoices">
