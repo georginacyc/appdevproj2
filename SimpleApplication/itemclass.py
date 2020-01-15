@@ -10,7 +10,7 @@ class Item:
         self.__itemCost = itemCost
         self.__itemPrice = itemPrice
         self.__itemQuantity = 0
-        self.__itemStockStatus = ""
+        self.__itemStockStatus = self.set_itemStockStatus()
 
     #get attributes
     def get_itemCount(self):
