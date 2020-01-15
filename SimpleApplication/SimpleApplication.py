@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
+
+import invoiceclass
 from forms import CreateUserForm, CreateStaffForm, LogInForm
+from invoiceForm import CreateInvoiceForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, itemclass, itemForm, staffClass
 
@@ -28,8 +31,29 @@ def staffHome():
 
 @app.route('/inventory')
 def inventory():
-    return render_template('inventory.html')
+    createInvoiceForm = CreateInvoiceForm(request.form)
 
+    if request.method == 'POST' and createInvoiceForm.validate():
+        invoiceDict = {}
+        db = shelve.open('storage.db', 'c')
+        try:
+            invoiceDict = db['Invoice']
+            invoiceclass.Invoice.countID = db['Invoicecount']
+        except:
+            print("Error in retrieving Invoice from storage.db.")
+        invoice = invoiceclass.Invoice(createInvoiceForm.invoiceNumber.data,createInvoiceForm.invoiceDate.data,createInvoiceForm.shipmentDate.data,createInvoiceForm.shipmentStatus.data,createInvoiceForm.receivedDate.data)
+        invoiceDict[invoice.get_invoiceCount()] = invoice
+        db['Invoice'] = invoiceDict
+        db['invoicecount']=invoiceclass.Invoice.countID
+        print(db['Invoice'])
+        db.close()
+
+        return redirect(url_for('inventory'))
+    return render_template('createInvoice.html', form=createInvoiceForm)
+
+@app.route('/viewinvoices')
+def viewInvoices():
+    return redirect(url_for('inventory'))
 
 @app.route('/createUser', methods=['GET', 'POST'])
 def createUser():
@@ -168,6 +192,7 @@ def staffAccount():
 #     loginForm = LogInForm(request.form)
 #
 #     if request.method == 'POST' and loginForm.validate():
+
 
 
 @app.route('/createNewReport')

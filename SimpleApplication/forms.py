@@ -6,13 +6,6 @@ class CreateUserForm(Form):
     gender = SelectField('Gender', [validators.DataRequired()],choices=[('', 'Select'), ('F', 'Female'), ('M', 'Male')],default='')
     remarks = TextAreaField('Remarks', [validators.Optional()])
 
-class CreateItemForm(Form):
-    itemName=StringField("Item Name", [validators.Length(min=1, max=150),validators.DataRequired()])
-    itemCategory=SelectField("Item Type",[validators.DataRequired()],choices=[('', 'Select'),("T","Top"),("B","Bottom")],default=" ")
-    itemGender = SelectField('Item Gender', [validators.DataRequired()],choices=[('', 'Select'), ('F', 'Female'), ('M', 'Male')],default='')
-    itemSerial = TextAreaField('Item Serial', [validators.DataRequired()])
-    itemCost = TextAreaField('Item Cost',[validators.DataRequired()])
-
 class CreateStaffForm(Form):
     fname = StringField("First Name", [validators.DataRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "John"})
     lname = StringField("Last Name", [validators.DataRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "Doe"})
