@@ -94,6 +94,21 @@ def createUser():
         return redirect(url_for('home'))
     return render_template('createUser.html', form=createUserForm)
 
+@app.route('/retrieveUsers')
+def retrieveUsers():
+ usersDict = {}
+ db = shelve.open('storage.db', 'r')
+ usersDict = db['Users']
+ db.close()
+
+
+ usersList = []
+ for key in usersDict:
+  user = usersDict.get(key)
+  usersList.append(user)
+
+ return render_template('retrieveUsers.html', usersList=usersList, count=len(usersList))
+
 @app.route('/deleteItem/<int:id>/',methods=['GET','POST'])
 def deleteItem(id):
 
