@@ -23,3 +23,8 @@ class CreateStaffForm(Form):
     # password =  PasswordField("Password", [validators.DataRequired(), EqualTo('confirm', message='Passwords must match')])
     # confirm = PasswordField("Confirm Password")
     address = TextAreaField("Address", [validators.DataRequired()])
+
+class LogInForm(Form):
+    email = Email("Email", [validators.InputRequired()], render_kw={"placeholder": "johndoe@domain.com"})
+    password = PasswordField("Password", [validators.InputRequired()], render_kw={"placeholder": "password"})
+

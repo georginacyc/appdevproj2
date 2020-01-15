@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
-from forms import CreateUserForm, CreateStaffForm
+from forms import CreateUserForm, CreateStaffForm, LogInForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, itemclass, itemForm, staffClass
 
@@ -162,6 +162,13 @@ def createStaff():
 @app.route('/staffAccount')
 def staffAccount():
     render_template('staffAccount.html')
+
+@app.route('/tempLogin', method=['GET', 'POST'])
+def login():
+    loginForm = LogInForm(request.form)
+
+    if request.method == 'POST' and loginForm.validate():
+
 
 @app.route('/createNewReport')
 def createNewReport():
