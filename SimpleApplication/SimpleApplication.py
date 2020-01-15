@@ -107,6 +107,23 @@ def itemCreation():
         return redirect(url_for('itempage'))
     return render_template('itemCreation.html', form=createItemForm)
 
+@app.route('/createStaff', methods=['GET', 'POST'])
+def createStaff():
+    CreateStaffForm = CreateStaffForm(request.form)
+
+    if request.method == 'POST' and creatStaffForm.validate():
+        itemsDict = {}
+        db = shelve.open('storage.db', 'w')
+        try:
+            staffDict = db['Staff']
+        except:
+            print("Error in retrieving Items from storage.db.")
+            staff = staffClass.Staff(createStaffForm.fname.data,createStaffForm.lname.data, createStaffForm.gender.data,createStaffForm.hp.data, createStaffForm.dob.data, createStaffForm.password.data, createStaffForm.address.data)
+            staffDict[staff.get_email()] = staff
+            db['Staff'] = staffDict
+            db.close()
+        return redirect(url_for('home'))
+    return render_template('createStaff.html', form=createStaffForm)
 
 @app.route('/createNewReport')
 def createNewReport():
