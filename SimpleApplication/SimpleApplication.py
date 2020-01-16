@@ -29,11 +29,9 @@ def retrieveFiles():
 def home():
     return render_template('home.html')
 
-
-@app.route('/cart')
-def cart():
-    return render_template('cart.html')
-
+@app.route('/checkout')
+def checkout():
+    return render_template('checkout.html')
 
 @app.route('/contactUs')
 def contactUs():
@@ -156,6 +154,18 @@ def itempage():
         itemList.append(item)
     return render_template('itempage.html', itemList=itemList, count=len(itemList))
 
+@app.route('/cart')
+def cart():
+    itemDict = {}
+    db = shelve.open('storage.db', 'r')
+    itemDict = db['Items']
+    db.close()
+
+    itemList = []
+    for key in itemDict:
+        item = itemDict.get(key)
+        itemList.append(item)
+    return render_template('cart.html', itemList=itemList, count=len(itemList))
 
 @app.route('/viewItem')
 def viewItem():
@@ -244,6 +254,8 @@ def createNewReport():
 @app.route('/salesReports')
 def salesReports():
     return render_template('salesReports.html')
+
+
 
 if __name__ == '__main__':
     app.run()

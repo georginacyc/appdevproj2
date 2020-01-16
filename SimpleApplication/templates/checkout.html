@@ -1,8 +1,13 @@
 {% extends "base.html" %}
-{% block title %}monoqlo - Cart{% endblock %}
+{% block title %}monoqlo - Checkout{% endblock %}
 {% block content %}
 <style>
-@charset "utf-8";
+    .yourcart {
+  text-align: center;
+  font-size: 1.5rem;
+  width 100%;
+ }
+ @charset "utf-8";
 
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700,600);
 
@@ -390,57 +395,26 @@ aside {
   .product-details {
     padding: 0 1rem;
   }
-}
-
 </style>
+<h1 class ="yourcart">Checkout</h1>
 
 
-<head>
-
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Basket</title>
-  <script>
-  </script>
-</head>
-<h1 class ="yourcart">Your Cart</h1>
-<div>
-    {% if count == 0 %}
-    <p>There are no items.</p>
-    {% elif count == 1 %}
-    <p>There is 1 item.</p>
-    {% else %}
-    <p>There are {{ count }} items in your cart.</p>
-    {% endif %}
-</div>
-
-<div>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                 <th>Item Name</th>
-                 <th>Gender</th>
-                 <th>Price</th>
-                 <th>Quantity</th>
-                 <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in itemList %}
-                <tr>
-                     <td>{{ item.get_itemName() }}</td>
-                     <td>{{ item.get_itemGender() }}</td>
-                     <td>${{ item.get_itemPrice() }}</td>
-                     <td><input type="number" value="1" min="1" class="quantity-field"></td>
-                     <td><form action= "{{url_for('deleteItem', id=item.get_itemCount())}}" method="POST">
-                            <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?')">
-                        </form></td>
-
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-<a href="/checkout" class="btn btn-primary btn-lg btn-block" role="button">Proceed to checkout</a>
+      <div class="basket-labels">
+        <ul class="itemtable">
+          <li class="item item-heading">Item</li>
+          <li class="price">Price</li>
+          <li class="quantity">Quantity</li>
+          <li class="subtotal">Subtotal</li>
+        </ul>
+      </div>
+      <div class="basket-product">
+        <div class="item">
+          <div class="product-image">
+            <img src="https://sslimages.shoppersstop.com/B8AC9759D45547D9AEF177F0DE13B7C8/img/8B340B41B71D41E5A7C47B94F2780C3A/204946260_9306_8B340B41B71D41E5A7C47B94F2780C3A.jpg" width="120" height="166" alt="" class="product-frame">
+          </div>
+          <div class="product-details">
+            <h1><strong><span class="item-quantity">4</span></strong> Lace Sleeve Cuff Dress</h1>
+          </div>
+        </div>
+        <div class="price">26.00</div>
 {% endblock %}
