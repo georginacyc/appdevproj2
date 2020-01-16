@@ -7,14 +7,11 @@ from invoiceclass import Invoice
 
 
 def Iserialcheck(form, field):
-    itemsDict = {}
+
+    itemDict = {}
     db = shelve.open('storage.db', 'r')
-    try:
-        itemsDict = db['Items']
-        itemclass.Item.countID = db['itemcount']
-    except:
-        print("Error in retrieving Items from storage.db.")
-    if field.data in itemsDict:
+    itemDict = db['Items']
+    if field.data in itemDict:
         pass
     else:
         raise ValidationError('Item Serial not found')
@@ -28,7 +25,7 @@ class CreateInvoiceForm(Form):
     shipmentStatus = SelectField("Shipment Status", [validators.DataRequired()],choices=[('', 'Select'), ('Shipped', 'Shipped'), ('Received', 'Received')], default='')
     receivedDate = DateField("Received Date ( d-m-Y )", [validators.DataRequired()], format='%d-%m-%Y')
     itemSerial = StringField("Item Serial", [validators.DataRequired(), Iserialcheck])
-    orderQuantity = IntegerField("Order Quantity", [validators.DataRequired])
+    orderQuantity = IntegerField("Order Quantity", [validators.DataRequired()])
 
 
 class EditInvoiceForm(Form):

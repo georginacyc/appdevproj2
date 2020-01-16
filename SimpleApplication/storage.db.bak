@@ -3,3 +3,5 @@
 'Users', (3584, 186)
 'Items', (7168, 355)
 'itemcount', (6656, 5)
+'Invoice', (8192, 301)
+'invoicecount', (8704, 5)
