@@ -90,8 +90,12 @@ def createInvoice():
         try:
             invoiceDict = db['Invoice']
             invoiceclass.Invoice.countID = db['invoicecount']
+        except IOError:
+            print("IOError")
         except:
             print("Error in retrieving Invoice from storage.db.")
+
+
         invoice = invoiceclass.Invoice(createInvoiceForm.invoiceDate.data, createInvoiceForm.shipmentDate.data,
                                        createInvoiceForm.shipmentStatus.data, createInvoiceForm.receivedDate.data, )
         invoiceDict[invoice.get_invoiceCount()] = invoice
@@ -113,6 +117,8 @@ def createUser():
         db = shelve.open('storage.db', 'c')
         try:
             usersDict = db['Users']
+        except IOError:
+            print("IOError")
         except:
             print("Error in retrieving Users from storage.db.")
             user = User.User(createUserForm.firstName.data, createUserForm.lastName.data,
