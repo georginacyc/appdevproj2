@@ -50,7 +50,16 @@ def inventory():
 
 @app.route('/viewinvoices')
 def viewInvoices():
-    return redirect(url_for('inventory'))
+    invoiceDict = {}
+    db = shelve.open('storage.db', 'r')
+    invoiceDict = db['Invoice']
+    db.close()
+
+    invoiceList = []
+    for key in invoiceDict:
+        invoice = invoiceDict.get(key)
+        invoiceList.append(invoice)
+    return render_template('inventory.html', itemList=invoiceList, count=len(invoiceList))
 
 @app.route('/viewStock')
 def viewStock():
