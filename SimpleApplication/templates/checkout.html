@@ -1,11 +1,13 @@
-/SimpleApplication/.idea/
-/SimpleApplication/venv/
-/venv/
-/.idea
-/.idea/vcs.xml
-
+{% extends "base.html" %}
+{% block title %}monoqlo - Checkout{% endblock %}
+{% block content %}
 <style>
-@charset "utf-8";
+    .yourcart {
+  text-align: center;
+  font-size: 1.5rem;
+  width 100%;
+ }
+ @charset "utf-8";
 
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700,600);
 
@@ -393,7 +395,26 @@ aside {
   .product-details {
     padding: 0 1rem;
   }
-}
-
 </style>
+<h1 class ="yourcart">Checkout</h1>
 
+
+      <div class="basket-labels">
+        <ul class="itemtable">
+          <li class="item item-heading">Item</li>
+          <li class="price">Price</li>
+          <li class="quantity">Quantity</li>
+          <li class="subtotal">Subtotal</li>
+        </ul>
+      </div>
+      <div class="basket-product">
+        <div class="item">
+          <div class="product-image">
+            <img src="https://sslimages.shoppersstop.com/B8AC9759D45547D9AEF177F0DE13B7C8/img/8B340B41B71D41E5A7C47B94F2780C3A/204946260_9306_8B340B41B71D41E5A7C47B94F2780C3A.jpg" width="120" height="166" alt="" class="product-frame">
+          </div>
+          <div class="product-details">
+            <h1><strong><span class="item-quantity">4</span></strong> Lace Sleeve Cuff Dress</h1>
+          </div>
+        </div>
+        <div class="price">26.00</div>
+{% endblock %}
