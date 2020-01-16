@@ -17,7 +17,7 @@ def serialcheck(form,field):
 class CreateItemForm(Form):
     itemName = StringField("Item Name",[validators.Length(min=1, max=150),validators.DataRequired()])
     itemSerial = StringField("Item Serial",[validators.DataRequired(),serialcheck])
-    itemCategory = SelectField("Category",[validators.DataRequired()],choices=[('', 'Select'), ('T', 'Tops'), ('B', 'Bottoms')],default='')
+    itemCategory = SelectField("Category",[validators.DataRequired()],choices=[('', 'Select'), ('Tops', 'Tops'), ('Bottoms', 'Bottoms')],default='')
     itemGender = SelectField("Gender", [validators.DataRequired()],choices=[('', 'Select'), ('F', 'Female'), ('M', 'Male')],default='')
     itemCost = FloatField("Item Cost",[validators.DataRequired()])
     itemPrice = FloatField("Item Price",[validators.DataRequired()])

@@ -1,9 +1,11 @@
 class Invoice:
     countID = 0
-    def __init__(self,invoiceNumber,invoiceDate,shipmentDate,shipmentStatus,receivedDate):
+    invoiceN = 1000
+    def __init__(self,invoiceDate,shipmentDate,shipmentStatus,receivedDate):
         self.__class__.countID +=1
         self.__invoiceCount = self.__class__.countID
-        self.__invoiceNumber = invoiceNumber
+        self.__class__.invoiceN +=1
+        self.__invoiceNumber = self.__class__.invoiceN
         self.__invoiceDate = invoiceDate
         self.__shipmentDate = shipmentDate
         self.__shipmentStatus = shipmentStatus
@@ -25,9 +27,9 @@ class Invoice:
     def get_receivedDate(self):
         return self.__receivedDate
 
+
 #setter
-    def set_invoiceNumber(self,invoiceNumber):
-        self.__invoiceNumber = invoiceNumber
+
     def set_invoiceDate(self,invoiceDate):
         self.__invoiceDate = invoiceDate
 
