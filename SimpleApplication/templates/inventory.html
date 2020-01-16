@@ -23,12 +23,11 @@
                      <td>{{ invoice.get_invoiceCount() }}</td>
                      <td>{{ invoice.get_invoiceNumber() }}</td>
                      <td>{{ invoice.get_invoiceDate() }}</td>
-                     <td>{{ invoice.get_shipmentDate }}</td>
+                     <td>{{ invoice.get_shipmentDate() }}</td>
                      <td>{{ invoice.get_shipmentStatus() }}</td>
                      <td>{{ invoice.get_receivedDate() }}</td>
                      <td><a class="btn btn-warning">Edit Status</a></td>
                      <td><a class="btn btn-danger">Received</a></td>
-
                 </tr>
             {% endfor %}
         </tbody>

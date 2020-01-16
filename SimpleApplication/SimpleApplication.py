@@ -6,16 +6,18 @@ from invoiceForm import CreateInvoiceForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, itemclass, itemForm, staffClass, os, uuid
 
-UPLOAD_FOLDER='templates/includes/productimages/'
+UPLOAD_FOLDER = 'templates/includes/productimages/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
 
 def retrieveFiles():
     entries = os.listdir(app.config['UPLOAD_FOLDER'])
@@ -23,6 +25,7 @@ def retrieveFiles():
     for entry in entries:
         fileList.append(entry)
     return fileList
+
 
 @app.route('/')
 def home():
@@ -46,10 +49,6 @@ def staffHome():
 
 @app.route('/inventory')
 def inventory():
-    return render_template('inventory.html')
-
-@app.route('/viewinvoices')
-def viewInvoices():
     invoiceDict = {}
     db = shelve.open('storage.db', 'r')
     invoiceDict = db['Invoice']
@@ -59,7 +58,13 @@ def viewInvoices():
     for key in invoiceDict:
         invoice = invoiceDict.get(key)
         invoiceList.append(invoice)
-    return render_template('inventory.html', itemList=invoiceList, count=len(invoiceList))
+    return render_template('inventory.html', invoiceList=invoiceList, count=len(invoiceList))
+
+
+@app.route('/viewinvoices')
+def viewInvoices():
+    return render_template('inventory.html')
+
 
 @app.route('/viewStock')
 def viewStock():
@@ -74,7 +79,8 @@ def viewStock():
         itemList.append(item)
     return render_template('viewStock.html', itemList=itemList, count=len(itemList))
 
-@app.route('/createInvoice',methods=['GET','POST'])
+
+@app.route('/createInvoice', methods=['GET', 'POST'])
 def createInvoice():
     createInvoiceForm = CreateInvoiceForm(request.form)
 
@@ -83,18 +89,20 @@ def createInvoice():
         db = shelve.open('storage.db', 'c')
         try:
             invoiceDict = db['Invoice']
-            invoiceclass.Invoice.countID = db['Invoicecount']
+            invoiceclass.Invoice.countID = db['invoicecount']
         except:
             print("Error in retrieving Invoice from storage.db.")
-        invoice = invoiceclass.Invoice(createInvoiceForm.invoiceDate.data, createInvoiceForm.shipmentDate.data, createInvoiceForm.shipmentStatus.data,createInvoiceForm.receivedDate.data, )
+        invoice = invoiceclass.Invoice(createInvoiceForm.invoiceDate.data, createInvoiceForm.shipmentDate.data,
+                                       createInvoiceForm.shipmentStatus.data, createInvoiceForm.receivedDate.data, )
         invoiceDict[invoice.get_invoiceCount()] = invoice
         db['Invoice'] = invoiceDict
-        db['invoicecount']=invoiceclass.Invoice.countID
+        db['invoicecount'] = invoiceclass.Invoice.countID
         print(db['Invoice'])
         db.close()
 
         return redirect(url_for('inventory'))
     return render_template('createInvoice.html', form=createInvoiceForm)
+
 
 @app.route('/createUser', methods=['GET', 'POST'])
 def createUser():
@@ -116,36 +124,37 @@ def createUser():
         return redirect(url_for('home'))
     return render_template('createUser.html', form=createUserForm)
 
+
 @app.route('/retrieveUsers')
 def retrieveUsers():
- usersDict = {}
- db = shelve.open('storage.db', 'r')
- usersDict = db['Users']
- db.close()
-
-
- usersList = []
- for key in usersDict:
-  user = usersDict.get(key)
-  usersList.append(user)
-
- return render_template('retrieveUsers.html', usersList=usersList, count=len(usersList))
-
-@app.route('/deleteItem/<id>/',methods=['GET','POST'])
-def deleteItem(id):
-
-    itemDict = {}
-    db  = shelve.open("storage.db","w")
-    itemDict =db["Items"]
-
-    itemDict.pop(id) #action of removing the record
-    db["Items"] = itemDict #put back to persistence
+    usersDict = {}
+    db = shelve.open('storage.db', 'r')
+    usersDict = db['Users']
     db.close()
 
-    #after we delete succesfully
+    usersList = []
+    for key in usersDict:
+        user = usersDict.get(key)
+        usersList.append(user)
+
+    return render_template('retrieveUsers.html', usersList=usersList, count=len(usersList))
+
+
+@app.route('/deleteItem/<id>/', methods=['GET', 'POST'])
+def deleteItem(id):
+    itemDict = {}
+    db = shelve.open("storage.db", "w")
+    itemDict = db["Items"]
+
+    itemDict.pop(id)  # action of removing the record
+    db["Items"] = itemDict  # put back to persistence
+    db.close()
+
+    # after we delete succesfully
     return redirect(url_for('itempage'))
 
-@app.route('/updateItem/<id>/',methods=['GET','POST'])
+
+@app.route('/updateItem/<id>/', methods=['GET', 'POST'])
 def updateItem(id):
     updateItemForm = CreateItemForm(request.form)
     if request.method == 'POST' and updateItemForm.validate():
@@ -177,7 +186,8 @@ def updateItem(id):
         updateItemForm.itemGender.data = item.get_itemGender()
         updateItemForm.itemCost.data = item.get_itemCost()
         updateItemForm.itemPrice.data = item.get_itemPrice()
-        return render_template('updateItem.html',form=updateItemForm)
+        return render_template('updateItem.html', form=updateItemForm)
+
 
 @app.route('/itempage')
 def itempage():
@@ -210,10 +220,12 @@ def itemCreation():
             itemclass.Item.countID = db['itemcount']
         except:
             print("Error in retrieving Items from storage.db.")
-        item = itemclass.Item(createItemForm.itemSerial.data,createItemForm.itemName.data,createItemForm.itemCategory.data, createItemForm.itemGender.data, createItemForm.itemCost.data,createItemForm.itemPrice.data)
+        item = itemclass.Item(createItemForm.itemSerial.data, createItemForm.itemName.data,
+                              createItemForm.itemCategory.data, createItemForm.itemGender.data,
+                              createItemForm.itemCost.data, createItemForm.itemPrice.data)
         itemsDict[item.get_itemSerial()] = item
         db['Items'] = itemsDict
-        db['itemcount']=itemclass.Item.countID
+        db['itemcount'] = itemclass.Item.countID
         db.close()
 
         def upload_file():
@@ -236,6 +248,7 @@ def itemCreation():
 
                     return render_template('itemCreation.html', fileList=retrieveFiles())
             return render_template('home.html', fileList=retrieveFiles())
+
         return redirect(url_for('itempage'))
     return render_template('itemCreation.html', form=createItemForm)
 
@@ -251,7 +264,9 @@ def createStaff():
             staffDict = db['Staff']
         except:
             print("Error in retrieving Staff from storage.db.")
-        staff = staffClass.Staff(createStaffForm.fname.data,createStaffForm.lname.data, createStaffForm.gender.data,createStaffForm.hp.data, createStaffForm.dob.data, createStaffForm.password.data, createStaffForm.address.data)
+        staff = staffClass.Staff(createStaffForm.fname.data, createStaffForm.lname.data, createStaffForm.gender.data,
+                                 createStaffForm.hp.data, createStaffForm.dob.data, createStaffForm.password.data,
+                                 createStaffForm.address.data)
 
         staffDict[staff.get_email()] = staff
         db['Staff'] = staffDict
@@ -287,13 +302,13 @@ def login():
                     pw = True
                     logged[login.Form.email.data] = x.get_fname()
 
-
         if email == True and pw == True:
             print("Successfully logged in!")
             return redirect(url_for('staffHome'))
         else:
             print("Invalid credentials. Please try again.")
     return render_template('tempLogin.html', form=loginForm)
+
 
 @app.route('/tempStaffAccounts')
 def staffAccounts():
@@ -315,13 +330,16 @@ def staffAccounts():
 
     return render_template("tempStaffAccountList.html", usersList=usersList, count=len(usersList))
 
+
 @app.route('/createNewReport')
 def createNewReport():
     return render_template('create.html')
 
+
 @app.route('/salesReports')
 def salesReports():
     return render_template('salesReports.html')
+
 
 @app.route('/catalogueHis')
 def catalogueHis():
@@ -336,7 +354,8 @@ def catalogueHis():
         itemList.append(item)
     return render_template('catalogueHis.html', itemList=itemList, count=len(itemList))
 
-@app.route('/itemDetails/<id>/',methods=['GET','POST'])
+
+@app.route('/itemDetails/<id>/', methods=['GET', 'POST'])
 def itemDetails(id):
     itemDict = {}
     db = shelve.open('storage.db', 'r')
@@ -347,6 +366,7 @@ def itemDetails(id):
     item = itemDict.get(id)
     itemList.append(item)
     return render_template('itemDetails.html', itemList=itemList, count=len(itemList))
+
 
 if __name__ == '__main__':
     app.run()
