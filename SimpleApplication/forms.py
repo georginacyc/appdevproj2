@@ -20,6 +20,14 @@ class CreateStaffForm(Form):
     address = TextAreaField("Address", [validators.InputRequired()])
     type = RadioField("Account Type", [validators.DataRequired()], choices=[("Staff","Staff"), ("Admin", "Admin")], default="Staff")
 
+class UpdateStaffForm(Form):
+    fname = StringField("First Name", [validators.Length(min=1, max=150)], render_kw={"placeholder": "John"})
+    lname = StringField("Last Name", [validators.Length(min=1, max=150)], render_kw={"placeholder": "Doe"})
+    gender = SelectField("Gender", choices=[("", "Select"), ("F", "Female"), ("M", "Male")], default = "")
+    hp = StringField("Contact Number", render_kw={"placeholder": "65500999"})
+    address = TextAreaField("Address")
+    type = RadioField("Account Type", choices=[("Staff","Staff"), ("Admin", "Admin")], default="Staff")
+
 class LogInForm(Form):
     email = EmailField("Email", [validators.InputRequired()], render_kw={"placeholder": "johndoe@domain.com"})
     password = PasswordField("Password", [validators.InputRequired()], render_kw={"placeholder": "password"})

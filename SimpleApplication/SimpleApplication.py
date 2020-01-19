@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 import invoiceclass
-from forms import CreateUserForm, CreateStaffForm, LogInForm
+from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm
 from invoiceForm import CreateInvoiceForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, itemclass, itemForm, staffClass, os, uuid
@@ -281,9 +281,46 @@ def createStaff():
     return render_template('createStaff.html', form=createStaffForm)
 
 
-@app.route('/updateStaff')
-def updateStaff():
-    return redirect(url_for('staffHome'))
+@app.route('/updateStaff/<int:eID>', methods=['GET', 'POST'])
+def updateStaff(eID):
+    updateStaffForm = UpdateStaffForm(request.form)
+    eID2 = str(eID).zfill(6)
+    if request.method == 'POST' and updateStaffForm.validate():
+        staffDict = {}
+        db = shelve.open('storage.db', 'c')
+        try:
+            staffDict = db['Staff']
+        except:
+            print("Error in retrieving Staff from storage.db.")
+
+        staff = staffDict.get(eID2)
+        staff.set_fname(updateStaffForm.fname.data)
+        staff.set_lname(updateStaffForm.lname.data)
+        staff.set_gender(updateStaffForm.gender.data)
+        staff.set_hp(updateStaffForm.hp.data)
+        staff.set_address(updateStaffForm.address.data)
+        staff.set_type(updateStaffForm.type.data)
+
+        staffDict[staff.get_eID()] = staff
+        db['Staff'] = staffDict
+        db.close()
+        return redirect(url_for('staffAccounts'))
+
+    else:
+        staffDict = {}
+        db = shelve.open('storage.db', 'r')
+        staffDict = db['Staff']
+        db.close()
+
+        staff = staffDict.get(eID2)
+        updateStaffForm.fname.data = staff.get_fname()
+        updateStaffForm.lname.data = staff.get_lname()
+        updateStaffForm.gender.data = staff.get_gender()
+        updateStaffForm.hp.data = staff.get_hp()
+        updateStaffForm.address.data = staff.get_address()
+        updateStaffForm.type.data = staff.get_type()
+
+        return render_template('updateStaff.html', form=updateStaffForm)
 
 
 @app.route('/tempLogin', methods=['GET', 'POST'])
