@@ -274,7 +274,7 @@ def createStaff():
                                  createStaffForm.hp.data, createStaffForm.dob.data, createStaffForm.password.data,
                                  createStaffForm.address.data, createStaffForm.type.data)
 
-        staffDict[staff.get_email()] = staff
+        staffDict[staff.get_eID()] = staff
         db['Staff'] = staffDict
         db.close()
         return redirect(url_for('staffAccounts'))
@@ -335,6 +335,21 @@ def staffAccounts():
         staffList.append(staff)
 
     return render_template("staffAccounts.html", staffList=staffList, count=len(staffList))
+
+
+@app.route('/deleteStaff/<int:eID>', methods=['GET', 'POST'])
+def deleteStaff(eID):
+    staffDict = {}
+    db = shelve.open("storage.db", "w")
+    staffDict = db["Staff"]
+
+    eID2 = str(eID).zfill(6)
+    staffDict.pop(eID2)  # action of removing the record
+    db["Staff"] = staffDict  # put back to persistence
+    db.close()
+
+    # after we delete succesfully
+    return redirect(url_for('staffAccounts'))
 
 
 @app.route('/createNewReport')
