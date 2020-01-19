@@ -272,18 +272,18 @@ def createStaff():
             print("Error in retrieving Staff from storage.db.")
         staff = staffClass.Staff(createStaffForm.fname.data, createStaffForm.lname.data, createStaffForm.gender.data,
                                  createStaffForm.hp.data, createStaffForm.dob.data, createStaffForm.password.data,
-                                 createStaffForm.address.data)
+                                 createStaffForm.address.data, createStaffForm.type.data)
 
         staffDict[staff.get_email()] = staff
         db['Staff'] = staffDict
         db.close()
-        return redirect(url_for('staffHome'))
+        return redirect(url_for('staffAccounts'))
     return render_template('createStaff.html', form=createStaffForm)
 
 
-@app.route('/staffAccount')
-def staffAccount():
-    render_template('staffAccount.html')
+@app.route('/updateStaff')
+def updateStaff():
+    return redirect(url_for('staffHome'))
 
 
 @app.route('/tempLogin', methods=['GET', 'POST'])
@@ -316,25 +316,25 @@ def login():
     return render_template('tempLogin.html', form=loginForm)
 
 
-@app.route('/tempStaffAccounts')
+@app.route('/staffAccounts')
 def staffAccounts():
-    usersDict = {}
+    staffDict = {}
 
     try:
         db = shelve.open("storage.db", "r")
-        usersDict = db["Staff"]
+        staffDict = db["Staff"]
     except:
         print("db error")
     else:
         db.close()
 
     #  loop through dict to save in list
-    usersList = []
-    for key in usersDict:
-        user = usersDict.get(key)
-        usersList.append(user)
+    staffList = []
+    for key in staffDict:
+        staff = staffDict.get(key)
+        staffList.append(staff)
 
-    return render_template("tempStaffAccountList.html", usersList=usersList, count=len(usersList))
+    return render_template("staffAccounts.html", staffList=staffList, count=len(staffList))
 
 
 @app.route('/createNewReport')

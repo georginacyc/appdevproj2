@@ -1,7 +1,7 @@
 class Staff:
     count = 000000
 
-    def __init__(self, fname, lname, gender, hp, dob, password, address):
+    def __init__(self, fname, lname, gender, hp, dob, password, address, type):
         self.__fname = fname
         self.__lname = lname
         self.__gender = gender
@@ -11,6 +11,7 @@ class Staff:
         self.__address = address
         self.__eID = self.set_eID(self.__class__.count)
         self.__email = self.set_email(self.get_eID())
+        self.__type = type
 
     def set_fname(self, fname):
         self.__fname = fname
@@ -31,6 +32,8 @@ class Staff:
         self.__eID = count
     def set_email(self, eID):
         self.__email = str(eID) + "@monoqlo.com"
+    def set_type(self, type):
+        self.__type = type
 
     def get_fname(self):
         return self.__fname
@@ -50,3 +53,5 @@ class Staff:
         return self.__eID
     def get_email(self):
         return self.__email
+    def get_type(self):
+        return self.__type

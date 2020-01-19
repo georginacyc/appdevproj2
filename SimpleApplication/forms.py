@@ -18,6 +18,7 @@ class CreateStaffForm(Form):
     password =  PasswordField("Password", [validators.InputRequired(), EqualTo('confirm', message="Passwords must match.")])
     confirm = PasswordField("Confirm Password")
     address = TextAreaField("Address", [validators.InputRequired()])
+    type = RadioField("Account Type", [validators.DataRequired()], choices=[("Staff","Staff"), ("Admin", "Admin")], default="Staff")
 
 class LogInForm(Form):
     email = EmailField("Email", [validators.InputRequired()], render_kw={"placeholder": "johndoe@domain.com"})
