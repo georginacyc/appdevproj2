@@ -214,6 +214,7 @@ def viewItem():
     return render_template('itempage.html')
 
 
+
 @app.route('/itemCreation', methods=['GET', 'POST'])
 def itemCreation():
     createItemForm = CreateItemForm(request.form)
