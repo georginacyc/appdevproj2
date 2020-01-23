@@ -7,7 +7,7 @@ class CreateUserForm(Form):
     lastName = StringField("last Name",[validators.Length(min=1, max=150),validators.DataRequired()])
     membership=RadioField("Membership",choices=[("F","Fellow"),("S","Senior"),("P","Professional")],default="F")
     gender = SelectField('Gender', [validators.DataRequired()],choices=[('', 'Select'), ('F', 'Female'), ('M', 'Male')],default='')
-    remarks = TextAreaField('Remarks', [validators.Optional()])
+    email= EmailField('Email', [validators.InputRequired()])
 
 class CreateStaffForm(Form):
     fname = StringField("First Name", [validators.InputRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "John"})

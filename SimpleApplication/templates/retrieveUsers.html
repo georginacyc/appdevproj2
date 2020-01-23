@@ -20,7 +20,7 @@
             <th>Last Name</th>
             <th>Membership</th>
             <th>Gender</th>
-            <th>Remarks</th>
+            <th>Email</th>
             <th></th>
             <th></th>
         </tr>
@@ -39,7 +39,7 @@
             <td>Professional</td>
             {% endif %}
             <td>{{ user.get_gender() }}</td>
-            <td>{{ user.get_remarks() }}</td>
+            <td>{{ user.get_email() }}</td>
             <td><a href="#" class="btn btn-warning">Update</a></td>
             <td>
                 <form action="" method="POST">
