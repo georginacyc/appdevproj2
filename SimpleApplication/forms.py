@@ -14,7 +14,7 @@ class CreateStaffForm(Form):
     lname = StringField("Last Name", [validators.InputRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "Doe"})
     gender = SelectField("Gender", [validators.DataRequired()], choices=[("", "Select"), ("F", "Female"), ("M", "Male")], default = "")
     hp = StringField("Contact Number", [validators.InputRequired()], render_kw={"placeholder": "65500999"})
-    dob = DateField("Date of Birth", [validators.DataRequired()], format='%d-%m-%Y', render_kw={"placeholder": "DD-MM-YYYY"})
+    dob = DateField("Date of Birth", [validators.DataRequired()], format='%d/%m/%Y', render_kw={"placeholder": "DD/MM/YYYY"})
     password =  PasswordField("Password", [validators.InputRequired(), EqualTo('confirm', message="Passwords must match.")])
     confirm = PasswordField("Confirm Password")
     address = TextAreaField("Address", [validators.InputRequired()])

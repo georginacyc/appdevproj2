@@ -4,7 +4,7 @@ import invoiceclass
 from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm
 from invoiceForm import CreateInvoiceForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, itemclass, itemForm, staffClass, os, uuid
+import shelve, User, itemclass, itemForm, Staff, os, uuid
 
 UPLOAD_FOLDER = 'templates/includes/productimages/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
