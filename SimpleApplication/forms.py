@@ -5,9 +5,9 @@ from wtforms.validators import EqualTo
 class CreateUserForm(Form):
     firstName = StringField("First Name",[validators.Length(min=1, max=150),validators.DataRequired()])
     lastName = StringField("last Name",[validators.Length(min=1, max=150),validators.DataRequired()])
-    membership=RadioField("Membership",choices=[("F","Fellow"),("S","Senior"),("P","Professional")],default="F")
+    DOB = DateField("Date of Birth", [validators.DataRequired()], format='%d-%m-%Y', render_kw={"placeholder": "DD-MM-YYYY"})
     gender = SelectField('Gender', [validators.DataRequired()],choices=[('', 'Select'), ('F', 'Female'), ('M', 'Male')],default='')
-    remarks = TextAreaField('Remarks', [validators.Optional()])
+    email= EmailField('Email', [validators.InputRequired()])
 
 class CreateStaffForm(Form):
     fname = StringField("First Name", [validators.InputRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "John"})

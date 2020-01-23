@@ -1,10 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
-import invoiceclass
 from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm
 from invoiceForm import CreateInvoiceForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, itemclass, itemForm, Staff, os, uuid
+import shelve, User, Item, itemForm, Staff, Invoice, os, uuid
 
 UPLOAD_FOLDER = 'templates/includes/productimages/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -89,18 +88,18 @@ def createInvoice():
         db = shelve.open('storage.db', 'c')
         try:
             invoiceDict = db['Invoice']
-            invoiceclass.Invoice.countID = db['invoicecount']
+            Invoice.Invoice.countID = db['invoicecount']
         except IOError:
             print("IOError")
         except:
             print("Error in retrieving Invoice from storage.db.")
 
 
-        invoice = invoiceclass.Invoice(createInvoiceForm.invoiceDate.data, createInvoiceForm.shipmentDate.data,
+        invoice = Invoice.Invoice(createInvoiceForm.invoiceDate.data, createInvoiceForm.shipmentDate.data,
                                        createInvoiceForm.shipmentStatus.data, createInvoiceForm.receivedDate.data, )
         invoiceDict[invoice.get_invoiceCount()] = invoice
         db['Invoice'] = invoiceDict
-        db['invoicecount'] = invoiceclass.Invoice.countID
+        db['invoicecount'] = Invoice.Invoice.countID
         print(db['Invoice'])
         db.close()
 
@@ -122,7 +121,7 @@ def createUser():
         except:
             print("Error in retrieving Users from storage.db.")
             user = User.User(createUserForm.firstName.data, createUserForm.lastName.data,
-                             createUserForm.membership.data, createUserForm.gender.data, createUserForm.remarks.data)
+                             createUserForm.DOB.data, createUserForm.gender.data, createUserForm.email.data)
             usersDict[user.get_userID()] = user
             db['Users'] = usersDict
             db.close()
@@ -224,15 +223,15 @@ def itemCreation():
         db = shelve.open('storage.db', 'c')
         try:
             itemsDict = db['Items']
-            itemclass.Item.countID = db['itemcount']
+            Item.Item.countID = db['itemcount']
         except:
             print("Error in retrieving Items from storage.db.")
-        item = itemclass.Item(createItemForm.itemSerial.data, createItemForm.itemName.data,
+        item = Item.Item(createItemForm.itemSerial.data, createItemForm.itemName.data,
                               createItemForm.itemCategory.data, createItemForm.itemGender.data,
                               createItemForm.itemCost.data, createItemForm.itemPrice.data)
         itemsDict[item.get_itemSerial()] = item
         db['Items'] = itemsDict
-        db['itemcount'] = itemclass.Item.countID
+        db['itemcount'] = Item.Item.countID
         db.close()
 
         def upload_file():
@@ -271,7 +270,7 @@ def createStaff():
             staffDict = db['Staff']
         except:
             print("Error in retrieving Staff from storage.db.")
-        staff = staffClass.Staff(createStaffForm.fname.data, createStaffForm.lname.data, createStaffForm.gender.data,
+        staff = Staff.Staff(createStaffForm.fname.data, createStaffForm.lname.data, createStaffForm.gender.data,
                                  createStaffForm.hp.data, createStaffForm.dob.data, createStaffForm.password.data,
                                  createStaffForm.address.data, createStaffForm.type.data)
 

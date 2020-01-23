@@ -20,7 +20,7 @@
             <th>Last Name</th>
             <th>Membership</th>
             <th>Gender</th>
-            <th>Remarks</th>
+            <th>Email</th>
             <th></th>
             <th></th>
         </tr>
@@ -31,15 +31,9 @@
             <td>{{ user.get_userID() }}</td>
             <td>{{ user.get_firstName() }}</td>
             <td>{{ user.get_lastName() }}</td>
-            {% if user.get_membership() == "F" %}
-            <td>Fellow</td>
-            {% elif user.get_membership() == "S" %}
-            <td>Senior</td>
-            {% elif user.get_membership() == "P" %}
-            <td>Professional</td>
-            {% endif %}
+            <td>{{ user.get_DOB() }}</td>
             <td>{{ user.get_gender() }}</td>
-            <td>{{ user.get_remarks() }}</td>
+            <td>{{ user.get_email() }}</td>
             <td><a href="#" class="btn btn-warning">Update</a></td>
             <td>
                 <form action="" method="POST">
