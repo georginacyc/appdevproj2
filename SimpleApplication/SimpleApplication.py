@@ -122,7 +122,8 @@ def createUser():
         except:
             print("Error in retrieving Users from storage.db.")
             user = User.User(createUserForm.firstName.data, createUserForm.lastName.data,
-                             createUserForm.DOB.data, createUserForm.gender.data, createUserForm.email.data)
+                             createUserForm.DOB.data, createUserForm.gender.data, createUserForm.email.data,
+                             createUserForm.pw.data,createUserForm.confirmpw.data )
             usersDict[user.get_userID()] = user
             db['Users'] = usersDict
             db.close()
