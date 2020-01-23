@@ -15,7 +15,6 @@ class Item:
     #get attributes
     def get_itemCount(self):
         return self.__itemCount
-
     def get_itemName(self):
         return self.__itemName
     def get_itemSerial(self):

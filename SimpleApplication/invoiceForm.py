@@ -2,8 +2,8 @@ import shelve
 
 from wtforms import Form, StringField, SelectField, validators, ValidationError, IntegerField, DateField
 
-import itemclass
-from invoiceclass import Invoice
+import Item
+from Invoice import Invoice
 
 
 def Iserialcheck(form, field):
