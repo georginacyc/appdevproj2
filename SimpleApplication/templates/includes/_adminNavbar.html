@@ -1,40 +1,8 @@
 { extends "_staffNavbar.html" }
 
-<nav class="navbar navbar-expand-lg">
-    <a class="navbar-brand" href="/">monoqlo</a>
-
-    <ul class="navbar-nav mr-auto">
-        <li class="nav-item">
-            <a class="nav-link" href="/inventory"><i class='fas fa-warehouse'></i> inventory</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/"><i class='fas fa-clipboard-check'></i> order history</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/salesReports"><i class='fas fa-chart-line'></i> sales</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/itempage"><i class='fas fa-tshirt'></i> items</a>
-        </li>
-    </ul>
-
-    <ul class="nav navbar-nav">
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-                user
-            </a>
-            <div class="dropdown-menu">
-                <p>Hello, USER!</p>
-                <a class="dropdown-item" href="/staffAccounts">Staff Accounts</a>
-                <a class="dropdown-item" href="/createStaff">New Staff</a>
-                <a class="dropdown-item" href="/announcements">Announcements</a>
-                <a class="dropdown-item" href="/createAnnouncement">Create Announcement</a>
-                <a class="dropdown-item" href="/logout">Log Out</a>
-            </div>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/"><i class="fas fa-bell"></i></a>
-        </li>
-    </ul>
-</nav>
-
+{% block content %}
+    <a class="dropdown-item" href="/staffAccounts">Staff Accounts</a>
+    <a class="dropdown-item" href="/createStaff">New Staff</a>
+    <a class="dropdown-item" href="/announcements">Announcements</a>
+    <a class="dropdown-item" href="/createAnnouncement">Create Announcement</a>
+{% endblock %}

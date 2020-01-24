@@ -360,6 +360,35 @@ def login():
     return render_template('login.html', form=loginForm)
 
 
+@app.before_request
+def accountCheck():
+    user = {}
+    staffs = {}
+
+    admin = False
+
+    try:
+        db = shelve.open('storage.db', 'r')
+        user = db['Logged']
+        staffs = db['Staff']
+        db.close()
+    except:
+        print("Error in retrieving storage.db")
+
+    if user != {}:
+        staff = list(user.keys())[0]
+        for id, name in user.items():
+            for key, object in staffs.items():
+                if id == key:
+                    if object.get_type == "Admin":
+                        pass
+
+
+    else:
+        print("No user signed in")
+
+
+
 @app.route('/logout')
 def logout():
     dict = {}
