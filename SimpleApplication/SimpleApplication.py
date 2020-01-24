@@ -310,34 +310,67 @@ def updateStaff(eID):
         return render_template('updateStaff.html', form=updateStaffForm)
 
 
-@app.route('/tempLogin', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     loginForm = LogInForm(request.form)
-    email = False
-    pw = False
+    field1 = False
+    field2 = False
 
     if request.method == 'POST' and loginForm.validate():
+        email = loginForm.email.data
+        email = email.split("@")
+        domain = email[1]
+
         userDict = {}
         logged = {}
-        db = shelve.open('storage.db', 'c')
         try:
-            userDict = db['Staff']
-            db['Logged'] = {}
+            db = shelve.open('storage.db', 'c')
         except:
-            print("Error in retrieving Staff from storage.db")
-        for x in userDict:
-            if x == loginForm.email.data:
-                email = True
-                if x.get_password() == loginForm.password.data:
-                    pw = True
-                    logged[login.Form.email.data] = x.get_fname()
+            print("Unable to retrieve storage.db")
 
-        if email == True and pw == True:
+        if domain == "monoqlo.com":
+            try:
+                userDict = db['Staff']
+                db['Logged'] = {}
+            except:
+                print("Error in retrieving Staff from storage.db")
+            for user, object in userDict.items():
+                if user == email[0]:
+                    field1 = True
+                    if object.get_password() == loginForm.password.data:
+                        field2 = True
+                        logged[email[0]] = object.get_fname()
+
+        else:
+            print("User account.")
+
+        if field1 == True and field2 == True:
+            db['Logged'] = logged
+            db.close()
             print("Successfully logged in!")
             return redirect(url_for('staffHome'))
+        elif field1 == True and field2 == False:
+            print("Invalid Email.")
+        elif field1 == False and field2 == True:
+            print("Invalid Password.")
         else:
             print("Invalid credentials. Please try again.")
-    return render_template('tempLogin.html', form=loginForm)
+
+
+    return render_template('login.html', form=loginForm)
+
+
+@app.route('/logout')
+def logout():
+    dict = {}
+    try:
+        db = shelve.open('storage.db', 'r')
+        db['Logged'] = dict
+        db.close()
+    except:
+        print("No user logged in, or some other error lol")
+
+    return redirect(url_for('home'))
 
 
 @app.route('/staffAccounts')

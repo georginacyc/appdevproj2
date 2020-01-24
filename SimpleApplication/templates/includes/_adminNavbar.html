@@ -1,3 +1,5 @@
+{ extends "_staffNavbar.html" }
+
 <nav class="navbar navbar-expand-lg">
     <a class="navbar-brand" href="/">monoqlo</a>
 
@@ -23,12 +25,10 @@
             </a>
             <div class="dropdown-menu">
                 <p>Hello, USER!</p>
-                {% block content %}
                 <a class="dropdown-item" href="/staffAccounts">Staff Accounts</a>
                 <a class="dropdown-item" href="/createStaff">New Staff</a>
                 <a class="dropdown-item" href="/announcements">Announcements</a>
                 <a class="dropdown-item" href="/createAnnouncement">Create Announcement</a>
-                {% endblock %}
                 <a class="dropdown-item" href="/logout">Log Out</a>
             </div>
         </li>
@@ -37,3 +37,4 @@
         </li>
     </ul>
 </nav>
+
