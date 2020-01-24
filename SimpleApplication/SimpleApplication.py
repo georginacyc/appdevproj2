@@ -112,21 +112,24 @@ def createUser():
     createUserForm = CreateUserForm(request.form)
 
     if request.method == 'POST' and createUserForm.validate():
+        print('SimpleApp Ln 115')
         usersDict = {}
-        db = shelve.open('storage.db', 'c')
+        db = shelve.open('storage.db', 'w')
         try:
+            print('SimpleApp Ln 119')
             usersDict = db['Users']
         except IOError:
             print("IOError")
         except:
             print("Error in retrieving Users from storage.db.")
+        finally:
             user = User.User(createUserForm.firstName.data, createUserForm.lastName.data,
                              createUserForm.DOB.data, createUserForm.gender.data, createUserForm.email.data,
                              createUserForm.pw.data,createUserForm.confirmpw.data )
             usersDict[user.get_userID()] = user
             db['Users'] = usersDict
             db.close()
-            return redirect(url_for('retrieveUsers'))
+        # return redirect(url_for('retrieveUsers'))
         return redirect(url_for('home'))
     return render_template('createUser.html', form=createUserForm)
 
@@ -198,9 +201,13 @@ def updateItem(id):
 @app.route('/itempage')
 def itempage():
     itemDict = {}
-    db = shelve.open('storage.db', 'r')
-    itemDict = db['Items']
-    db.close()
+    try:
+        db = shelve.open('storage.db', 'r')
+        itemDict = db['Items']
+    except:
+        print("whip")
+    finally:
+        db.close()
 
     itemList = []
     for key in itemDict:
@@ -234,27 +241,6 @@ def itemCreation():
         db['Items'] = itemsDict
         db['itemcount'] = Item.Item.countID
         db.close()
-
-        def upload_file():
-            if request.method == 'POST':
-                # check if the post request has the file part
-                if 'file' not in request.files:
-                    flash('No file part')
-                    return redirect(request.url)
-                file = request.files['file']
-                # if user does not select file, browser also
-                # submit an empty part without filename
-                if file.filename == '':
-                    flash('No selected file')
-                    return redirect(request.url)
-                if file and allowed_file(file.filename):
-                    filename = secure_filename(file.filename)
-
-                    # added uuid to make the filename unique. Otherwise, file with same names will override.
-                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], str(uuid.uuid4()) + filename))
-
-                    return render_template('itemCreation.html', fileList=retrieveFiles())
-            return render_template('home.html', fileList=retrieveFiles())
 
         return redirect(url_for('itempage'))
     return render_template('itemCreation.html', form=createItemForm)
