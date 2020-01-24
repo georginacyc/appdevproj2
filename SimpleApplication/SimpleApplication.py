@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
-from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm
+from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm, CreateAnnouncementForm
 from invoiceForm import CreateInvoiceForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, Item, itemForm, Staff, Invoice, os, uuid
+import shelve, User, Item, itemForm, Staff, Invoice, os, uuid, Announcement
 
 UPLOAD_FOLDER = 'templates/includes/productimages/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -383,7 +383,6 @@ def accountCheck():
                     if object.get_type == "Admin":
                         pass
 
-
     else:
         print("No user signed in")
 
@@ -436,6 +435,31 @@ def deleteStaff(eID):
 
     # after we delete succesfully
     return redirect(url_for('staffAccounts'))
+
+
+@app.route('/createAnnouncement')
+def createAnnouncement():
+    createAnnouncementForm = CreateAnnouncementForm(request.form)
+
+    if request.method == 'POST' and createAnnouncementForm.validate():
+        annDict = {}
+        db = shelve.open('storage.db', 'c')
+        try:
+            annDict = db['Announcements']
+        except:
+            print("Error in retrieving Staff from storage.db.")
+        announcement = Announcement.Announcement(createAnnouncementForm.date.data, createAnnouncementForm.title.data, createAnnouncementForm.description.data)
+
+        annDict[announcement.get_date()] = announcement
+        db['Announcements'] = annDict
+        db.close()
+        return redirect(url_for('retrieveAnnouncements'))
+    return render_template('createAnnouncement.html', form=createAnnouncementForm)
+
+
+@app.route('/retreiveAnnouncements')
+def retreiveAnnouncements():
+    pass
 
 
 @app.route('/createNewReport')
