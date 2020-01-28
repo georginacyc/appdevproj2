@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
-from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm, CreateAnnouncementForm
+from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm, CreateAnnouncement
 from invoiceForm import CreateInvoiceForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, Invoice, os, uuid, Announcement
@@ -252,8 +252,9 @@ def createStaff():
 
     if request.method == 'POST' and createStaffForm.validate():
         staffDict = {}
-        db = shelve.open('storage.db', 'c')
         try:
+            db = shelve.open('storage.db', 'c')
+            Staff.Staff.count = db['staffCount']
             staffDict = db['Staff']
         except:
             print("Error in retrieving Staff from storage.db.")
@@ -263,6 +264,8 @@ def createStaff():
 
         staffDict[staff.get_eID()] = staff
         db['Staff'] = staffDict
+        db['staffCount'] = Staff.Staff.count
+
         db.close()
         return redirect(url_for('staffAccounts'))
     return render_template('createStaff.html', form=createStaffForm)
@@ -437,29 +440,47 @@ def deleteStaff(eID):
     return redirect(url_for('staffAccounts'))
 
 
-@app.route('/createAnnouncement')
+@app.route('/createAnnouncement', methods=['GET', 'POST'])
 def createAnnouncement():
-    createAnnouncementForm = CreateAnnouncementForm(request.form)
+    createAnnouncementForm = CreateAnnouncement(request.form)
 
     if request.method == 'POST' and createAnnouncementForm.validate():
         annDict = {}
         db = shelve.open('storage.db', 'c')
         try:
             annDict = db['Announcements']
+            Announcement.Announcement.count = db['annCount']
         except:
             print("Error in retrieving Staff from storage.db.")
         announcement = Announcement.Announcement(createAnnouncementForm.date.data, createAnnouncementForm.title.data, createAnnouncementForm.description.data)
 
-        annDict[announcement.get_date()] = announcement
+        annDict[Announcement.Announcement.count] = announcement
         db['Announcements'] = annDict
+        db['annCount'] = Announcement.Announcement.count
         db.close()
         return redirect(url_for('retrieveAnnouncements'))
     return render_template('createAnnouncement.html', form=createAnnouncementForm)
 
 
-@app.route('/retreiveAnnouncements')
+@app.route('/retrieveAnnouncements')
 def retreiveAnnouncements():
-    pass
+    annDict = {}
+
+    try:
+        db = shelve.open("storage.db", "r")
+        annDict = db["Announcements"]
+    except:
+        print("db error")
+    else:
+        db.close()
+
+    #  loop through dict to save in list
+    annList = []
+    for key in annDict:
+        announcement = annDict.get(key)
+        annList.append(announcement)
+
+    return render_template("retrieveAnnouncements.html", annList=annList)
 
 
 @app.route('/createNewReport')

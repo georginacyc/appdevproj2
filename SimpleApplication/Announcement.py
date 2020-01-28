@@ -1,5 +1,8 @@
 class Announcement:
+    count = 0
+
     def __init__(self, date, title, description):
+        self.__class__.count += 1
         self.__date = date
         self.__title = title
         self.__description = ""
