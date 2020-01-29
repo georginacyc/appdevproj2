@@ -346,6 +346,18 @@ def login():
 
         else:
             print("User account.")
+            try:
+                userDict = db['Users']
+                db['Users'] = {}
+            except:
+                print("Error in retrieving User from storage.db")
+            for user, object in userDict.items():
+                if user == email[0]:
+                    field1 = True
+                    if object.get_pw() == loginForm.pw.data:
+                        field2 = True
+                        logged[email[0]] = object.get_firstname()
+
 
         if field1 == True and field2 == True:
             db['Logged'] = logged
