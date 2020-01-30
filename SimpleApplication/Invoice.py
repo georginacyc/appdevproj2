@@ -1,10 +1,11 @@
 class Invoice:
-    countID = 0
     invoiceN = 1000
+    countID = 0
+
     def __init__(self,invoiceDate,shipmentDate,shipmentStatus,receivedDate):
         self.__class__.countID +=1
         self.__invoiceCount = self.__class__.countID
-        self.__class__.invoiceN +=1
+        self.__class__.invoiceN += 1
         self.__invoiceNumber = self.__class__.invoiceN
         self.__invoiceDate = invoiceDate
         self.__shipmentDate = shipmentDate
