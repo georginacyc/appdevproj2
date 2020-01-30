@@ -1,22 +1,16 @@
 {% extends "base.html" %}
 {% block title %}monoqlo - home{% endblock %}
 {% block content %}
+{% from "includes/_formhelper.html" import render_field %}
   <style>
       /* picture with button guy  */
  .container1 {
   position: relative;
   width: 50%;
 }
-.image {
-  opacity: 1;
-  display: block;
-  width: 100%;
-  height: auto;
-  transition: .5s ease;
-  backface-visibility: hidden;
-}
+
 .image1{
-  width: 629.3px;
+  width: 750px;
 
 }
 
@@ -25,7 +19,7 @@
   opacity: 0;
   position: absolute;
   top: 50%;
-  left: 50%;
+  left: 35%;
   transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
   text-align: center;

@@ -1,8 +1,8 @@
-{% extends "staffBase.html" %}
-{% block title %}monoqolo - new staff{% endblock %}
+{% extends "base.html" %}
+{% block title %}monoqolo - login{% endblock %}
 {% block content %}
 {% from "includes/_formhelper.html" import render_field %}
-<h1 class="display-4">New Staff</h1>
+<h1 class="display-4">Login</h1>
 <form method="POST" action="">
  <div class="form-group">
   {{ render_field(form.email, class="form-control") }}

@@ -34,3 +34,9 @@ class LogInForm(Form):
     email = EmailField("Email", [validators.InputRequired()], render_kw={"placeholder": "johndoe@domain.com"})
     password = PasswordField("Password", [validators.InputRequired()], render_kw={"placeholder": "password"})
 
+class CreateAnnouncement(Form):
+    date = DateField("Date", [validators.DataRequired()], format='%d/%m/%Y', render_kw={'readonly': True})
+    title = StringField("Title", [validators.DataRequired(), validators.Length(min=1, max=150)])
+    description = TextAreaField("Description (Optional)")
+
+

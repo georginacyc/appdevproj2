@@ -1,30 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
-from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm
+from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm, CreateAnnouncement
 from invoiceForm import CreateInvoiceForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, Item, itemForm, Staff, Invoice, os, uuid
+import shelve, User, Item, itemForm, Staff, Invoice, os, uuid, Announcement
 
-UPLOAD_FOLDER = 'templates/includes/productimages/'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
-
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
-
-
-def retrieveFiles():
-    entries = os.listdir(app.config['UPLOAD_FOLDER'])
-    fileList = []
-    for entry in entries:
-        fileList.append(entry)
-    return fileList
-
 
 @app.route('/')
 def home():
@@ -112,21 +94,24 @@ def createUser():
     createUserForm = CreateUserForm(request.form)
 
     if request.method == 'POST' and createUserForm.validate():
+        print('SimpleApp Ln 115')
         usersDict = {}
-        db = shelve.open('storage.db', 'c')
+        db = shelve.open('storage.db', 'w')
         try:
+            print('SimpleApp Ln 119')
             usersDict = db['Users']
         except IOError:
             print("IOError")
         except:
             print("Error in retrieving Users from storage.db.")
+        finally:
             user = User.User(createUserForm.firstName.data, createUserForm.lastName.data,
                              createUserForm.DOB.data, createUserForm.gender.data, createUserForm.email.data,
                              createUserForm.pw.data,createUserForm.confirmpw.data )
             usersDict[user.get_userID()] = user
             db['Users'] = usersDict
             db.close()
-            return redirect(url_for('retrieveUsers'))
+        # return redirect(url_for('retrieveUsers'))
         return redirect(url_for('home'))
     return render_template('createUser.html', form=createUserForm)
 
@@ -197,10 +182,15 @@ def updateItem(id):
 
 @app.route('/itempage')
 def itempage():
+    global db
     itemDict = {}
-    db = shelve.open('storage.db', 'r')
-    itemDict = db['Items']
-    db.close()
+    try:
+        db = shelve.open('storage.db', 'r')
+        itemDict = db['Items']
+    except:
+        print("whip")
+    finally:
+        db.close()
 
     itemList = []
     for key in itemDict:
@@ -215,8 +205,8 @@ def viewItem():
 
 
 
-@app.route('/itemCreation', methods=['GET', 'POST'])
-def itemCreation():
+@app.route('/createItem', methods=['GET', 'POST'])
+def createItem():
     createItemForm = CreateItemForm(request.form)
 
     if request.method == 'POST' and createItemForm.validate():
@@ -235,29 +225,8 @@ def itemCreation():
         db['itemcount'] = Item.Item.countID
         db.close()
 
-        def upload_file():
-            if request.method == 'POST':
-                # check if the post request has the file part
-                if 'file' not in request.files:
-                    flash('No file part')
-                    return redirect(request.url)
-                file = request.files['file']
-                # if user does not select file, browser also
-                # submit an empty part without filename
-                if file.filename == '':
-                    flash('No selected file')
-                    return redirect(request.url)
-                if file and allowed_file(file.filename):
-                    filename = secure_filename(file.filename)
-
-                    # added uuid to make the filename unique. Otherwise, file with same names will override.
-                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], str(uuid.uuid4()) + filename))
-
-                    return render_template('itemCreation.html', fileList=retrieveFiles())
-            return render_template('home.html', fileList=retrieveFiles())
-
         return redirect(url_for('itempage'))
-    return render_template('itemCreation.html', form=createItemForm)
+    return render_template('createItem.html', form=createItemForm)
 
 
 @app.route('/createStaff', methods=['GET', 'POST'])
@@ -266,8 +235,9 @@ def createStaff():
 
     if request.method == 'POST' and createStaffForm.validate():
         staffDict = {}
-        db = shelve.open('storage.db', 'c')
         try:
+            db = shelve.open('storage.db', 'c')
+            Staff.Staff.count = db['staffCount']
             staffDict = db['Staff']
         except:
             print("Error in retrieving Staff from storage.db.")
@@ -277,6 +247,8 @@ def createStaff():
 
         staffDict[staff.get_eID()] = staff
         db['Staff'] = staffDict
+        db['staffCount'] = Staff.Staff.count
+
         db.close()
         return redirect(url_for('staffAccounts'))
     return render_template('createStaff.html', form=createStaffForm)
@@ -324,34 +296,95 @@ def updateStaff(eID):
         return render_template('updateStaff.html', form=updateStaffForm)
 
 
-@app.route('/tempLogin', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     loginForm = LogInForm(request.form)
-    email = False
-    pw = False
+    field1 = False
+    field2 = False
 
     if request.method == 'POST' and loginForm.validate():
+        email = loginForm.email.data
+        email = email.split("@")
+        domain = email[1]
+
         userDict = {}
         logged = {}
-        db = shelve.open('storage.db', 'c')
         try:
-            userDict = db['Staff']
-            db['Logged'] = {}
+            db = shelve.open('storage.db', 'c')
         except:
-            print("Error in retrieving Staff from storage.db")
-        for x in userDict:
-            if x == loginForm.email.data:
-                email = True
-                if x.get_password() == loginForm.password.data:
-                    pw = True
-                    logged[login.Form.email.data] = x.get_fname()
+            print("Unable to retrieve storage.db")
 
-        if email == True and pw == True:
+        if domain == "monoqlo.com":
+            try:
+                userDict = db['Staff']
+                db['Logged'] = {}
+            except:
+                print("Error in retrieving Staff from storage.db")
+            for user, object in userDict.items():
+                if user == email[0]:
+                    field1 = True
+                    if object.get_password() == loginForm.password.data:
+                        field2 = True
+                        logged[email[0]] = object.get_fname()
+
+        else:
+            print("User account.")
+
+        if field1 == True and field2 == True:
+            db['Logged'] = logged
+            db.close()
             print("Successfully logged in!")
             return redirect(url_for('staffHome'))
+        elif field1 == True and field2 == False:
+            print("Invalid Email.")
+        elif field1 == False and field2 == True:
+            print("Invalid Password.")
         else:
             print("Invalid credentials. Please try again.")
-    return render_template('tempLogin.html', form=loginForm)
+
+
+    return render_template('login.html', form=loginForm)
+
+
+@app.before_request
+def accountCheck():
+    user = {}
+    staffs = {}
+
+    admin = False
+
+    try:
+        db = shelve.open('storage.db', 'r')
+        user = db['Logged']
+        staffs = db['Staff']
+        db.close()
+    except:
+        print("Error in retrieving storage.db")
+
+    if user != {}:
+        staff = list(user.keys())[0]
+        for id, name in user.items():
+            for key, object in staffs.items():
+                if id == key:
+                    if object.get_type == "Admin":
+                        pass
+
+    else:
+        print("No user signed in")
+
+
+
+@app.route('/logout')
+def logout():
+    dict = {}
+    try:
+        db = shelve.open('storage.db', 'r')
+        db['Logged'] = dict
+        db.close()
+    except:
+        print("No user logged in, or some other error lol")
+
+    return redirect(url_for('home'))
 
 
 @app.route('/staffAccounts')
@@ -388,6 +421,49 @@ def deleteStaff(eID):
 
     # after we delete succesfully
     return redirect(url_for('staffAccounts'))
+
+
+@app.route('/createAnnouncement', methods=['GET', 'POST'])
+def createAnnouncement():
+    createAnnouncementForm = CreateAnnouncement(request.form)
+
+    if request.method == 'POST' and createAnnouncementForm.validate():
+        annDict = {}
+        db = shelve.open('storage.db', 'c')
+        try:
+            annDict = db['Announcements']
+            Announcement.Announcement.count = db['annCount']
+        except:
+            print("Error in retrieving Staff from storage.db.")
+        announcement = Announcement.Announcement(createAnnouncementForm.date.data, createAnnouncementForm.title.data, createAnnouncementForm.description.data)
+
+        annDict[Announcement.Announcement.count] = announcement
+        db['Announcements'] = annDict
+        db['annCount'] = Announcement.Announcement.count
+        db.close()
+        return redirect(url_for('retrieveAnnouncements'))
+    return render_template('createAnnouncement.html', form=createAnnouncementForm)
+
+
+@app.route('/retrieveAnnouncements')
+def retreiveAnnouncements():
+    annDict = {}
+
+    try:
+        db = shelve.open("storage.db", "r")
+        annDict = db["Announcements"]
+    except:
+        print("db error")
+    else:
+        db.close()
+
+    #  loop through dict to save in list
+    annList = []
+    for key in annDict:
+        announcement = annDict.get(key)
+        annList.append(announcement)
+
+    return render_template("retrieveAnnouncements.html", annList=annList)
 
 
 @app.route('/createNewReport')
