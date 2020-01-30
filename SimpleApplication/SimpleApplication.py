@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm, CreateAnnouncement
-from invoiceForm import CreateInvoiceForm
+from orderForm import CreateOrderForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, Item, itemForm, Staff, Invoice, os, uuid, Announcement
+import shelve, User, Item, itemForm, Staff, Order, os, uuid, Announcement
 
 
 app = Flask(__name__)
@@ -33,18 +33,18 @@ def inventory():
     return render_template('viewStock.html')
 
 
-@app.route('/viewInvoices')
-def viewInvoices():
-    invoiceDict = {}
+@app.route('/viewOrders')
+def viewOrders():
+    orderDict = {}
     db = shelve.open('storage.db', 'r')
-    invoiceDict = db['Invoice']
+    orderDict = db['Order']
     db.close()
 
-    invoiceList = []
-    for key in invoiceDict:
-        invoice = invoiceDict.get(key)
-        invoiceList.append(invoice)
-    return render_template('viewInvoices.html', invoiceList=invoiceList, count=len(invoiceList))
+    orderList = []
+    for key in orderDict:
+        order = orderDict.get(key)
+        orderList.append(order)
+    return render_template('viewOrders.html', orderList=orderList, count=len(orderList))
 
 
 @app.route('/viewStock')
@@ -61,32 +61,31 @@ def viewStock():
     return render_template('viewStock.html', itemList=itemList, count=len(itemList))
 
 
-@app.route('/createInvoice', methods=['GET', 'POST'])
-def createInvoice():
-    createInvoiceForm = CreateInvoiceForm(request.form)
+@app.route('/createOrder', methods=['GET', 'POST'])
+def createOrder():
+    createOrderForm = CreateOrderForm(request.form)
 
-    if request.method == 'POST' and createInvoiceForm.validate():
-        invoiceDict = {}
+    if request.method == 'POST' and createOrderForm.validate():
+        orderDict = {}
         db = shelve.open('storage.db', 'c')
         try:
-            invoiceDict = db['Invoice']
-            Invoice.Invoice.countID = db['invoicecount']
+            orderDict = db['Order']
+            Order.Order.countID = db['ordercount']
         except IOError:
             print("IOError")
         except:
-            print("Error in retrieving Invoice from storage.db.")
+            print("Error in retrieving the order from storage.db.")
 
 
-        invoice = Invoice.Invoice(createInvoiceForm.invoiceDate.data, createInvoiceForm.shipmentDate.data,
-                                       createInvoiceForm.shipmentStatus.data, createInvoiceForm.receivedDate.data, )
-        invoiceDict[invoice.get_invoiceCount()] = invoice
-        db['Invoice'] = invoiceDict
-        db['invoicecount'] = Invoice.Invoice.countID
-        print(db['Invoice'])
+        order = Order.Order(createOrderForm.orderDate.data, createOrderForm.shipmentDate.data, "Ordered", "")
+        orderDict[order.get_orderCount()] = order
+        db['Order'] = orderDict
+        db['ordercount'] = Order.Order.countID
+        print(db['Order'])
         db.close()
 
-        return redirect(url_for('viewInvoices'))
-    return render_template('createInvoice.html', form=createInvoiceForm)
+        return redirect(url_for('viewOrders'))
+    return render_template('createOrder.html', form=createOrderForm)
 
 
 @app.route('/createUser', methods=['GET', 'POST'])

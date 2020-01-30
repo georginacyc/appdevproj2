@@ -8,8 +8,8 @@
         <thead>
             <tr>
                 <th>S/N</th>
-                <th>Invoice Number</th>
-                <th>Invoice Date</th>
+                <th>Order Number</th>
+                <th>Order Date</th>
                 <th>Shipment Date</th>
                 <th>Shipment Status</th>
                 <th>Received Date</th>
@@ -18,11 +18,11 @@
             </tr>
         </thead>
         <tbody>
-            {% for invoice in invoiceList %}
+            {% for order in orderList %}
                 <tr>
-                     <td>{{ invoice.get_invoiceCount() }}</td>
-                     <td>{{ invoice.get_invoiceNumber() }}</td>
-                     <td>{{ invoice.get_invoiceDate() }}</td>
+                     <td>{{ invoice.get_orderCount() }}</td>
+                     <td>{{ invoice.get_orderNumber() }}</td>
+                     <td>{{ invoice.get_orderDate() }}</td>
                      <td>{{ invoice.get_shipmentDate() }}</td>
                      <td>{{ invoice.get_shipmentStatus() }}</td>
                      <td>{{ invoice.get_receivedDate() }}</td>

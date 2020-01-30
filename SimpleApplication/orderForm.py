@@ -3,7 +3,7 @@ import shelve
 from wtforms import Form, StringField, SelectField, validators, ValidationError, IntegerField, DateField
 
 import Item
-from Invoice import Invoice
+from Order import Order
 
 
 def Iserialcheck(form, field):
@@ -18,14 +18,16 @@ def Iserialcheck(form, field):
     db.close()
 
 
-class CreateInvoiceForm(Form):
-    invoiceNumber = Invoice.invoiceN
-    invoiceDate = DateField("Invoice Date ( d-m-Y )", [validators.DataRequired()], format='%d-%m-%Y')
+class CreateOrderForm(Form):
+    orderNumber = Order.orderN
+    orderDate = DateField("Order Date ( d-m-Y )", [validators.DataRequired()], format='%d-%m-%Y')
     shipmentDate = DateField("Shipment Date ( d-m-Y )", [validators.DataRequired()], format='%d-%m-%Y')
+    shipmentStatus = "Ordered"
+    receivedDate = "-"
     itemSerial = StringField("Item Serial", [validators.DataRequired(), Iserialcheck])
     orderQuantity = IntegerField("Order Quantity", [validators.DataRequired()])
 
 
-class UpdateInvoiceForm(Form):
+class UpdateOrderForm(Form):
     shipmentStatus = SelectField("Shipment Status", [validators.DataRequired()],choices=[('', 'Select'),('Ordered', 'Ordered'), ('Shipped', 'Shipped'), ('Received', 'Received')], default='')
     receivedDate = DateField("Received Date ( d-m-Y )", [validators.DataRequired()], format='%d-%m-%Y')

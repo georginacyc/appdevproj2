@@ -1,11 +1,11 @@
 {% extends "staffBase.html" %}
-{% block title %}Create Invoice{% endblock %}
+{% block title %}Create Order{% endblock %}
 {% block content %}
 {% include 'includes/_staffInventoryNav.html' %}
 {% from "includes/_formhelper.html" import render_field %}
 <form method="POST" action="">
  <div class="form-group">
-  {{ render_field(form.invoiceDate, class="form-check") }}
+  {{ render_field(form.orderDate, class="form-check") }}
  </div>
  <div class="form-group">
   {{ render_field(form.shipmentDate, class="form-check") }}
@@ -19,7 +19,7 @@
  </div>
  <div id="prof">
  </div>
- <input onclick="invoiceSubmit()" type="submit" value="Submit" class="btn btn-primary"/>
+ <input onclick="orderSubmit()" type="submit" value="Submit" class="btn btn-primary"/>
 
 </form>
 {% endblock %}
