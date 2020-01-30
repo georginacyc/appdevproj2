@@ -30,7 +30,7 @@ def staffHome():
 
 @app.route('/inventory')
 def inventory():
-    return render_template('viewInvoices.html')
+    return render_template('viewStock.html')
 
 
 @app.route('/viewInvoices')
