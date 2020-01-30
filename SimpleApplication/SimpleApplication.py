@@ -5,26 +5,8 @@ from invoiceForm import CreateInvoiceForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, Invoice, os, uuid, Announcement
 
-UPLOAD_FOLDER = 'templates/includes/productimages/'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
-
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
-
-
-def retrieveFiles():
-    entries = os.listdir(app.config['UPLOAD_FOLDER'])
-    fileList = []
-    for entry in entries:
-        fileList.append(entry)
-    return fileList
-
 
 @app.route('/')
 def home():
@@ -200,6 +182,7 @@ def updateItem(id):
 
 @app.route('/itempage')
 def itempage():
+    global db
     itemDict = {}
     try:
         db = shelve.open('storage.db', 'r')
