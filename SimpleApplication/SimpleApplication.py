@@ -205,8 +205,8 @@ def viewItem():
 
 
 
-@app.route('/itemCreation', methods=['GET', 'POST'])
-def itemCreation():
+@app.route('/createItem', methods=['GET', 'POST'])
+def createItem():
     createItemForm = CreateItemForm(request.form)
 
     if request.method == 'POST' and createItemForm.validate():
@@ -226,7 +226,7 @@ def itemCreation():
         db.close()
 
         return redirect(url_for('itempage'))
-    return render_template('itemCreation.html', form=createItemForm)
+    return render_template('createItem.html', form=createItemForm)
 
 
 @app.route('/createStaff', methods=['GET', 'POST'])
