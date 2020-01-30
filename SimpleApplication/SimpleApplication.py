@@ -30,6 +30,11 @@ def staffHome():
 
 @app.route('/inventory')
 def inventory():
+    return render_template('viewInvoices.html')
+
+
+@app.route('/viewInvoices')
+def viewInvoices():
     invoiceDict = {}
     db = shelve.open('storage.db', 'r')
     invoiceDict = db['Invoice']
@@ -39,12 +44,7 @@ def inventory():
     for key in invoiceDict:
         invoice = invoiceDict.get(key)
         invoiceList.append(invoice)
-    return render_template('inventory.html', invoiceList=invoiceList, count=len(invoiceList))
-
-
-@app.route('/viewinvoices')
-def viewInvoices():
-    return render_template('inventory.html')
+    return render_template('viewInvoices.html', invoiceList=invoiceList, count=len(invoiceList))
 
 
 @app.route('/viewStock')
@@ -85,7 +85,7 @@ def createInvoice():
         print(db['Invoice'])
         db.close()
 
-        return redirect(url_for('inventory'))
+        return redirect(url_for('viewInvoices'))
     return render_template('createInvoice.html', form=createInvoiceForm)
 
 

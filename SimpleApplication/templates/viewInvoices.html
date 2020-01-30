@@ -1,0 +1,37 @@
+{% extends "staffBase.html" %}
+{% block title %}View Invoices{% endblock %}
+{% block content %}
+{% include 'includes/_staffInventoryNav.html' %}
+<hr>
+<div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>S/N</th>
+                <th>Invoice Number</th>
+                <th>Invoice Date</th>
+                <th>Shipment Date</th>
+                <th>Shipment Status</th>
+                <th>Received Date</th>
+                <th>Shipment Status</th>
+                <th>Received</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for invoice in invoiceList %}
+                <tr>
+                     <td>{{ invoice.get_invoiceCount() }}</td>
+                     <td>{{ invoice.get_invoiceNumber() }}</td>
+                     <td>{{ invoice.get_invoiceDate() }}</td>
+                     <td>{{ invoice.get_shipmentDate() }}</td>
+                     <td>{{ invoice.get_shipmentStatus() }}</td>
+                     <td>{{ invoice.get_receivedDate() }}</td>
+                     <td><a class="btn btn-info">Update</a></td>
+                     <td><a class="btn btn-danger">Received</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
