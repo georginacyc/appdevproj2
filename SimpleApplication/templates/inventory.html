@@ -18,11 +18,11 @@
             </tr>
         </thead>
         <tbody>
-            {% for order in orderList %}
+            {% for stockorder in stockorderList %}
                 <tr>
-                     <td>{{ invoice.get_orderCount() }}</td>
-                     <td>{{ invoice.get_orderNumber() }}</td>
-                     <td>{{ invoice.get_orderDate() }}</td>
+                     <td>{{ invoice.get_stockorderCount() }}</td>
+                     <td>{{ invoice.get_stockorderNumber() }}</td>
+                     <td>{{ invoice.get_stockorderDate() }}</td>
                      <td>{{ invoice.get_shipmentDate() }}</td>
                      <td>{{ invoice.get_shipmentStatus() }}</td>
                      <td>{{ invoice.get_receivedDate() }}</td>

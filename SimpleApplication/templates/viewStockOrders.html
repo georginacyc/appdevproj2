@@ -1,5 +1,5 @@
 {% extends "staffBase.html" %}
-{% block title %}View Orders{% endblock %}
+{% block title %}View StockOrders{% endblock %}
 {% block content %}
 {% include 'includes/_staffInventoryNav.html' %}
 <hr>
@@ -18,14 +18,14 @@
             </tr>
         </thead>
         <tbody>
-            {% for order in orderList %}
+            {% for stockorder in stockorderList %}
                 <tr>
-                     <td>{{ order.get_orderCount() }}</td>
-                     <td>{{ order.get_orderNumber() }}</td>
-                     <td>{{ order.get_orderDate() }}</td>
-                     <td>{{ order.get_shipmentDate() }}</td>
-                     <td>{{ order.get_shipmentStatus() }}</td>
-                     <td>{{ order.get_receivedDate() }}</td>
+                     <td>{{ stockorder.get_stockorderCount() }}</td>
+                     <td>{{ stockorder.get_stockorderNumber() }}</td>
+                     <td>{{ stockorder.get_stockorderDate() }}</td>
+                     <td>{{ stockorder.get_shipmentDate() }}</td>
+                     <td>{{ stockorder.get_shipmentStatus() }}</td>
+                     <td>{{ stockorder.get_receivedDate() }}</td>
                      <td><a class="btn btn-info">Update</a></td>
                      <td><a class="btn btn-danger">Received</a></td>
                 </tr>

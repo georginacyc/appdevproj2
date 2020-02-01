@@ -1,5 +1,5 @@
 {% extends "staffBase.html" %}
-{% block title %}Update Order{% endblock %}
+{% block title %}Update Stock Order{% endblock %}
 {% block content %}
 {% include 'includes/_staffInventoryNav.html' %}
 {% from "includes/_formhelper.html" import render_field %}
@@ -19,6 +19,6 @@
  <div class="form-group">
   {{ render_field(form.receivedDate, class="form-control") }}
  </div>
- <input onclick="orderSubmit()" type="submit" value="Submit" class="btn btn-primary"/>
+ <input onclick="stockorderSubmit()" type="submit" value="Submit" class="btn btn-primary"/>
 </form>
 {% endblock %}

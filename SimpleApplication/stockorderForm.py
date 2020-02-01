@@ -3,7 +3,7 @@ import shelve
 from wtforms import Form, StringField, SelectField, validators, ValidationError, IntegerField, DateField
 
 import Item
-from Order import Order
+from StockOrder import StockOrder
 
 
 def Iserialcheck(form, field):
@@ -18,16 +18,16 @@ def Iserialcheck(form, field):
     db.close()
 
 
-class CreateOrderForm(Form):
-    orderNumber = Order.orderN
-    orderDate = DateField("Order Date ( d-m-Y )", [validators.DataRequired()], format='%d-%m-%Y')
+class CreateStockOrderForm(Form):
+    stockorderNumber = StockOrder.stockorderN
+    stockorderDate = DateField("Order Date ( d-m-Y )", [validators.DataRequired()], format='%d-%m-%Y')
     shipmentDate = DateField("Shipment Date ( d-m-Y )", [validators.DataRequired()], format='%d-%m-%Y')
     shipmentStatus = "Ordered"
     receivedDate = "-"
     itemSerial = StringField("Item Serial", [validators.DataRequired(), Iserialcheck])
-    orderQuantity = IntegerField("Order Quantity", [validators.DataRequired()])
+    stockorderQuantity = IntegerField("Order Quantity", [validators.DataRequired()])
 
 
-class UpdateOrderForm(Form):
+class UpdateStockOrderForm(Form):
     shipmentStatus = SelectField("Shipment Status", [validators.DataRequired()],choices=[('', 'Select'),('Ordered', 'Ordered'), ('Shipped', 'Shipped'), ('Received', 'Received')], default='')
     receivedDate = DateField("Received Date ( d-m-Y )", [validators.DataRequired()], format='%d-%m-%Y')

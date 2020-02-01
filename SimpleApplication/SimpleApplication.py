@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm, CreateAnnouncement
-from orderForm import CreateOrderForm
+from stockorderForm import CreateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, Item, itemForm, Staff, Order, os, uuid, Announcement
+import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement
 
 
 app = Flask(__name__)
@@ -33,18 +33,18 @@ def inventory():
     return render_template('viewStock.html')
 
 
-@app.route('/viewOrders')
-def viewOrders():
-    orderDict = {}
+@app.route('/viewStockOrders')
+def viewStockOrders():
+    stockorderDict = {}
     db = shelve.open('storage.db', 'r')
-    orderDict = db['Order']
+    stockorderDict = db['StockOrder']
     db.close()
 
-    orderList = []
-    for key in orderDict:
-        order = orderDict.get(key)
-        orderList.append(order)
-    return render_template('viewOrders.html', orderList=orderList, count=len(orderList))
+    stockorderList = []
+    for key in stockorderDict:
+        stockorder = stockorderDict.get(key)
+        stockorderList.append(stockorder)
+    return render_template('viewStockOrders.html', stockorderList=stockorderList, count=len(stockorderList))
 
 
 @app.route('/viewStock')
@@ -61,31 +61,31 @@ def viewStock():
     return render_template('viewStock.html', itemList=itemList, count=len(itemList))
 
 
-@app.route('/createOrder', methods=['GET', 'POST'])
-def createOrder():
-    createOrderForm = CreateOrderForm(request.form)
+@app.route('/createStockOrder', methods=['GET', 'POST'])
+def createStockOrder():
+    createStockOrderForm = CreateStockOrderForm(request.form)
 
-    if request.method == 'POST' and createOrderForm.validate():
-        orderDict = {}
+    if request.method == 'POST' and createStockOrderForm.validate():
+        stockorderDict = {}
         db = shelve.open('storage.db', 'c')
         try:
-            orderDict = db['Order']
-            Order.Order.countID = db['ordercount']
+            stockorderDict = db['StockOrder']
+            StockOrder.StockOrder.countID = db['stockordercount']
         except IOError:
             print("IOError")
         except:
             print("Error in retrieving the order from storage.db.")
 
 
-        order = Order.Order(createOrderForm.orderDate.data, createOrderForm.shipmentDate.data, "Ordered", "")
-        orderDict[order.get_orderCount()] = order
-        db['Order'] = orderDict
-        db['ordercount'] = Order.Order.countID
-        print(db['Order'])
+        stockorder = StockOrder.StockOrder(createStockOrderForm.stockorderDate.data, createStockOrderForm.shipmentDate.data, "Ordered", "")
+        stockorderDict[stockorder.get_stockorderCount()] = stockorder
+        db['StockOrder'] = stockorderDict
+        db['stockordercount'] = StockOrder.StockOrder.countID
+        print(db['StockOrder'])
         db.close()
 
-        return redirect(url_for('viewOrders'))
-    return render_template('createOrder.html', form=createOrderForm)
+        return redirect(url_for('viewStockOrders'))
+    return render_template('createStockOrder.html', form=createStockOrderForm)
 
 
 @app.route('/createUser', methods=['GET', 'POST'])
