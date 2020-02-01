@@ -35,7 +35,7 @@ class LogInForm(Form):
     password = PasswordField("Password", [validators.InputRequired()], render_kw={"placeholder": "password"})
 
 class CreateAnnouncement(Form):
-    date = DateField("Date", [validators.DataRequired()], format='%d/%m/%Y', render_kw={"placeholder": date.today, 'readonly': True})
+    date = DateField("Date", [validators.DataRequired()], format='%d/%m/%Y', render_kw={'readonly': True})
     title = StringField("Title", [validators.DataRequired(), validators.Length(min=1, max=150)])
     description = TextAreaField("Description (Optional)")
 

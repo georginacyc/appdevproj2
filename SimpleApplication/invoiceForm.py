@@ -28,5 +28,5 @@ class CreateInvoiceForm(Form):
     orderQuantity = IntegerField("Order Quantity", [validators.DataRequired()])
 
 
-class EditInvoiceForm(Form):
+class UpdateInvoiceForm(Form):
     pass
