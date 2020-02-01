@@ -95,7 +95,7 @@ def createUser():
     if request.method == 'POST' and createUserForm.validate():
         print('SimpleApp Ln 115')
         usersDict = {}
-        db = shelve.open('storage.db', 'w')
+        db = shelve.open('storage.db', 'c')
         try:
             print('SimpleApp Ln 119')
             usersDict = db['Users']
@@ -110,7 +110,7 @@ def createUser():
             usersDict[user.get_userID()] = user
             db['Users'] = usersDict
             db.close()
-        # return redirect(url_for('retrieveUsers'))
+        return redirect(url_for('retrieveUsers'))
         return redirect(url_for('home'))
     return render_template('createUser.html', form=createUserForm)
 
@@ -128,6 +128,44 @@ def retrieveUsers():
         usersList.append(user)
 
     return render_template('retrieveUsers.html', usersList=usersList, count=len(usersList))
+
+@app.route('/updateUser', methods=['GET', 'POST'])
+def updateUser(id):
+    updateUserForm = CreateUserForm(request.form)
+    if request.method == 'POST' and updateUserForm.validate():
+        userDict = {}
+        db = shelve.open('storage.db', 'w')
+        userDict = db['Users']
+        user = userDict.get(id)
+        user.set_firstName(updateUserForm.firstName.data)
+        user.set_lastName(updateUserForm.lastName.data)
+        user.set_gender(updateUserForm.gender.data)
+        db['Users'] = userDict
+        db.close()
+
+        return redirect(url_for('retrieveUsers'))
+    else:
+        userDict = {}
+        db = shelve.open('storage.db', 'r')
+        userDict = db['Users']
+        db.close()
+        user = userDict.get(id)
+        updateUserForm.firstName.data = user.get_firstName()
+        updateUserForm.lastName.data = user.get_lastName()
+        updateUserForm.gender.data = user.get_gender()
+
+
+        return render_template('updateUser.html', form=updateUserForm)
+
+@app.route('/deleteUser', methods=['POST'])
+def deleteUser(id):
+    usersDict = {}
+    db = shelve.open('storage.db', 'w')
+    usersDict = db['Users']
+    usersDict.pop(id)
+    db['Users'] = usersDict
+    db.close()
+    return redirect(url_for('retrieveUsers'))
 
 
 @app.route('/deleteItem/<id>/', methods=['GET', 'POST'])
@@ -300,6 +338,8 @@ def login():
     loginForm = LogInForm(request.form)
     field1 = False
     field2 = False
+    field3 = False
+    field4 = False
 
     if request.method == 'POST' and loginForm.validate():
         email = loginForm.email.data
@@ -308,10 +348,10 @@ def login():
 
         userDict = {}
         logged = {}
-        try:
-            db = shelve.open('storage.db', 'c')
-        except:
-            print("Unable to retrieve storage.db")
+        # try:
+        #     db = shelve.open('storage.db', 'c')
+        # except:
+        #     print("Unable to retrieve storage.db")
 
         if domain == "monoqlo.com":
             try:
@@ -328,16 +368,36 @@ def login():
 
         else:
             print("User account.")
+            try:
+                userDict = db['Users']
+                db['Users'] = {}
+            except:
+                print("Error in retrieving User from storage.db")
+            for user, object in userDict.items():
+                if user == email[0]:
+                    field1 = True
+                    if object.get_pw() == loginForm.pw.data:
+                        field2 = True
+                        logged[email[0]] = object.get_firstname()
+
 
         if field1 == True and field2 == True:
             db['Logged'] = logged
             db.close()
             print("Successfully logged in!")
             return redirect(url_for('staffHome'))
+        elif field3 == True and field4 == True:
+            db['Logged'] = logged
+            db.close()
+            return redirect(url_for('home'))
         elif field1 == True and field2 == False:
             print("Invalid Email.")
+        elif field3 == True and field4 == False:
+            print('Invalid email')
         elif field1 == False and field2 == True:
             print("Invalid Password.")
+        elif field3 == False and field4 == True:
+            print('Invalid password')
         else:
             print("Invalid credentials. Please try again.")
 
