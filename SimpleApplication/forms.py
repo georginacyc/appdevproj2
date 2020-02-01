@@ -11,6 +11,14 @@ class CreateUserForm(Form):
     pw = PasswordField("Password", [validators.InputRequired(), EqualTo('confirmpw', message="Passwords must match.")])
     confirmpw = PasswordField("Confirm Password")
 
+class UpdateUserForm(Form):
+    firstName = StringField("First Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Lily"})
+    lastName = StringField("last Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Doe"})
+    gender = SelectField('Gender', [validators.DataRequired()],choices=[('', 'Select'), ('F', 'Female'), ('M', 'Male')],default='')
+
+
+
+
 class CreateStaffForm(Form):
     fname = StringField("First Name", [validators.InputRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "John"})
     lname = StringField("Last Name", [validators.InputRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "Doe"})
