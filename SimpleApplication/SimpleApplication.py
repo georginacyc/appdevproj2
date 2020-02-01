@@ -301,6 +301,8 @@ def login():
     loginForm = LogInForm(request.form)
     field1 = False
     field2 = False
+    field3 = False
+    field4 = False
 
     if request.method == 'POST' and loginForm.validate():
         email = loginForm.email.data
@@ -309,10 +311,10 @@ def login():
 
         userDict = {}
         logged = {}
-        try:
-            db = shelve.open('storage.db', 'c')
-        except:
-            print("Unable to retrieve storage.db")
+        # try:
+        #     db = shelve.open('storage.db', 'c')
+        # except:
+        #     print("Unable to retrieve storage.db")
 
         if domain == "monoqlo.com":
             try:
@@ -347,10 +349,18 @@ def login():
             db.close()
             print("Successfully logged in!")
             return redirect(url_for('staffHome'))
+        elif field3 == True and field4 == True:
+            db['Logged'] = logged
+            db.close()
+            return redirect(url_for('home'))
         elif field1 == True and field2 == False:
             print("Invalid Email.")
+        elif field3 == True and field4 == False:
+            print('Invalid email')
         elif field1 == False and field2 == True:
             print("Invalid Password.")
+        elif field3 == False and field4 == True:
+            print('Invalid password')
         else:
             print("Invalid credentials. Please try again.")
 
