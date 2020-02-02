@@ -143,7 +143,7 @@ def createUser():
             user = User.User(createUserForm.firstName.data, createUserForm.lastName.data,
                              createUserForm.DOB.data, createUserForm.gender.data, createUserForm.email.data,
                              createUserForm.pw.data, createUserForm.confirmpw.data)
-            usersDict[user.get_userID()] = user
+            usersDict[user.get_email()] = user
             db['Users'] = usersDict
             db.close()
         return redirect(url_for('retrieveUsers'))
@@ -159,15 +159,15 @@ def retrieveUsers():
     db.close()
 
     usersList = []
-    for key in usersDict:
-        user = usersDict.get(key)
+    for email in usersDict:
+        user = usersDict.get(email)
         usersList.append(user)
 
     return render_template('retrieveUsers.html', usersList=usersList, count=len(usersList))
 
 
-@app.route('/updateUser/<int:id>/', methods=['GET', 'POST'])
-def updateUser(id):
+@app.route('/updateUser/<email>/', methods=['GET', 'POST'])
+def updateUser(email):
     updateUserForm = CreateUserForm(request.form)
     if request.method == 'POST' and updateUserForm.validate():
         userDict = {}
@@ -176,7 +176,7 @@ def updateUser(id):
             userDict = db['Users']
         except:
             print("Error in retrieving User from storage.db")
-        user = userDict.get(id)
+        user = userDict.get(email)
         user.set_firstName(updateUserForm.firstName.data)
         user.set_lastName(updateUserForm.lastName.data)
         user.set_gender(updateUserForm.gender.data)
@@ -189,7 +189,7 @@ def updateUser(id):
         db = shelve.open('storage.db', 'r')
         userDict = db['Users']
         db.close()
-        user = userDict.get(id)
+        user = userDict.get(email)
         updateUserForm.firstName.data = user.get_firstName()
         updateUserForm.lastName.data = user.get_lastName()
         updateUserForm.gender.data = user.get_gender()
@@ -197,13 +197,13 @@ def updateUser(id):
         return render_template('updateUser.html', form=updateUserForm)
 
 
-@app.route('/deleteUser/<int:id>', methods=['GET', 'POST'])
-def deleteUser(id):
+@app.route('/deleteUser/<id>/', methods=['GET', 'POST'])
+def deleteUser(email):
     usersDict = {}
     db = shelve.open('storage.db', 'w')
     usersDict = db['Users']
 
-    usersDict.pop(id)  # action of removing the record
+    usersDict.pop(email)  # action of removing the record
     db['Users'] = usersDict  # put back to persistence
     db.close()
 
@@ -409,20 +409,19 @@ def login():
                         field2 = True
                         logged[email[0]] = object.get_fname()
         else:
-            pass
-            # print("User account.")
-            # try:
-            #     userDict = db['Users']
-            #     db['Users'] = {}
-            # except:
-            #     print("Error in retrieving User from storage.db")
-            # finally:
-            #     for user, object in userDict.items():
-            #         if user == email[0]:
-            #             field3 = True
-            #         if object.get_pw() == loginForm.pw.data:
-            #             field4 = True
-            #             logged[email[0]] = object.get_firstname()
+            print("User account.")
+            try:
+                userDict = db['Users']
+                db['Users'] = {}
+            except:
+                print("Error in retrieving User from storage.db")
+            finally:
+                for user, object in userDict.items():
+                    if user == email[0]:
+                        field3 = True
+                    if object.get_pw() == loginForm.pw.data:
+                        field4 = True
+                        logged[email[0]] = object.get_firstname()
 
         if field1 == True and field2 == True:
             db['Logged'] = logged
