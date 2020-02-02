@@ -1,8 +1,48 @@
 {% extends "base.html" %}
 {% block title %}Item{% endblock %}
 {% block content %}
+<style>
+    * {
+  box-sizing: border-box;
+}
 
-<div>
+.column {
+  float: left;
+  width: 25%;
+  padding: 0 10px;
+}
+
+.cardRow {margin: 0 -5px;}
+
+.cardRow:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* this adds the "card" effect */
+  padding: 16px;
+  text-align: center;
+  background-color: #f1f1f1;
+}
+
+@media screen and (max-width: 600px) {
+  .column {
+    width: 100%;
+    display: block;
+    margin-bottom: 20px;
+  }
+}
+</style>
+<div class="cardRows">
+    {% for item in itemList %}
+      <div class="column">
+        <div class="card">{{ item.get_itemName() }}</div>
+      </div>
+    {% endfor %}
+</div>
+<!--<div>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -26,5 +66,5 @@
             {% endfor %}
         </tbody>
     </table>
-</div>
+</div>-->
 {% endblock %}
