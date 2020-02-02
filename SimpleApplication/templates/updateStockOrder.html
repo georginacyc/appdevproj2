@@ -4,21 +4,23 @@
 {% include 'includes/_staffInventoryNav.html' %}
 {% from "includes/_formhelper.html" import render_field %}
 
-{% for stockorder in stockorderList %}
-<p>Order number: {{ stockorder.get_stockorderNumber() }}</p>
-<p>Order Date: {{ stockorder.get_stockorderDate() }}</p>
-<p>Item Serial: {{ stockorder.get_stockItemSerial() }}</p>
-<p>Order Quantity:</p>
-{% endfor %}
-
-<hr>
 <form method="POST" action="">
  <div class="form-group">
-  {{ render_field(form.shipmentStatus, class="form-control") }}
+  {{ render_field(form.stockorderDate, class="form-check") }}
  </div>
  <div class="form-group">
-  {{ render_field(form.receivedDate, class="form-control") }}
+  {{ render_field(form.shipmentDate, class="form-check") }}
+ </div>
+ <hr>
+ <div class="form-group">
+  {{ render_field(form.stockItemSerial, class="form-control") }}
+ </div>
+  <div class="form-group">
+  {{ render_field(form.stockorderQuantity, class="form-control") }}
+ </div>
+ <div id="prof">
  </div>
  <input onclick="stockorderSubmit()" type="submit" value="Submit" class="btn btn-primary"/>
+
 </form>
 {% endblock %}
