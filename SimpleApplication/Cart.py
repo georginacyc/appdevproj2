@@ -7,7 +7,6 @@ class Cart:
         self.__cartQuantity = cartQuantity
         self.__cartSubtotal = cartSubtotal
 
-
     def get_cartCount(self):
         return self.__cartCount
     def get_cartItem(self):
@@ -24,6 +23,6 @@ class Cart:
     def set_cartSubtotal(self,cartSubtotal):
         self.__cartSubtotal = cartSubtotal
 
+
     def set_updatePrice(self):
-
-
+        pass
