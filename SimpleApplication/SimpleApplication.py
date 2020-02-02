@@ -199,7 +199,7 @@ def updateUser(email):
         return render_template('updateUser.html', form=updateUserForm)
 
 
-@app.route('/deleteUser/<id>/', methods=['GET', 'POST'])
+@app.route('/deleteUser/<email>/', methods=['GET', 'POST'])
 def deleteUser(email):
     usersDict = {}
     db = shelve.open('storage.db', 'w')
