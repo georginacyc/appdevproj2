@@ -3,6 +3,7 @@
 {% block content %}
 {% include 'includes/_staffInventoryNav.html' %}
 {% from "includes/_formhelper.html" import render_field %}
+
 <form method="POST" action="">
  <div class="form-group">
   {{ render_field(form.stockorderDate, class="form-check") }}

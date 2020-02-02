@@ -14,7 +14,6 @@
                 <th>Shipment Status</th>
                 <th>Received Date</th>
                 <th>Shipment Status</th>
-                <th>Received</th>
             </tr>
         </thead>
         <tbody>
@@ -26,8 +25,7 @@
                      <td>{{ StockOrder.get_shipmentDate() }}</td>
                      <td>{{ StockOrder.get_shipmentStatus() }}</td>
                      <td>{{ StockOrder.get_receivedDate() }}</td>
-                     <td><a class="btn btn-info">Update</a></td>
-                     <td><a class="btn btn-danger">Received</a></td>
+                     <td><a href="/updateItem/{{item.get_itemSerial()}}" class="btn btn-info">Receive Order</a></td>
                 </tr>
             {% endfor %}
         </tbody>
