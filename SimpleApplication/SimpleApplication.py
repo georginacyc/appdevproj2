@@ -146,7 +146,9 @@ def updateUser(email):
         user.set_firstName(updateUserForm.firstName.data)
         user.set_lastName(updateUserForm.lastName.data)
         user.set_gender(updateUserForm.gender.data)
+        userDict[email] = user
         db['Users'] = userDict
+
         db.close()
 
         return redirect(url_for('retrieveUsers'))
