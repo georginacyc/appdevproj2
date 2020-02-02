@@ -24,7 +24,7 @@ class CreateStockOrderForm(Form):
     shipmentDate = DateField("Shipment Date ( d-m-Y )", [validators.DataRequired()], format='%d-%m-%Y')
     shipmentStatus = "Ordered"
     receivedDate = "-"
-    itemSerial = StringField("Item Serial", [validators.DataRequired(), Iserialcheck])
+    stockItemSerial = StringField("Item Serial", [validators.DataRequired(), Iserialcheck])
     stockorderQuantity = IntegerField("Order Quantity", [validators.DataRequired()])
 
 
