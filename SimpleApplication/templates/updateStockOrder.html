@@ -5,13 +5,19 @@
 {% from "includes/_formhelper.html" import render_field %}
 
 <form method="POST" action="">
+  <div class="form-group">
+  {{ render_field(form.shipmentStatus, class="form-check") }}
+ </div>
+ <div class="form-group">
+  {{ render_field(form.receivedDate, class="form-check") }}
+ </div>
+ <hr>
  <div class="form-group">
   {{ render_field(form.stockorderDate, class="form-check") }}
  </div>
  <div class="form-group">
   {{ render_field(form.shipmentDate, class="form-check") }}
  </div>
- <hr>
  <div class="form-group">
   {{ render_field(form.stockItemSerial, class="form-control") }}
  </div>
