@@ -1,25 +1,25 @@
-class Invoice:
-    invoiceN = 1000
+class StockOrder:
+    stockorderN = 1000
     countID = 0
 
-    def __init__(self,invoiceDate,shipmentDate,shipmentStatus,receivedDate):
+    def __init__(self,stockorderDate,shipmentDate,shipmentStatus,receivedDate):
         self.__class__.countID +=1
-        self.__invoiceCount = self.__class__.countID
-        self.__class__.invoiceN += 1
-        self.__invoiceNumber = self.__class__.invoiceN
-        self.__invoiceDate = invoiceDate
+        self.__stockorderCount = self.__class__.countID
+        self.__class__.stockorderN += 1
+        self.__stockorderNumber = self.__class__.stockorderN
+        self.__stockorderDate = stockorderDate
         self.__shipmentDate = shipmentDate
         self.__shipmentStatus = shipmentStatus
         self.__receivedDate = receivedDate
 
 
 #getter
-    def get_invoiceCount(self):
-        return self.__invoiceCount
-    def get_invoiceNumber(self):
-        return self.__invoiceNumber
-    def get_invoiceDate(self):
-        return self.__invoiceDate
+    def get_stockorderCount(self):
+        return self.__stockorderCount
+    def get_stockorderNumber(self):
+        return self.__stockorderNumber
+    def get_stockorderDate(self):
+        return self.__stockorderDate
 
     def get_shipmentDate(self):
         return self.__shipmentDate
@@ -31,8 +31,8 @@ class Invoice:
 
 #setter
 
-    def set_invoiceDate(self,invoiceDate):
-        self.__invoiceDate = invoiceDate
+    def set_stockorderDate(self,stockorderDate):
+        self.__stockorderDate = stockorderDate
 
     def set_shipmentDate(self,shipmentDate):
         self.__shipmentDate = shipmentDate

@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm, CreateAnnouncement
-from invoiceForm import CreateInvoiceForm
+from stockorderForm import CreateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, Item, itemForm, Staff, Invoice, os, uuid, Announcement
+import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement
 
 
 app = Flask(__name__)
@@ -33,18 +33,18 @@ def inventory():
     return render_template('viewStock.html')
 
 
-@app.route('/viewInvoices')
-def viewInvoices():
-    invoiceDict = {}
+@app.route('/viewStockOrders')
+def viewStockOrders():
+    stockorderDict = {}
     db = shelve.open('storage.db', 'r')
-    invoiceDict = db['Invoice']
+    stockorderDict = db['StockOrder']
     db.close()
 
-    invoiceList = []
-    for key in invoiceDict:
-        invoice = invoiceDict.get(key)
-        invoiceList.append(invoice)
-    return render_template('viewInvoices.html', invoiceList=invoiceList, count=len(invoiceList))
+    stockorderList = []
+    for key in stockorderDict:
+        stockorder = stockorderDict.get(key)
+        stockorderList.append(stockorder)
+    return render_template('viewStockOrders.html', stockorderList=stockorderList, count=len(stockorderList))
 
 
 @app.route('/viewStock')
@@ -61,32 +61,31 @@ def viewStock():
     return render_template('viewStock.html', itemList=itemList, count=len(itemList))
 
 
-@app.route('/createInvoice', methods=['GET', 'POST'])
-def createInvoice():
-    createInvoiceForm = CreateInvoiceForm(request.form)
+@app.route('/createStockOrder', methods=['GET', 'POST'])
+def createStockOrder():
+    createStockOrderForm = CreateStockOrderForm(request.form)
 
-    if request.method == 'POST' and createInvoiceForm.validate():
-        invoiceDict = {}
+    if request.method == 'POST' and createStockOrderForm.validate():
+        stockorderDict = {}
         db = shelve.open('storage.db', 'c')
         try:
-            invoiceDict = db['Invoice']
-            Invoice.Invoice.countID = db['invoicecount']
+            stockorderDict = db['StockOrder']
+            StockOrder.StockOrder.countID = db['stockordercount']
         except IOError:
             print("IOError")
         except:
-            print("Error in retrieving Invoice from storage.db.")
+            print("Error in retrieving the order from storage.db.")
 
 
-        invoice = Invoice.Invoice(createInvoiceForm.invoiceDate.data, createInvoiceForm.shipmentDate.data,
-                                       createInvoiceForm.shipmentStatus.data, createInvoiceForm.receivedDate.data, )
-        invoiceDict[invoice.get_invoiceCount()] = invoice
-        db['Invoice'] = invoiceDict
-        db['invoicecount'] = Invoice.Invoice.countID
-        print(db['Invoice'])
+        stockorder = StockOrder.StockOrder(createStockOrderForm.stockorderDate.data, createStockOrderForm.shipmentDate.data, "Ordered", "")
+        stockorderDict[stockorder.get_stockorderCount()] = stockorder
+        db['StockOrder'] = stockorderDict
+        db['stockordercount'] = StockOrder.StockOrder.countID
+        print(db['StockOrder'])
         db.close()
 
-        return redirect(url_for('viewInvoices'))
-    return render_template('createInvoice.html', form=createInvoiceForm)
+        return redirect(url_for('viewStockOrders'))
+    return render_template('createStockOrder.html', form=createStockOrderForm)
 
 
 @app.route('/createUser', methods=['GET', 'POST'])
@@ -483,7 +482,7 @@ def deleteStaff(eID):
     db["Staff"] = staffDict  # put back to persistence
     db.close()
 
-    # after we delete succesfully
+    # after we delete successfully
     return redirect(url_for('staffAccounts'))
 
 
@@ -496,13 +495,19 @@ def createAnnouncement():
         db = shelve.open('storage.db', 'c')
         try:
             annDict = db['Announcements']
-            Announcement.Announcement.count = db['annCount']
+            count = db['annCount']
         except:
             print("Error in retrieving Staff from storage.db.")
-        announcement = Announcement.Announcement(createAnnouncementForm.date.data, createAnnouncementForm.title.data, createAnnouncementForm.description.data)
+        if count == None:
+            Announcement.Announcement.count = 0
+        announcement = Announcement.Announcement(createAnnouncementForm.date.data, createAnnouncementForm.title.data)
+        announcement.set_description(createAnnouncementForm.description.data)
 
         annDict[Announcement.Announcement.count] = announcement
-        db['Announcements'] = annDict
+        sort = dict(sorted(annDict.items(), key=lambda x: x[0], reverse=True))
+        print(sort.keys())
+
+        db['Announcements'] = sort
         db['annCount'] = Announcement.Announcement.count
         db.close()
         return redirect(url_for('retrieveAnnouncements'))
@@ -510,7 +515,7 @@ def createAnnouncement():
 
 
 @app.route('/retrieveAnnouncements')
-def retreiveAnnouncements():
+def retrieveAnnouncements():
     annDict = {}
 
     try:
@@ -528,6 +533,30 @@ def retreiveAnnouncements():
         annList.append(announcement)
 
     return render_template("retrieveAnnouncements.html", annList=annList)
+
+
+@app.before_request
+def deleteDict():
+    dict = {}
+    # db = shelve.open("storage.db", "w")
+    # db["Announcements"] = dict
+    # db["annCount"] = dict
+    # db.close()
+    # print("Cleared")
+
+
+@app.route('/deleteAnnouncement/<int:id>', methods=['GET', 'POST'])
+def deleteAnnouncement(id):
+    annDict = {}
+    db = shelve.open("storage.db", "w")
+    annDict = db["Announcements"]
+
+    annDict.pop(id)  # action of removing the record
+    db["Announcements"] = annDict  # put back to persistence
+    db.close()
+
+    # after we delete successfully
+    return redirect(url_for('retrieveAnnouncements'))
 
 
 @app.route('/createNewReport')
