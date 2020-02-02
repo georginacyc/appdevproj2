@@ -113,7 +113,7 @@ def createUser():
             db['Users'] = usersDict
             db.close()
         return redirect(url_for('retrieveUsers'))
-        return redirect(url_for('home'))
+        # return redirect(url_for('home'))
     return render_template('createUser.html', form=createUserForm)
 
 
@@ -356,10 +356,10 @@ def login():
 
         userDict = {}
         logged = {}
-        # try:
-        #     db = shelve.open('storage.db', 'c')
-        # except:
-        #     print("Unable to retrieve storage.db")
+        try:
+            db = shelve.open('storage.db', 'c')
+        except:
+            print("Unable to retrieve storage.db")
 
         if domain == "monoqlo.com":
             try:
@@ -367,27 +367,28 @@ def login():
                 db['Logged'] = {}
             except:
                 print("Error in retrieving Staff from storage.db")
+
             for user, object in userDict.items():
                 if user == email[0]:
                     field1 = True
                     if object.get_password() == loginForm.password.data:
                         field2 = True
                         logged[email[0]] = object.get_fname()
-
         else:
-            print("User account.")
-            try:
-                userDict = db['Users']
-                db['Users'] = {}
-            except:
-                print("Error in retrieving User from storage.db")
-            finally:
-                for user, object in userDict.items():
-                    if user == email[0]:
-                        field1 = True
-                    if object.get_pw() == loginForm.pw.data:
-                        field2 = True
-                        logged[email[0]] = object.get_firstname()
+            pass
+            # print("User account.")
+            # try:
+            #     userDict = db['Users']
+            #     db['Users'] = {}
+            # except:
+            #     print("Error in retrieving User from storage.db")
+            # finally:
+            #     for user, object in userDict.items():
+            #         if user == email[0]:
+            #             field3 = True
+            #         if object.get_pw() == loginForm.pw.data:
+            #             field4 = True
+            #             logged[email[0]] = object.get_firstname()
 
         if field1 == True and field2 == True:
             db['Logged'] = logged
@@ -398,14 +399,10 @@ def login():
             db['Logged'] = logged
             db.close()
             return redirect(url_for('home'))
-        elif field1 == True and field2 == False:
+        elif field1 == True and field2 == False or field3 == True and field4 == False:
             print("Invalid Email.")
-        elif field3 == True and field4 == False:
-            print('Invalid email')
-        elif field1 == False and field2 == True:
+        elif field1 == False and field2 == True or field3 == False and field4 == True:
             print("Invalid Password.")
-        elif field3 == False and field4 == True:
-            print('Invalid password')
         else:
             print("Invalid credentials. Please try again.")
 
@@ -541,8 +538,8 @@ def retrieveAnnouncements():
 def deleteDict():
     dict = {}
     # db = shelve.open("storage.db", "w")
-    # db["Announcements"] = dict
-    # db["annCount"] = dict
+    # db["Users"] = dict
+    # # db["annCount"] = dict
     # db.close()
     # print("Cleared")
 
