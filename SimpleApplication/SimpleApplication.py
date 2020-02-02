@@ -130,13 +130,16 @@ def retrieveUsers():
 
     return render_template('retrieveUsers.html', usersList=usersList, count=len(usersList))
 
-@app.route('/updateUser', methods=['GET', 'POST'])
+@app.route('/updateUser/<int:id>/', methods=['GET', 'POST'])
 def updateUser(id):
     updateUserForm = CreateUserForm(request.form)
     if request.method == 'POST' and updateUserForm.validate():
         userDict = {}
         db = shelve.open('storage.db', 'w')
-        userDict = db['Users']
+        try:
+            userDict = db['Users']
+        except:
+            print("Error in retrieving User from storage.db")
         user = userDict.get(id)
         user.set_firstName(updateUserForm.firstName.data)
         user.set_lastName(updateUserForm.lastName.data)
@@ -158,7 +161,7 @@ def updateUser(id):
 
         return render_template('updateUser.html', form=updateUserForm)
 
-@app.route('/deleteUser', methods=['POST'])
+@app.route('/deleteUser/<int:id>', methods=['POST'])
 def deleteUser(id):
     usersDict = {}
     db = shelve.open('storage.db', 'w')
@@ -167,6 +170,7 @@ def deleteUser(id):
     db['Users'] = usersDict
     db.close()
     return redirect(url_for('retrieveUsers'))
+
 
 
 @app.route('/deleteItem/<id>/', methods=['GET', 'POST'])
