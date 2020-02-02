@@ -47,7 +47,7 @@ class Item:
     def set_itemPrice(self,itemPrice):
         self.__itemPrice = itemPrice
     def set_itemQuantity(self,itemQuantity):
-        self.__itemQuantity = itemQuantity
+        self.__itemQuantity += itemQuantity
 
     def set_itemStockStatus(self):
         quantity = self.__itemQuantity

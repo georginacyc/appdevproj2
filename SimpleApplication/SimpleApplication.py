@@ -95,6 +95,7 @@ def createStockOrder():
                                            createStockOrderForm.shipmentDate.data, "Ordered", "",
                                            createStockOrderForm.stockItemSerial.data,
                                            createStockOrderForm.stockorderQuantity.data)
+        print(stockorder.get_stockorderNumber())
         stockorderDict[stockorder.get_stockorderNumber()] = stockorder
         db['StockOrder'] = stockorderDict
         db['stockordercount'] = StockOrder.StockOrder.countID
@@ -105,34 +106,47 @@ def createStockOrder():
     return render_template('createStockOrder.html', form=createStockOrderForm)
 
 
-@app.route('/updateStockOrder/<id>/', methods=['GET', 'POST'])
+@app.route('/updateStockOrder/<int:id>/', methods=['GET', 'POST'])
 def updateStockOrder(id):
     updateStockOrderForm = UpdateStockOrderForm(request.form)
-
+    quantity = 0
     if request.method == 'POST' and updateStockOrderForm.validate():
         stockorderDict = {}
         db = shelve.open('storage.db', 'w')
         stockorderDict = db['StockOrder']
 
         stockorder = stockorderDict.get(id)
-        stockorder.set_stockorderDate(updateStockOrderForm.stockorderDate.data)
-        stockorder.set_shipmentDate(updateStockOrderForm.shipmentDate.data)
         stockorder.set_shipmentStatus(updateStockOrderForm.shipmentStatus.data)
         stockorder.set_receivedDate(updateStockOrderForm.receivedDate.data)
-        stockorder.set_stockItemSerial(updateStockOrderForm.stockItemSerial.data)
-        stockorder.set_stockorderQuantity(updateStockOrderForm.stockorderQuantity.data)
-
         db['StockOrder'] = stockorderDict
         db.close()
-        return redirect(url_for('viewStockOrder'))
+        return redirect(url_for('viewStockOrders'))
     else:
         stockorderDict = {}
         db = shelve.open('storage.db', 'r')
         stockorderDict = db['StockOrder']
+        print(stockorderDict)
         db.close()
 
         stockorder = stockorderDict.get(id)
         print(stockorder)
+        updateStockOrderForm.stockorderDate.data = stockorder.get_stockorderDate()
+        updateStockOrderForm.shipmentDate.data = stockorder.get_shipmentDate()
+        updateStockOrderForm.shipmentStatus.data = stockorder.get_shipmentStatus()
+        updateStockOrderForm.receivedDate.data = stockorder.get_receivedDate()
+        updateStockOrderForm.stockItemSerial.data = stockorder.get_stockItemSerial()
+        updateStockOrderForm.stockorderQuantity.data = stockorder.get_stockorderQuantity()
+
+        quantity = stockorder.get_stockorderQuantity()
+        itemDict = {}
+        db = shelve.open('storage.db', 'w')
+        itemDict = db['Items']
+
+        item = itemDict.get(stockorder.get_stockItemSerial())
+        item.set_itemQuantity(quantity)
+        item.set_itemStockStatus()
+        db['Items'] = itemDict
+        db.close()
 
         return render_template('updateStockOrder.html', form=updateStockOrderForm)
 
