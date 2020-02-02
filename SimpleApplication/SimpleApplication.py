@@ -13,9 +13,22 @@ def home():
     return render_template('home.html')
 
 
-@app.route('/cart')
+@app.route('/cart', methods=['GET', 'POST'])
 def cart():
+    cartDict = {}
+    db = shelve.open('storage.db', 'c')
+    itemDict = db['Cart']
+    db.close()
+
+    cartList = []
+    for key in cartDict:
+        cart = cartDict.get(key)
+        cartList.append(cart)
     return render_template('cart.html')
+
+@app.route('/checkout')
+def checkout():
+    return render_template('checkout.html')
 
 
 @app.route('/contactUs')
