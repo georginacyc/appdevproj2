@@ -10,6 +10,8 @@
                 <th>S/N</th>
                 <th>Order Number</th>
                 <th>Order Date</th>
+                <th>Item Ordered</th>
+                <th>Ordered Quantity</th>
                 <th>Shipment Date</th>
                 <th>Shipment Status</th>
                 <th>Received Date</th>
@@ -23,6 +25,8 @@
                      <td>{{ stockorder.get_stockorderCount() }}</td>
                      <td>{{ stockorder.get_stockorderNumber() }}</td>
                      <td>{{ stockorder.get_stockorderDate() }}</td>
+                     <td>{{ stockorder.get_stockItemSerial() }}</td>
+                     <td>{{ stockorder.get_stockorderQuantity() }}</td>
                      <td>{{ stockorder.get_shipmentDate() }}</td>
                      <td>{{ stockorder.get_shipmentStatus() }}</td>
                      <td>{{ stockorder.get_receivedDate() }}</td>
