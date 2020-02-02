@@ -10,8 +10,7 @@ class User:
         self.__email=email
         self.__pw=pw
         self.__confirmpw=confirmpw
-    def get_userID(self):
-        return self.__userID
+
     def get_firstName(self):
         return self.__firstName
     def get_lastName(self):

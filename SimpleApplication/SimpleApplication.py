@@ -178,7 +178,9 @@ def updateUser(email):
         user.set_firstName(updateUserForm.firstName.data)
         user.set_lastName(updateUserForm.lastName.data)
         user.set_gender(updateUserForm.gender.data)
+        userDict[email] = user
         db['Users'] = userDict
+
         db.close()
 
         return redirect(url_for('retrieveUsers'))
@@ -195,7 +197,7 @@ def updateUser(email):
         return render_template('updateUser.html', form=updateUserForm)
 
 
-@app.route('/deleteUser/<id>/', methods=['GET', 'POST'])
+@app.route('/deleteUser/<email>/', methods=['GET', 'POST'])
 def deleteUser(email):
     usersDict = {}
     db = shelve.open('storage.db', 'w')
