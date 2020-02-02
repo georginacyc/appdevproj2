@@ -16,6 +16,11 @@ def Iserialcheck(form, field):
         raise ValidationError('Serial number does not exist')
     db.close()
 
+def checkquantity(form,field):
+    if field.data>0:
+        pass
+    else:
+        raise ValidationError("Quantity must be more than 0")
 
 class CreateStockOrderForm(Form):
     stockorderNumber = StockOrder.get_stockorderNumber
@@ -24,7 +29,7 @@ class CreateStockOrderForm(Form):
     shipmentStatus = "Ordered"
     receivedDate = "-"
     stockItemSerial = StringField("Item Serial", [validators.DataRequired(), Iserialcheck])
-    stockorderQuantity = IntegerField("Order Quantity", [validators.DataRequired()])
+    stockorderQuantity = IntegerField("Order Quantity", [validators.DataRequired(),checkquantity])
 
 
 class UpdateStockOrderForm(Form):
