@@ -14,7 +14,7 @@ def Iserialcheck(form, field):
     if field.data in itemDict:
         pass
     else:
-        raise ValidationError('Item Serial not found')
+        raise ValidationError('Serial number does not exist')
     db.close()
 
 
@@ -29,5 +29,10 @@ class CreateStockOrderForm(Form):
 
 
 class UpdateStockOrderForm(Form):
-    shipmentStatus = SelectField("Shipment Status", [validators.DataRequired()],choices=[('', 'Select'),('Ordered', 'Ordered'), ('Shipped', 'Shipped'), ('Received', 'Received')], default='')
+    stockorderNumber = StockOrder.stockorderN
+    stockorderDate = DateField("Order Date ( d-m-Y )", [validators.DataRequired()], format='%d-%m-%Y',render_kw={'disabled':''})
+    shipmentDate = DateField("Shipment Date ( d-m-Y )", [validators.DataRequired()], format='%d-%m-%Y',render_kw={'disabled':''})
+    shipmentStatus = SelectField("Shipment Status", [validators.DataRequired()],choices=[('Received', 'Received')], render_kw={"placeholder": "Ordered"})
     receivedDate = DateField("Received Date ( d-m-Y )", [validators.DataRequired()], format='%d-%m-%Y')
+    stockItemSerial = StringField("Item Serial", [validators.DataRequired(), Iserialcheck],render_kw={'disabled':''})
+    stockorderQuantity = IntegerField("Order Quantity", [validators.DataRequired()],render_kw={'disabled':''})
