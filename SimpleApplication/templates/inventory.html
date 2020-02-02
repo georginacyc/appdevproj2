@@ -20,12 +20,12 @@
         <tbody>
             {% for stockorder in stockorderList %}
                 <tr>
-                     <td>{{ invoice.get_stockorderCount() }}</td>
-                     <td>{{ invoice.get_stockorderNumber() }}</td>
-                     <td>{{ invoice.get_stockorderDate() }}</td>
-                     <td>{{ invoice.get_shipmentDate() }}</td>
-                     <td>{{ invoice.get_shipmentStatus() }}</td>
-                     <td>{{ invoice.get_receivedDate() }}</td>
+                     <td>{{ StockOrder.get_stockorderCount() }}</td>
+                     <td>{{ StockOrder.get_stockorderNumber() }}</td>
+                     <td>{{ StockOrder.get_stockorderDate() }}</td>
+                     <td>{{ StockOrder.get_shipmentDate() }}</td>
+                     <td>{{ StockOrder.get_shipmentStatus() }}</td>
+                     <td>{{ StockOrder.get_receivedDate() }}</td>
                      <td><a class="btn btn-info">Update</a></td>
                      <td><a class="btn btn-danger">Received</a></td>
                 </tr>

@@ -4,10 +4,10 @@
 {% include 'includes/_staffInventoryNav.html' %}
 {% from "includes/_formhelper.html" import render_field %}
 
-{% for item in itemList %}
-<p>Order number:</p>
-<p>Order Date:</p>
-<p>Item Serial:</p>
+{% for stockorder in stockorderList %}
+<p>Order number: {{ stockorder.get_stockorderNumber() }}</p>
+<p>Order Date: {{ stockorder.get_stockorderDate() }}</p>
+<p>Item Serial: {{ stockorder.get_stockItemSerial() }}</p>
 <p>Order Quantity:</p>
 {% endfor %}
 

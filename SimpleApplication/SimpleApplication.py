@@ -5,8 +5,8 @@ from stockorderForm import CreateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement
 
-
 app = Flask(__name__)
+
 
 @app.route('/')
 def home():
@@ -76,8 +76,10 @@ def createStockOrder():
         except:
             print("Error in retrieving the order from storage.db.")
 
-
-        stockorder = StockOrder.StockOrder(createStockOrderForm.stockorderDate.data, createStockOrderForm.shipmentDate.data, "Ordered", "")
+        stockorder = StockOrder.StockOrder(createStockOrderForm.stockorderDate.data,
+                                           createStockOrderForm.shipmentDate.data, "Ordered", "",
+                                           createStockOrderForm.stockItemSerial.data,
+                                           createStockOrderForm.stockorderQuantity.data)
         stockorderDict[stockorder.get_stockorderCount()] = stockorder
         db['StockOrder'] = stockorderDict
         db['stockordercount'] = StockOrder.StockOrder.countID
@@ -106,7 +108,7 @@ def createUser():
         finally:
             user = User.User(createUserForm.firstName.data, createUserForm.lastName.data,
                              createUserForm.DOB.data, createUserForm.gender.data, createUserForm.email.data,
-                             createUserForm.pw.data,createUserForm.confirmpw.data )
+                             createUserForm.pw.data, createUserForm.confirmpw.data)
             usersDict[user.get_userID()] = user
             db['Users'] = usersDict
             db.close()
@@ -128,6 +130,7 @@ def retrieveUsers():
         usersList.append(user)
 
     return render_template('retrieveUsers.html', usersList=usersList, count=len(usersList))
+
 
 @app.route('/updateUser/<int:id>/', methods=['GET', 'POST'])
 def updateUser(id):
@@ -157,22 +160,21 @@ def updateUser(id):
         updateUserForm.lastName.data = user.get_lastName()
         updateUserForm.gender.data = user.get_gender()
 
-
         return render_template('updateUser.html', form=updateUserForm)
 
-@app.route('/deleteUser/<int:id>', methods=['GET','POST'])
+
+@app.route('/deleteUser/<int:id>', methods=['GET', 'POST'])
 def deleteUser(id):
     usersDict = {}
     db = shelve.open('storage.db', 'w')
     usersDict = db['Users']
 
-    usersDict.pop(id) #action of removing the record
-    db['Users'] = usersDict # put back to persistence
+    usersDict.pop(id)  # action of removing the record
+    db['Users'] = usersDict  # put back to persistence
     db.close()
 
-    #after we delete successfully
+    # after we delete successfully
     return redirect(url_for('retrieveUsers'))
-
 
 
 @app.route('/deleteItem/<id>/', methods=['GET', 'POST'])
@@ -248,7 +250,6 @@ def viewItem():
     return render_template('itempage.html')
 
 
-
 @app.route('/createItem', methods=['GET', 'POST'])
 def createItem():
     createItemForm = CreateItemForm(request.form)
@@ -262,8 +263,8 @@ def createItem():
         except:
             print("Error in retrieving Items from storage.db.")
         item = Item.Item(createItemForm.itemSerial.data, createItemForm.itemName.data,
-                              createItemForm.itemCategory.data, createItemForm.itemGender.data,
-                              createItemForm.itemCost.data, createItemForm.itemPrice.data)
+                         createItemForm.itemCategory.data, createItemForm.itemGender.data,
+                         createItemForm.itemCost.data, createItemForm.itemPrice.data)
         itemsDict[item.get_itemSerial()] = item
         db['Items'] = itemsDict
         db['itemcount'] = Item.Item.countID
@@ -286,8 +287,8 @@ def createStaff():
         except:
             print("Error in retrieving Staff from storage.db.")
         staff = Staff.Staff(createStaffForm.fname.data, createStaffForm.lname.data, createStaffForm.gender.data,
-                                 createStaffForm.hp.data, createStaffForm.dob.data, createStaffForm.password.data,
-                                 createStaffForm.address.data, createStaffForm.type.data)
+                            createStaffForm.hp.data, createStaffForm.dob.data, createStaffForm.password.data,
+                            createStaffForm.address.data, createStaffForm.type.data)
 
         staffDict[staff.get_eID()] = staff
         db['Staff'] = staffDict
@@ -388,7 +389,6 @@ def login():
                         field2 = True
                         logged[email[0]] = object.get_firstname()
 
-
         if field1 == True and field2 == True:
             db['Logged'] = logged
             db.close()
@@ -408,7 +408,6 @@ def login():
             print('Invalid password')
         else:
             print("Invalid credentials. Please try again.")
-
 
     return render_template('login.html', form=loginForm)
 
@@ -438,7 +437,6 @@ def accountCheck():
 
     else:
         print("No user signed in")
-
 
 
 @app.route('/logout')
