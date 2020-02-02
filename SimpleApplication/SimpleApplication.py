@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm, CreateAnnouncement
-from stockorderForm import CreateStockOrderForm
+from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement
 
@@ -89,6 +89,40 @@ def createStockOrder():
         return redirect(url_for('viewStockOrders'))
     return render_template('createStockOrder.html', form=createStockOrderForm)
 
+
+@app.route('/updateStockOrder/<id>/', methods =['GET','POST'])
+def updateStockOrder(id):
+    updateStockOrderForm = UpdateStockOrderForm(request.form)
+    if request.method == 'POST' and updateStockOrderForm.validate():
+        stockorderDict = {}
+        db = shelve.open('storage.db', 'w')
+        stockorderDict = db['StockOrder']
+
+        stockorder = stockorderDict.get(id)
+        stockorder.set_stockorderDate(updateStockOrderForm.stockorderDate.data)
+        stockorder.set_shipmentDate(updateStockOrderForm.shipmentDate.data)
+        stockorder.set_shipmentStatus(updateStockOrderForm.shipmentStatus.data)
+        stockorder.set_receivedDate(updateStockOrderForm.receivedDate.data)
+        stockorder.set_stockItemSerial(updateStockOrderForm.stockItemSerial.data)
+        stockorder.set_stockorderQuantity(updateStockOrderForm.stockorderQuantity.data)
+
+        db['StockOrder'] = stockorderDict
+        db.close()
+        return redirect(url_for('viewStockOrder'))
+    else:
+        stockorderDict = {}
+        db = shelve.open('storage.db', 'r')
+        stockorderDict = db['StockOrder']
+        db.close()
+
+        stockorder = stockorderDict.get(id)
+        updateStockOrderForm.stockorderDate.data = stockorder.get_stockorderDate()
+        updateStockOrderForm.shipmentDate.data = stockorder.get_shipmentDate()
+        updateStockOrderForm.shipmentStatus.data = stockorder.get_shipmentStatus()
+        updateStockOrderForm.receivedDate.data = stockorder.get_receivedDate()
+        updateStockOrderForm.stockItemSerial.data = stockorder.get_stockItemSerial()
+        updateStockOrderForm.stockorderQuantity.data = stockorder.get_stockorderQuantity()
+        return render_template('updateStockOrder.html', form=updateStockOrderForm)
 
 @app.route('/createUser', methods=['GET', 'POST'])
 def createUser():
