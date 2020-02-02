@@ -49,3 +49,8 @@ class CreateAnnouncement(Form):
     description = TextAreaField("Description (Optional)", default="")
 
 
+class ContactUsForm(Form):
+    fname = StringField("First Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Lily"})
+    lname = StringField("last Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Doe"})
+    email= EmailField('Email', [validators.InputRequired()])
+    text = StringField("Text",[validators.Length(min=1, max=500),validators.DataRequired()],render_kw={"placeholder": "Didn't receive order..."})

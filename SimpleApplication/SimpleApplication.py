@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
-from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm, CreateAnnouncement
+from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement
@@ -31,9 +31,51 @@ def checkout():
     return render_template('checkout.html')
 
 
-@app.route('/contactUs')
+@app.route('/contactUs', methods=['GET', 'POST'])
 def contactUs():
-    return render_template('contactUs.html')
+    contactUsForm = ContactUsForm(request.form)
+
+    if request.method == 'POST' and contactUsForm.validate():
+        contactDict = {}
+        db = shelve.open('storage.db', 'c')
+        try:
+            contactDict = db['Items']
+        except:
+            print("Error in retrieving Items from storage.db.")
+        item = Item.Item(contactUsForm.fname.data, contactUsForm.lname.data,
+                         contactUsForm.email.data, contactUsForm.text.data)
+        contactDict[item.get_itemSerial()] = item
+        db['Contact'] = contactDict
+        db.close()
+
+
+
+@app.route('/retrieveContact')
+def retrieveContact():
+    contactDict = {}
+    db = shelve.open('storage.db', 'r')
+    contactDict = db['Contact']
+    db.close()
+
+    contactList = []
+    for email in contactDict:
+        contact = contactDict.get(email)
+        contactList.append(contact)
+
+    return render_template('retrieveContact.html', contactList=contactList, count=len(contactList))
+
+@app.route('/deleteContact/<email>/', methods=['GET', 'POST'])
+def deleteContact(email):
+    contactDict = {}
+    db = shelve.open('storage.db', 'w')
+    contactDict = db['Users']
+
+    contactDict.pop(email)  # action of removing the record
+    db['Users'] = contactDict  # put back to persistence
+    db.close()
+
+    # after we delete successfully
+    return redirect(url_for('retrieveContact'))
 
 
 @app.route('/staffHome')
