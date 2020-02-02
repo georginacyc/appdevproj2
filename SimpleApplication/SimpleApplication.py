@@ -46,6 +46,8 @@ def inventory():
     return render_template('viewStock.html')
 
 
+
+
 @app.route('/viewStockOrders')
 def viewStockOrders():
     stockorderDict = {}
@@ -165,8 +167,8 @@ def createUser():
             usersDict[user.get_email()] = user
             db['Users'] = usersDict
             db.close()
-        return redirect(url_for('retrieveUsers'))
-        # return redirect(url_for('home'))
+
+        return redirect(url_for('home'))
     return render_template('createUser.html', form=createUserForm)
 
 
@@ -214,6 +216,7 @@ def updateUser(email):
         updateUserForm.firstName.data = user.get_firstName()
         updateUserForm.lastName.data = user.get_lastName()
         updateUserForm.gender.data = user.get_gender()
+
 
         return render_template('updateUser.html', form=updateUserForm)
 
@@ -433,16 +436,16 @@ def login():
             print("User account.")
             try:
                 userDict = db['Users']
-                db['Users'] = {}
+
             except:
                 print("Error in retrieving User from storage.db")
             finally:
                 for user, object in userDict.items():
                     if user == email[0]:
                         field3 = True
-                    if object.get_pw() == loginForm.pw.data:
+                    if object.get_pw() == loginForm.password.data:
                         field4 = True
-                        logged[email[0]] = object.get_firstname()
+                        # logged[email[0]] = object.get_firstname()
 
         if field1 == True and field2 == True:
             db['Logged'] = logged
