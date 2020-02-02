@@ -1,6 +1,7 @@
 from wtforms import Form, StringField, RadioField, SelectField, TextAreaField, validators, DateField, PasswordField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import EqualTo
+import datetime
 
 class CreateUserForm(Form):
     firstName = StringField("First Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Lily"})
@@ -43,8 +44,8 @@ class LogInForm(Form):
     password = PasswordField("Password", [validators.InputRequired()], render_kw={"placeholder": "password"})
 
 class CreateAnnouncement(Form):
-    date = DateField("Date", [validators.DataRequired()], format='%d/%m/%Y', render_kw={'readonly': True})
+    date = DateField("Date", [validators.DataRequired()], format='%d/%m/%Y', default=datetime.date.today, render_kw={'readonly': True})
     title = StringField("Title", [validators.DataRequired(), validators.Length(min=1, max=150)])
-    description = TextAreaField("Description (Optional)")
+    description = TextAreaField("Description (Optional)", default="")
 
 
