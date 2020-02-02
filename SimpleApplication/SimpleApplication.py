@@ -116,16 +116,12 @@ def updateStockOrder(id):
         stockorderDict = db['StockOrder']
 
         stockorder = stockorderDict.get(id)
-        stockorder.set_stockorderDate(updateStockOrderForm.stockorderDate.data)
-        stockorder.set_shipmentDate(updateStockOrderForm.shipmentDate.data)
         stockorder.set_shipmentStatus(updateStockOrderForm.shipmentStatus.data)
         stockorder.set_receivedDate(updateStockOrderForm.receivedDate.data)
-        stockorder.set_stockItemSerial(updateStockOrderForm.stockItemSerial.data)
-        stockorder.set_stockorderQuantity(updateStockOrderForm.stockorderQuantity.data)
 
         db['StockOrder'] = stockorderDict
         db.close()
-        return redirect(url_for('viewStockOrder'))
+        return redirect(url_for('viewStockOrders'))
     else:
         stockorderDict = {}
         db = shelve.open('storage.db', 'r')
