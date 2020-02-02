@@ -109,7 +109,7 @@ def createUser():
             user = User.User(createUserForm.firstName.data, createUserForm.lastName.data,
                              createUserForm.DOB.data, createUserForm.gender.data, createUserForm.email.data,
                              createUserForm.pw.data, createUserForm.confirmpw.data)
-            usersDict[user.get_userID()] = user
+            usersDict[user.get_email()] = user
             db['Users'] = usersDict
             db.close()
         return redirect(url_for('retrieveUsers'))
