@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Item{% endblock %}
 {% block content %}
-
+{% from "includes/_formHelper.html" import render_field %}
 <div>
     <table class="table table-striped">
         <thead>
@@ -26,7 +26,9 @@
                      <td>{{ item.get_itemGender() }}</td>
                      <td>${{ item.get_itemPrice() }}</td>
                      <td>
-                            <input type="submit" value="Add to Cart" class="btn btn-success" onclick="return confirm('Add this item to cart?')">
+                         <form method="POST" action="">
+                            <input type="submit"  value="Add to Cart" class="btn btn-success" onclick="return confirm('Add this item to cart?')">
+                         </form>
                      </td>
 
                 </tr>
