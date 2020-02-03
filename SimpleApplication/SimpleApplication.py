@@ -37,16 +37,18 @@ def contactUs():
 
     if request.method == 'POST' and contactUsForm.validate():
         contactDict = {}
-        db = shelve.open('storage.db', 'c')
+        db = shelve.open('storage.db', 'w')
         try:
-            contactDict = db['Items']
+            contactDict = db['contact']
         except:
             print("Error in retrieving Items from storage.db.")
         item = Item.Item(contactUsForm.fname.data, contactUsForm.lname.data,
                          contactUsForm.email.data, contactUsForm.text.data)
-        contactDict[item.get_itemSerial()] = item
+        contactDict[item.get_Contact()] = item
         db['Contact'] = contactDict
         db.close()
+
+        return render_template('contactUS.html', form=contactUsForm)
 
 
 
@@ -457,7 +459,7 @@ def login():
 
     if request.method == 'POST' and loginForm.validate():
         email = loginForm.email.data
-        email = email.split("@")
+        emailSplit = email.split("@")
         domain = email[1]
 
         userDict = {}
@@ -475,11 +477,11 @@ def login():
                 print("Error in retrieving Staff from storage.db")
 
             for user, object in userDict.items():
-                if user == email[0]:
+                if user == emailSplit[0]:
                     field1 = True
                     if object.get_password() == loginForm.password.data:
                         field2 = True
-                        logged[email[0]] = object.get_fname()
+                        # logged[email[0]] = object.get_fname()
         else:
             print("User account.")
             try:
@@ -489,24 +491,23 @@ def login():
                 print("Error in retrieving User from storage.db")
             finally:
                 for user, object in userDict.items():
-                    if user == email[0]:
+                    if user == email:
                         field3 = True
-                    if object.get_pw() == loginForm.password.data:
-                        field4 = True
+                        print("1")
+                        if object.get_pw() == loginForm.password.data:
+                            field4 = True
+                            print("2")
                         # logged[email[0]] = object.get_firstname()
 
         if field1 == True and field2 == True:
-            db['Logged'] = logged
-            db.close()
             print("Successfully logged in!")
             return redirect(url_for('staffHome'))
         elif field3 == True and field4 == True:
-            db['Logged'] = logged
             db.close()
             return redirect(url_for('home'))
-        elif field1 == True and field2 == False or field3 == True and field4 == False:
-            print("Invalid Email.")
         elif field1 == False and field2 == True or field3 == False and field4 == True:
+            print("Invalid Email.")
+        elif field1 == True and field2 == False or field3 == True and field4 == False:
             print("Invalid Password.")
         else:
             print("Invalid credentials. Please try again.")
