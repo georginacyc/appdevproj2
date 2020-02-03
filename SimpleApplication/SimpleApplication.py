@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
-from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm, CreateAnnouncement
+from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement
@@ -13,27 +13,71 @@ def home():
     return render_template('home.html')
 
 
-@app.route('/cart', methods=['GET', 'POST'])
+@app.route('/createCart', methods=['GET', 'POST'])
 def cart():
-    cartDict = {}
-    db = shelve.open('storage.db', 'c')
-    itemDict = db['Cart']
-    db.close()
+    if request.method == 'POST':
+        cartDict = {}
+        db = shelve.open('storage.db', 'c')
+        try:
+            cartDict = db['Cart']
+        except:
+            print("Error in retrieving Items from storage,db.")
 
-    cartList = []
-    for key in cartDict:
-        cart = cartDict.get(key)
-        cartList.append(cart)
-    return render_template('cart.html')
+
+
 
 @app.route('/checkout')
 def checkout():
     return render_template('checkout.html')
 
 
-@app.route('/contactUs')
+@app.route('/contactUs', methods=['GET', 'POST'])
 def contactUs():
-    return render_template('contactUs.html')
+    contactUsForm = ContactUsForm(request.form)
+
+    if request.method == 'POST' and contactUsForm.validate():
+        contactDict = {}
+        db = shelve.open('storage.db', 'w')
+        try:
+            contactDict = db['contact']
+        except:
+            print("Error in retrieving Items from storage.db.")
+        item = Item.Item(contactUsForm.fname.data, contactUsForm.lname.data,
+                         contactUsForm.email.data, contactUsForm.text.data)
+        contactDict[item.get_Contact()] = item
+        db['Contact'] = contactDict
+        db.close()
+
+        return render_template('contactUS.html', form=contactUsForm)
+
+
+
+@app.route('/retrieveContact')
+def retrieveContact():
+    contactDict = {}
+    db = shelve.open('storage.db', 'r')
+    contactDict = db['Contact']
+    db.close()
+
+    contactList = []
+    for email in contactDict:
+        contact = contactDict.get(email)
+        contactList.append(contact)
+
+    return render_template('retrieveContact.html', contactList=contactList, count=len(contactList))
+
+@app.route('/deleteContact/<email>/', methods=['GET', 'POST'])
+def deleteContact(email):
+    contactDict = {}
+    db = shelve.open('storage.db', 'w')
+    contactDict = db['Users']
+
+    contactDict.pop(email)  # action of removing the record
+    db['Users'] = contactDict  # put back to persistence
+    db.close()
+
+    # after we delete successfully
+    return redirect(url_for('retrieveContact'))
 
 
 @app.route('/staffHome')
@@ -415,7 +459,7 @@ def login():
 
     if request.method == 'POST' and loginForm.validate():
         email = loginForm.email.data
-        email = email.split("@")
+        emailSplit = email.split("@")
         domain = email[1]
 
         userDict = {}
@@ -433,11 +477,11 @@ def login():
                 print("Error in retrieving Staff from storage.db")
 
             for user, object in userDict.items():
-                if user == email[0]:
+                if user == emailSplit[0]:
                     field1 = True
                     if object.get_password() == loginForm.password.data:
                         field2 = True
-                        logged[email[0]] = object.get_fname()
+                        # logged[email[0]] = object.get_fname()
         else:
             print("User account.")
             try:
@@ -447,24 +491,23 @@ def login():
                 print("Error in retrieving User from storage.db")
             finally:
                 for user, object in userDict.items():
-                    if user == email[0]:
+                    if user == email:
                         field3 = True
-                    if object.get_pw() == loginForm.password.data:
-                        field4 = True
+                        print("1")
+                        if object.get_pw() == loginForm.password.data:
+                            field4 = True
+                            print("2")
                         # logged[email[0]] = object.get_firstname()
 
         if field1 == True and field2 == True:
-            db['Logged'] = logged
-            db.close()
             print("Successfully logged in!")
             return redirect(url_for('staffHome'))
         elif field3 == True and field4 == True:
-            db['Logged'] = logged
             db.close()
             return redirect(url_for('home'))
-        elif field1 == True and field2 == False or field3 == True and field4 == False:
-            print("Invalid Email.")
         elif field1 == False and field2 == True or field3 == False and field4 == True:
+            print("Invalid Email.")
+        elif field1 == True and field2 == False or field3 == True and field4 == False:
             print("Invalid Password.")
         else:
             print("Invalid credentials. Please try again.")
