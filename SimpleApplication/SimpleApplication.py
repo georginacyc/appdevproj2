@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.utils import secure_filename
 from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
@@ -6,6 +6,11 @@ from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement
 
 app = Flask(__name__)
+
+
+app.config.from_mapping(
+    SECRET_KEY='yeet'
+)
 
 
 @app.route('/')
@@ -462,10 +467,9 @@ def login():
     if request.method == 'POST' and loginForm.validate():
         email = loginForm.email.data
         emailSplit = email.split("@")
-        domain = email[1]
+        domain = emailSplit[1]
 
         userDict = {}
-        logged = {}
         try:
             db = shelve.open('storage.db', 'c')
         except:
@@ -474,7 +478,6 @@ def login():
         if domain == "monoqlo.com":
             try:
                 userDict = db['Staff']
-                db['Logged'] = {}
             except:
                 print("Error in retrieving Staff from storage.db")
 
@@ -483,12 +486,14 @@ def login():
                     field1 = True
                     if object.get_password() == loginForm.password.data:
                         field2 = True
-                        # logged[email[0]] = object.get_fname()
+                        session["email"] = email
+                        session["name"] = object.get_fname()
+                        session["type"] = object.get_type()
+
         else:
             print("User account.")
             try:
                 userDict = db['Users']
-
             except:
                 print("Error in retrieving User from storage.db")
             finally:
@@ -498,8 +503,8 @@ def login():
                         print("1")
                         if object.get_pw() == loginForm.password.data:
                             field4 = True
-                            print("2")
-                        # logged[email[0]] = object.get_firstname()
+                            session["email"] = email
+                            session["name"] = object.get_firstName()
 
         if field1 == True and field2 == True:
             print("Successfully logged in!")
@@ -521,36 +526,36 @@ def login():
 def accountCheck():
     user = {}
     staffs = {}
-
-    admin = False
-
-    try:
-        db = shelve.open('storage.db', 'r')
-        user = db['Logged']
-        staffs = db['Staff']
-        db.close()
-    except:
-        print("Error in retrieving storage.db")
-
-    if user != {}:
-        staff = list(user.keys())[0]
-        for id, name in user.items():
-            for key, object in staffs.items():
-                if id == key:
-                    if object.get_type == "Admin":
-                        pass
-
-    else:
-        print("No user signed in")
+    #
+    # admin = False
+    #
+    # try:
+    #     db = shelve.open('storage.db', 'r')
+    #     user = db['Logged']
+    #     staffs = db['Staff']
+    #     db.close()
+    # except:
+    #     print("Error in retrieving storage.db")
+    #
+    # if user != {}:
+    #     staff = list(user.keys())[0]
+    #     for id, name in user.items():
+    #         for key, object in staffs.items():
+    #             if id == key:
+    #                 if object.get_type == "Admin":
+    #                     pass
+    #
+    # else:
+    #     print("No user signed in")
 
 
 @app.route('/logout')
 def logout():
     dict = {}
     try:
-        db = shelve.open('storage.db', 'r')
-        db['Logged'] = dict
-        db.close()
+        session["email"] = dict
+        session["name"] = dict
+        session["type"] = dict
     except:
         print("No user logged in, or some other error lol")
 

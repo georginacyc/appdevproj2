@@ -22,14 +22,16 @@
     <ul class="nav navbar-nav">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-                user
+                User
             </a>
             <div class="dropdown-menu">
-                <p>Hello, USER!</p>
-                <a class="dropdown-item" href="/staffAccounts">Staff Accounts</a>
-                <a class="dropdown-item" href="/createStaff">New Staff</a>
+                <p>Hello, {{ session["name"] }}!</p>
                 <a class="dropdown-item" href="/retrieveAnnouncements">Announcements</a>
-                <a class="dropdown-item" href="/createAnnouncement">Create Announcement</a>
+                {% if session["type"] == "Admin" %}
+                    <a class="dropdown-item" href="/staffAccounts">Staff Accounts</a>
+                    <a class="dropdown-item" href="/createStaff">New Staff</a>
+                    <a class="dropdown-item" href="/createAnnouncement">Create Announcement</a>
+                {% endif %}
                 <a class="dropdown-item" href="/">Log Out</a>
             </div>
         </li>
