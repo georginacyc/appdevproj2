@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
-from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm, CreateAnnouncement
+from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement
@@ -13,14 +13,71 @@ def home():
     return render_template('home.html')
 
 
-@app.route('/cart')
+@app.route('/createCart', methods=['GET', 'POST'])
 def cart():
-    return render_template('cart.html')
+    if request.method == 'POST':
+        cartDict = {}
+        db = shelve.open('storage.db', 'c')
+        try:
+            cartDict = db['Cart']
+        except:
+            print("Error in retrieving Items from storage,db.")
 
 
-@app.route('/contactUs')
+
+
+@app.route('/checkout')
+def checkout():
+    return render_template('checkout.html')
+
+
+@app.route('/contactUs', methods=['GET', 'POST'])
 def contactUs():
-    return render_template('contactUs.html')
+    contactUsForm = ContactUsForm(request.form)
+
+    if request.method == 'POST' and contactUsForm.validate():
+        contactDict = {}
+        db = shelve.open('storage.db', 'w')
+        try:
+            contactDict = db['contact']
+        except:
+            print("Error in retrieving Items from storage.db.")
+        item = Item.Item(contactUsForm.fname.data, contactUsForm.lname.data,
+                         contactUsForm.email.data, contactUsForm.text.data)
+        contactDict[item.get_Contact()] = item
+        db['Contact'] = contactDict
+        db.close()
+
+        return render_template('contactUS.html', form=contactUsForm)
+
+
+
+@app.route('/retrieveContact')
+def retrieveContact():
+    contactDict = {}
+    db = shelve.open('storage.db', 'r')
+    contactDict = db['Contact']
+    db.close()
+
+    contactList = []
+    for email in contactDict:
+        contact = contactDict.get(email)
+        contactList.append(contact)
+
+    return render_template('retrieveContact.html', contactList=contactList, count=len(contactList))
+
+@app.route('/deleteContact/<email>/', methods=['GET', 'POST'])
+def deleteContact(email):
+    contactDict = {}
+    db = shelve.open('storage.db', 'w')
+    contactDict = db['Users']
+
+    contactDict.pop(email)  # action of removing the record
+    db['Users'] = contactDict  # put back to persistence
+    db.close()
+
+    # after we delete successfully
+    return redirect(url_for('retrieveContact'))
 
 
 @app.route('/staffHome')
@@ -31,6 +88,8 @@ def staffHome():
 @app.route('/inventory')
 def inventory():
     return render_template('viewStock.html')
+
+
 
 
 @app.route('/viewStockOrders')
@@ -80,7 +139,8 @@ def createStockOrder():
                                            createStockOrderForm.shipmentDate.data, "Ordered", "",
                                            createStockOrderForm.stockItemSerial.data,
                                            createStockOrderForm.stockorderQuantity.data)
-        stockorderDict[stockorder.get_stockorderCount()] = stockorder
+        print(stockorder.get_stockorderNumber())
+        stockorderDict[stockorder.get_stockorderNumber()] = stockorder
         db['StockOrder'] = stockorderDict
         db['stockordercount'] = StockOrder.StockOrder.countID
         print(db['StockOrder'])
@@ -90,39 +150,50 @@ def createStockOrder():
     return render_template('createStockOrder.html', form=createStockOrderForm)
 
 
-@app.route('/updateStockOrder/<id>/', methods =['GET','POST'])
+@app.route('/updateStockOrder/<int:id>/', methods=['GET', 'POST'])
 def updateStockOrder(id):
     updateStockOrderForm = UpdateStockOrderForm(request.form)
+    quantity = 0
     if request.method == 'POST' and updateStockOrderForm.validate():
         stockorderDict = {}
         db = shelve.open('storage.db', 'w')
         stockorderDict = db['StockOrder']
 
         stockorder = stockorderDict.get(id)
-        stockorder.set_stockorderDate(updateStockOrderForm.stockorderDate.data)
-        stockorder.set_shipmentDate(updateStockOrderForm.shipmentDate.data)
         stockorder.set_shipmentStatus(updateStockOrderForm.shipmentStatus.data)
         stockorder.set_receivedDate(updateStockOrderForm.receivedDate.data)
-        stockorder.set_stockItemSerial(updateStockOrderForm.stockItemSerial.data)
-        stockorder.set_stockorderQuantity(updateStockOrderForm.stockorderQuantity.data)
-
         db['StockOrder'] = stockorderDict
         db.close()
-        return redirect(url_for('viewStockOrder'))
+        return redirect(url_for('viewStockOrders'))
     else:
         stockorderDict = {}
         db = shelve.open('storage.db', 'r')
         stockorderDict = db['StockOrder']
+        print(stockorderDict)
         db.close()
 
         stockorder = stockorderDict.get(id)
+        print(stockorder)
         updateStockOrderForm.stockorderDate.data = stockorder.get_stockorderDate()
         updateStockOrderForm.shipmentDate.data = stockorder.get_shipmentDate()
         updateStockOrderForm.shipmentStatus.data = stockorder.get_shipmentStatus()
         updateStockOrderForm.receivedDate.data = stockorder.get_receivedDate()
         updateStockOrderForm.stockItemSerial.data = stockorder.get_stockItemSerial()
         updateStockOrderForm.stockorderQuantity.data = stockorder.get_stockorderQuantity()
+
+        quantity = stockorder.get_stockorderQuantity()
+        itemDict = {}
+        db = shelve.open('storage.db', 'w')
+        itemDict = db['Items']
+
+        item = itemDict.get(stockorder.get_stockItemSerial())
+        item.set_itemQuantity(quantity)
+        item.set_itemStockStatus()
+        db['Items'] = itemDict
+        db.close()
+
         return render_template('updateStockOrder.html', form=updateStockOrderForm)
+
 
 @app.route('/createUser', methods=['GET', 'POST'])
 def createUser():
@@ -146,8 +217,8 @@ def createUser():
             usersDict[user.get_email()] = user
             db['Users'] = usersDict
             db.close()
-        return redirect(url_for('retrieveUsers'))
-        # return redirect(url_for('home'))
+
+        return redirect(url_for('home'))
     return render_template('createUser.html', form=createUserForm)
 
 
@@ -180,7 +251,9 @@ def updateUser(email):
         user.set_firstName(updateUserForm.firstName.data)
         user.set_lastName(updateUserForm.lastName.data)
         user.set_gender(updateUserForm.gender.data)
+        userDict[email] = user
         db['Users'] = userDict
+
         db.close()
 
         return redirect(url_for('retrieveUsers'))
@@ -194,10 +267,11 @@ def updateUser(email):
         updateUserForm.lastName.data = user.get_lastName()
         updateUserForm.gender.data = user.get_gender()
 
+
         return render_template('updateUser.html', form=updateUserForm)
 
 
-@app.route('/deleteUser/<id>/', methods=['GET', 'POST'])
+@app.route('/deleteUser/<email>/', methods=['GET', 'POST'])
 def deleteUser(email):
     usersDict = {}
     db = shelve.open('storage.db', 'w')
@@ -223,41 +297,6 @@ def deleteItem(id):
 
     # after we delete succesfully
     return redirect(url_for('itempage'))
-
-
-@app.route('/updateItem/<id>/', methods=['GET', 'POST'])
-def updateItem(id):
-    updateItemForm = CreateItemForm(request.form)
-    if request.method == 'POST' and updateItemForm.validate():
-        itemDict = {}
-        db = shelve.open('storage.db', 'w')
-        itemDict = db['Items']
-
-        item = itemDict.get(id)
-        item.set_itemName(updateItemForm.itemName.data)
-        item.set_itemSerial(updateItemForm.itemSerial.data)
-        item.set_itemCategory(updateItemForm.itemCategory.data)
-        item.set_itemGender(updateItemForm.itemGender.data)
-        item.set_itemCost(updateItemForm.itemCost.data)
-        item.set_itemPrice(updateItemForm.itemPrice.data)
-
-        db['Items'] = itemDict
-        db.close()
-        return redirect(url_for('itempage'))
-    else:
-        itemDict = {}
-        db = shelve.open('storage.db', 'r')
-        itemDict = db['Items']
-        db.close()
-
-        item = itemDict.get(id)
-        updateItemForm.itemName.data = item.get_itemName()
-        updateItemForm.itemSerial.data = item.get_itemSerial()
-        updateItemForm.itemCategory.data = item.get_itemCategory()
-        updateItemForm.itemGender.data = item.get_itemGender()
-        updateItemForm.itemCost.data = item.get_itemCost()
-        updateItemForm.itemPrice.data = item.get_itemPrice()
-        return render_template('updateItem.html', form=updateItemForm)
 
 
 @app.route('/itempage')
@@ -306,6 +345,41 @@ def createItem():
 
         return redirect(url_for('itempage'))
     return render_template('createItem.html', form=createItemForm)
+
+
+@app.route('/updateItem/<id>/', methods=['GET', 'POST'])
+def updateItem(id):
+    updateItemForm = CreateItemForm(request.form)
+    if request.method == 'POST' and updateItemForm.validate():
+        itemDict = {}
+        db = shelve.open('storage.db', 'w')
+        itemDict = db['Items']
+
+        item = itemDict.get(id)
+        item.set_itemName(updateItemForm.itemName.data)
+        item.set_itemSerial(updateItemForm.itemSerial.data)
+        item.set_itemCategory(updateItemForm.itemCategory.data)
+        item.set_itemGender(updateItemForm.itemGender.data)
+        item.set_itemCost(updateItemForm.itemCost.data)
+        item.set_itemPrice(updateItemForm.itemPrice.data)
+
+        db['Items'] = itemDict
+        db.close()
+        return redirect(url_for('itempage'))
+    else:
+        itemDict = {}
+        db = shelve.open('storage.db', 'r')
+        itemDict = db['Items']
+        db.close()
+
+        item = itemDict.get(id)
+        updateItemForm.itemName.data = item.get_itemName()
+        updateItemForm.itemSerial.data = item.get_itemSerial()
+        updateItemForm.itemCategory.data = item.get_itemCategory()
+        updateItemForm.itemGender.data = item.get_itemGender()
+        updateItemForm.itemCost.data = item.get_itemCost()
+        updateItemForm.itemPrice.data = item.get_itemPrice()
+        return render_template('updateItem.html', form=updateItemForm)
 
 
 @app.route('/createStaff', methods=['GET', 'POST'])
@@ -385,7 +459,7 @@ def login():
 
     if request.method == 'POST' and loginForm.validate():
         email = loginForm.email.data
-        email = email.split("@")
+        emailSplit = email.split("@")
         domain = email[1]
 
         userDict = {}
@@ -403,38 +477,37 @@ def login():
                 print("Error in retrieving Staff from storage.db")
 
             for user, object in userDict.items():
-                if user == email[0]:
+                if user == emailSplit[0]:
                     field1 = True
                     if object.get_password() == loginForm.password.data:
                         field2 = True
-                        logged[email[0]] = object.get_fname()
+                        # logged[email[0]] = object.get_fname()
         else:
             print("User account.")
             try:
                 userDict = db['Users']
-                db['Users'] = {}
+
             except:
                 print("Error in retrieving User from storage.db")
             finally:
                 for user, object in userDict.items():
-                    if user == email[0]:
+                    if user == email:
                         field3 = True
-                    if object.get_pw() == loginForm.pw.data:
-                        field4 = True
-                        logged[email[0]] = object.get_firstname()
+                        print("1")
+                        if object.get_pw() == loginForm.password.data:
+                            field4 = True
+                            print("2")
+                        # logged[email[0]] = object.get_firstname()
 
         if field1 == True and field2 == True:
-            db['Logged'] = logged
-            db.close()
             print("Successfully logged in!")
             return redirect(url_for('staffHome'))
         elif field3 == True and field4 == True:
-            db['Logged'] = logged
             db.close()
             return redirect(url_for('home'))
-        elif field1 == True and field2 == False or field3 == True and field4 == False:
-            print("Invalid Email.")
         elif field1 == False and field2 == True or field3 == False and field4 == True:
+            print("Invalid Email.")
+        elif field1 == True and field2 == False or field3 == True and field4 == False:
             print("Invalid Password.")
         else:
             print("Invalid credentials. Please try again.")
