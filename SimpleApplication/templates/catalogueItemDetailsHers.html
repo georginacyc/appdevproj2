@@ -10,7 +10,9 @@
 <br>
 <p>Availability: {{item.get_itemStockStatus()}}</p>
 <br>
-<input type="submit" value="Add to Cart" class="btn btn-success" onclick="return confirm('Add this item to cart?')">
+<form method="POST" action="">
+    <input type="submit" value="Add to Cart" class="btn btn-success" onclick="return confirm('Add this item to cart?')">
+</form>
 <br><br>
 <a href="/catalogueHers" class="btn btn-info">Back</a>
 {% endfor %}
