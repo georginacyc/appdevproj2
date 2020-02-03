@@ -3,7 +3,7 @@ from werkzeug.utils import secure_filename
 from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement
+import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, ContactUs
 
 app = Flask(__name__)
 
@@ -39,14 +39,16 @@ def contactUs():
         contactDict = {}
         db = shelve.open('storage.db', 'c')
         try:
-            contactDict = db['Items']
+            contactDict = db['Contact']
         except:
             print("Error in retrieving Items from storage.db.")
-        item = Item.Item(contactUsForm.fname.data, contactUsForm.lname.data,
+        contact = ContactUs.Contact(contactUsForm.fname.data, contactUsForm.lname.data,
                          contactUsForm.email.data, contactUsForm.text.data)
-        contactDict[item.get_itemSerial()] = item
+        contactDict[contact.get_email()] = contact
         db['Contact'] = contactDict
         db.close()
+        return redirect(url_for('retrieveContact'))
+    return render_template('contactUs.html', form=contactUsForm)
 
 
 

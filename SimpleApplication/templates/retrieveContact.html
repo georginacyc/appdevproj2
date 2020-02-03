@@ -4,11 +4,11 @@
 <h1 class="display-4">Contact Us</h1>
 <div>
     {% if count == 0 %}
-    <p>There are no users.</p>
+    <p>There are no inquiries.</p>
     {% elif count == 1 %}
-    <p>There is 1 user.</p>
+    <p>There is 1 inquiries.</p>
     {% else %}
-    <p>There are {{ count }} users.</p>
+    <p>There are {{ count }} inquiries.</p>
     {% endif %}
 </div>
 <div>
@@ -23,7 +23,7 @@
         </tr>
         </thead>
         <tbody>
-        {% for user in usersList %}
+        {% for contact in contactList %}
         <tr>
             <td>{{ user.get_fname() }}</td>
             <td>{{ user.get_lname() }}</td>
