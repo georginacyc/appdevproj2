@@ -685,13 +685,28 @@ def catalogueHis():
 
     itemList = []
     for key in itemDict:
-        item = itemDict.get(key)
-        itemList.append(item)
+        if key[9] == "M":
+            item = itemDict.get(key)
+            itemList.append(item)
     return render_template('catalogueHis.html', itemList=itemList, count=len(itemList))
 
+@app.route('/catalogueHers')
+def catalogueHers():
+    itemDict = {}
+    db = shelve.open('storage.db', 'r')
+    itemDict = db['Items']
+    db.close()
 
-@app.route('/itemDetails/<id>/', methods=['GET', 'POST'])
-def itemDetails(id):
+    itemList = []
+    for key in itemDict:
+        if key[9] == "F":
+            item = itemDict.get(key)
+            itemList.append(item)
+    return render_template('catalogueHers.html', itemList=itemList, count=len(itemList))
+
+
+@app.route('/catalogueItemDetailsHis/<id>/', methods=['GET', 'POST'])
+def itemDetailsHis(id):
     itemDict = {}
     db = shelve.open('storage.db', 'r')
     itemDict = db['Items']
@@ -700,8 +715,19 @@ def itemDetails(id):
     itemList = []
     item = itemDict.get(id)
     itemList.append(item)
-    return render_template('itemDetails.html', itemList=itemList, count=len(itemList))
+    return render_template('catalogueItemDetailsHis.html', itemList=itemList, count=len(itemList))
 
+@app.route('/catalogueItemDetailsHers/<id>/', methods=['GET', 'POST'])
+def itemDetailsHers(id):
+    itemDict = {}
+    db = shelve.open('storage.db', 'r')
+    itemDict = db['Items']
+    db.close()
+
+    itemList = []
+    item = itemDict.get(id)
+    itemList.append(item)
+    return render_template('catalogueItemDetailsHers.html', itemList=itemList, count=len(itemList))
 
 if __name__ == '__main__':
     app.run()
