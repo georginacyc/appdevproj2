@@ -48,6 +48,10 @@ class CreateAnnouncement(Form):
     title = StringField("Title", [validators.DataRequired(), validators.Length(min=1, max=150)])
     description = TextAreaField("Description (Optional)", default="")
 
+class ReadMoreAnnouncement(Form):
+    date = DateField("Date", format='%d/%m/%Y', render_kw={'readonly': True})
+    title = StringField("Title", [validators.Length(min=1, max=150)], render_kw={'readonly': True})
+    description = TextAreaField("Description (Optional)", default="", render_kw={'readonly': True})
 
 class ContactUsForm(Form):
     fname = StringField("First Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Lily"})

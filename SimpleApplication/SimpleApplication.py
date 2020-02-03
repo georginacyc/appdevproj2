@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.utils import secure_filename
-from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm
+from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm, ReadMoreAnnouncement
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement
@@ -87,7 +87,41 @@ def deleteContact(email):
 
 @app.route('/staffHome')
 def staffHome():
-    return render_template('staffHome.html')
+    annDict = {}
+
+    try:
+        db = shelve.open("storage.db", "r")
+        annDict = db["Announcements"]
+    except:
+        print("db error")
+    else:
+        db.close()
+
+    #  loop through dict to save in list
+    annList = []
+    keyList = []
+    for key in annDict:
+        announcement = annDict.get(key)
+        annList.append(announcement)
+        keyList.append(key)
+
+    return render_template('staffHome.html', annList=annList, keyList=keyList)
+
+
+@app.route('/readMoreAnn/<key>')
+def readMoreAnn(key):
+    readMoreAnn = ReadMoreAnnouncement(request.form)
+
+    annDict = {}
+    db = shelve.open('storage.db', 'r')
+    annDict = db['Announcements']
+    db.close()
+    announcement = annDict.get(key)
+    readMoreAnn.date.data = announcement.get_date()
+    readMoreAnn.title.data = announcement.get_title()
+    readMoreAnn.description.data = announcement.get_description()
+
+    return render_template('staffHome.html', form=readMoreAnn)
 
 
 @app.route('/inventory')
@@ -520,33 +554,6 @@ def login():
             print("Invalid credentials. Please try again.")
 
     return render_template('login.html', form=loginForm)
-
-
-@app.before_request
-def accountCheck():
-    user = {}
-    staffs = {}
-    #
-    # admin = False
-    #
-    # try:
-    #     db = shelve.open('storage.db', 'r')
-    #     user = db['Logged']
-    #     staffs = db['Staff']
-    #     db.close()
-    # except:
-    #     print("Error in retrieving storage.db")
-    #
-    # if user != {}:
-    #     staff = list(user.keys())[0]
-    #     for id, name in user.items():
-    #         for key, object in staffs.items():
-    #             if id == key:
-    #                 if object.get_type == "Admin":
-    #                     pass
-    #
-    # else:
-    #     print("No user signed in")
 
 
 @app.route('/logout')
