@@ -15,7 +15,7 @@ class CreateUserForm(Form):
 class UpdateUserForm(Form):
     firstName = StringField("First Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Lily"})
     lastName = StringField("last Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Doe"})
-    gender = RadioField('Gender', [validators.DataRequired()],choices=[('M', 'Male'), ('F', 'Female')],default='')
+    gender = SelectField('Gender', [validators.DataRequired()],choices=[("", "Select"),('M', 'Male'), ('F', 'Female')],default='')
 
 
 
