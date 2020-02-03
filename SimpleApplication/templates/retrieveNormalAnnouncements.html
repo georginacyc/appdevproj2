@@ -7,25 +7,17 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>No.</th>
                 <th>Date</th>
                 <th>Title</th>
                 <th>Description</th>
-                <th></th>
             </tr>
         </thead>
         <tbody>
          {% for x in annList %}
             <tr>
-                <td>{{ x.get_count() }}</td>
                 <td class="annDate">{{ x.get_date() }}</td>
                 <td class="annTitle">{{ x.get_title() }}</td>
                 <td class="annDesc">{{ x.get_description() }}</td>
-                <td>
-                    <form action="{{ url_for('deleteAnnouncement', id=x.get_count()) }}" method="POST">
-                        <input type="submit" value="Delete" class="btn btn-danger"">
-                    </form>
-                </td>
             </tr>
          {% endfor %}
         </tbody>

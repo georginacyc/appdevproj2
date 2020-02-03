@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-light">
-    <a class="navbar-brand" href="/">monoqlo</a>
+    <a class="navbar-brand" href="/staffHome">monoqlo</a>
 
     <ul class="navbar-nav mr-auto">
         <li class="nav-item">
@@ -25,18 +25,21 @@
     <ul class="nav navbar-nav">
         <li class="nav-item dropleft">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            User
+            {{ session["name"] }}
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <p class="dropdown-item">hello, {{ session["name"] }}!</p>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="/retrieveAnnouncements">Announcements</a>
                 {% if session["type"] == "Admin" %}
-                    <a class="dropdown-item" href="/staffAccounts">Staff Accounts</a>
-                    <a class="dropdown-item" href="/createStaff">New Staff</a>
-                    <a class="dropdown-item" href="/createAnnouncement">Create Announcement</a>
-                {% endif %}
+                <a class="dropdown-item" href="/staffAccounts">Manage Staff Accounts</a>
+                <a class="dropdown-item" href="/retrieveAnnouncements">Manage Announcements</a>
+                <a class="dropdown-item" href="/createStaff">New Staff</a>
+                <a class="dropdown-item" href="/createAnnouncement">Create Announcement</a>
+                <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="/">Log Out</a>
+                {% else %}
+                <a class="dropdown-item" href="/retrieveNormalAnnouncements">All Announcements</a>
+                <a class="dropdown-item" href="/staffAccountDetails">Your Details</a>
+                <a class="dropdown-item" href="/">Log Out</a>
+                {% endif %}
             </div>
         </li>
     </ul>

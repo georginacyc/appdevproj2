@@ -100,10 +100,16 @@ def staffHome():
     #  loop through dict to save in list
     annList = []
     keyList = []
+    count = 0
     for key in annDict:
-        announcement = annDict.get(key)
-        annList.append(announcement)
-        keyList.append(key)
+        if count < 5:
+            announcement = annDict.get(key)
+            annList.append(announcement)
+            keyList.append(key)
+        else:
+            break
+
+        count += 1
 
     return render_template('staffHome.html', annList=annList, keyList=keyList)
 
@@ -605,6 +611,28 @@ def deleteStaff(eID):
     return redirect(url_for('staffAccounts'))
 
 
+@app.route('/staffAccountDetails/<email>', methods=['GET', 'POST'])
+def updateStaff(email):
+    updateStaffForm = UpdateStaffForm(request.form)
+    split = email.split("@")
+    eID = split[0]
+
+    staffDict = {}
+    db = shelve.open('storage.db', 'r')
+    staffDict = db['Staff']
+    db.close()
+
+    staff = staffDict.get(eID2)
+    updateStaffForm.fname.data = staff.get_fname()
+    updateStaffForm.lname.data = staff.get_lname()
+    updateStaffForm.gender.data = staff.get_gender()
+    updateStaffForm.hp.data = staff.get_hp()
+    updateStaffForm.address.data = staff.get_address()
+    updateStaffForm.type.data = staff.get_type()
+
+    return render_template('updateStaff.html', form=updateStaffForm)
+
+
 @app.route('/createAnnouncement', methods=['GET', 'POST'])
 def createAnnouncement():
     createAnnouncementForm = CreateAnnouncement(request.form)
@@ -652,6 +680,27 @@ def retrieveAnnouncements():
         annList.append(announcement)
 
     return render_template("retrieveAnnouncements.html", annList=annList)
+
+
+@app.route('/retrieveNormalAnnouncements')
+def retrieveNormalAnnouncements():
+    annDict = {}
+
+    try:
+        db = shelve.open("storage.db", "r")
+        annDict = db["Announcements"]
+    except:
+        print("db error")
+    else:
+        db.close()
+
+    #  loop through dict to save in list
+    annList = []
+    for key in annDict:
+        announcement = annDict.get(key)
+        annList.append(announcement)
+
+    return render_template("retrieveNormalAnnouncements.html", annList=annList)
 
 
 @app.before_request

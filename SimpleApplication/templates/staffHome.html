@@ -7,7 +7,7 @@
 <br>
 
 <div id="homeAnnounce">
-    <p class="display-4">Announcements</p>
+    <p class="display-4">Latest Announcements</p>
     <table class="table">
         <tbody>
          {% for ann in annList %}
@@ -17,6 +17,11 @@
                 <td id="annDesc">{{ ann.get_description() }}</td>
             </tr>
          {% endfor %}
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
         </tbody>
     </table>
 </div>
