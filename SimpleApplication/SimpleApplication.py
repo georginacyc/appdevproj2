@@ -674,7 +674,7 @@ def catalogueHis():
     return render_template('catalogueHis.html', itemList=itemList, count=len(itemList))
 
 
-@app.route('/itemDetails/<id>/', methods=['GET', 'POST'])
+@app.route('/catalogueItemDetailsHers/<id>/', methods=['GET', 'POST'])
 def itemDetails(id):
     itemDict = {}
     db = shelve.open('storage.db', 'r')
@@ -684,6 +684,7 @@ def itemDetails(id):
     itemList = []
     item = itemDict.get(id)
     itemList.append(item)
+
     serial=item.get_itemSerial()
     addtocart = addtocartForm(request.form)
     if request.method == 'POST' and addtocart.validate():
@@ -698,7 +699,7 @@ def itemDetails(id):
         db['Cart'] = cartDict
         db.close()
 
-    return render_template('itemDetails.html', itemList=itemList, count=len(itemList))
+    return render_template('catalogueItemDetailsHers.html', itemList=itemList, count=len(itemList))
 
 
 if __name__ == '__main__':
