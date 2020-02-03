@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
-from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm
+from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, ContactUs
@@ -239,8 +239,10 @@ def retrieveUsers():
 
 @app.route('/updateUser/<email>/', methods=['GET', 'POST'])
 def updateUser(email):
-    updateUserForm = CreateUserForm(request.form)
+    updateUserForm = UpdateUserForm(request.form)
+
     if request.method == 'POST' and updateUserForm.validate():
+
         userDict = {}
         db = shelve.open('storage.db', 'w')
         try:
@@ -684,13 +686,28 @@ def catalogueHis():
 
     itemList = []
     for key in itemDict:
-        item = itemDict.get(key)
-        itemList.append(item)
+        if key[9] == "M":
+            item = itemDict.get(key)
+            itemList.append(item)
     return render_template('catalogueHis.html', itemList=itemList, count=len(itemList))
 
+@app.route('/catalogueHers')
+def catalogueHers():
+    itemDict = {}
+    db = shelve.open('storage.db', 'r')
+    itemDict = db['Items']
+    db.close()
 
-@app.route('/itemDetails/<id>/', methods=['GET', 'POST'])
-def itemDetails(id):
+    itemList = []
+    for key in itemDict:
+        if key[9] == "F":
+            item = itemDict.get(key)
+            itemList.append(item)
+    return render_template('catalogueHers.html', itemList=itemList, count=len(itemList))
+
+
+@app.route('/catalogueItemDetailsHis/<id>/', methods=['GET', 'POST'])
+def itemDetailsHis(id):
     itemDict = {}
     db = shelve.open('storage.db', 'r')
     itemDict = db['Items']
@@ -699,8 +716,19 @@ def itemDetails(id):
     itemList = []
     item = itemDict.get(id)
     itemList.append(item)
-    return render_template('itemDetails.html', itemList=itemList, count=len(itemList))
+    return render_template('catalogueItemDetailsHis.html', itemList=itemList, count=len(itemList))
 
+@app.route('/catalogueItemDetailsHers/<id>/', methods=['GET', 'POST'])
+def itemDetailsHers(id):
+    itemDict = {}
+    db = shelve.open('storage.db', 'r')
+    itemDict = db['Items']
+    db.close()
+
+    itemList = []
+    item = itemDict.get(id)
+    itemList.append(item)
+    return render_template('catalogueItemDetailsHers.html', itemList=itemList, count=len(itemList))
 
 if __name__ == '__main__':
     app.run()
