@@ -1,22 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Item{% endblock %}
 {% block content %}
-<body>
-{% for item in itemList %}
-<h2>{{ item.get_itemName() }}</h2>
-<p>Serial No. {{ item.get_itemSerial() }}</p>
-<br>
-<h3>${{item.get_itemPrice()}}</h3>
-<br>
-<p>Availability: {{item.get_itemStockStatus()}}</p>
-<br>
-<input type="submit" value="Add to Cart" class="btn btn-success" onclick="return confirm('Add this item to cart?')">
-<br>
-<a href="/catalogueHis" class="btn btn-info">Back</a>
-{% endfor %}
-</body>
-
-<!--<div>
+{% from "includes/_formHelper.html" import render_field %}
+<div>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -40,13 +26,15 @@
                      <td>{{ item.get_itemGender() }}</td>
                      <td>${{ item.get_itemPrice() }}</td>
                      <td>
-                            <input type="submit" value="Add to Cart" class="btn btn-success" onclick="return confirm('Add this item to cart?')">
+                         <form method="POST" action="">
+                            <input type="submit"  value="Add to Cart" class="btn btn-success" onclick="return confirm('Add this item to cart?')">
+                         </form>
                      </td>
 
                 </tr>
             {% endfor %}
         </tbody>
     </table>
-</div>-->
+</div>
 {% endblock %}
 
