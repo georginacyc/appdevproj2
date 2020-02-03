@@ -2,445 +2,270 @@
 {% block title %}monoqlo - Cart{% endblock %}
 {% block content %}
 <style>
-@charset "utf-8";
-
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700,600);
-
-html,
-html a {
-  -webkit-font-smoothing: antialiased;
-  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
+[class*="entypo-"]:before { font-family: 'entypo', sans-serif; }
+body {
+  background-color: #ecf0f1;
+  font: 300 1.25em/1.4 "Lato", sans-serif;
+  color: #686868;
+}
+h1, h2, h3, h4, h5, h6 { font-weight: 400; }
+h1, .sub-heading {
+  text-align: center;
+  margin: .5rem 0 1rem;
+}
+.sub-heading {
+  font-size: .75em;
+  font-weight: 300;
 }
 
-body:not(.nav, .navbar) {
-  background-color: #fff;
-  color: #666;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 62.5%;
-  margin: 0 auto;
+/**
+ * @section: utilities;
+ * @see: Justify Grid [http://justifygrid.com/]
+ */
+._grid {
+  text-align: justify !important;
+  text-justify: distribute-all-lines;
+  font-size: 0 !important;
+  text-rendering: optimizespeed;
 }
-
-a {
-  border: 0 none;
-  outline: 0;
-  text-decoration: none;
-}
-
-strong {
-  font-weight: bold;
-}
-
-p {
-  margin: 0.75rem 0 0;
-}
-
-h1 {
-  font-size: 0.75rem;
-  font-weight: normal;
-  margin: 0;
-  padding: 0;
-}
-
-input,
-button {
-  border: 0 none;
-  outline: 0 none;
-}
-
-button {
-  background-color: #666;
-  color: #fff;
-}
-
-button:hover,
-button:focus {
-  background-color: #555;
-}
-
-img,
-.basket-module,
-.basket-labels,
-.basket-product {
-  width: 100%;
-}
-
-input,
-button,
-.basket,
-.basket-module,
-.basket-labels,
-.item,
-.price,
-.quantity,
-.subtotal,
-.basket-product,
-.product-image,
-.product-details {
-  float: left;
-}
-
-.price:before,
-.subtotal:before,
-.subtotal-value:before,
-.total-value:before,
-.promo-value:before {
-  content: '$';
-}
-
-.hide {
-  display: none;
-}
-
-main {
-  clear: both;
-  font-size: 0.75rem;
-  margin: 0 auto;
-  overflow: hidden;
-  padding: 1rem 0;
-  width: 960px;
-}
-
-.basket,
-aside {
-  padding: 0 1rem;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-.basket {
-  width: 70%;
-}
-
-.basket-module {
-  color: #111;
-}
-
-label {
-  display: block;
-  margin-bottom: 0.3125rem;
-}
-
-
-
-.basket-labels {
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
-  margin-top: 1.625rem;
-}
-
-ul.itemtable {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-
-li {
-  color: #111;
+._grid:after {
+  content: "";
   display: inline-block;
-  padding: 0.625rem 0;
+  width: 100%;
 }
-
-li.price:before,
-li.subtotal:before {
-  content: '';
+._column {
+  display: inline-block;
+  vertical-align: top;
+  font-size: medium;
+  text-align: left;
+  text-rendering: optimizeLegibility;
 }
-
-.item {
-  width: 55%;
-}
-
-.price,
-.quantity,
-.subtotal {
-  width: 15%;
-}
-
-.subtotal {
-  text-align: right;
-}
-
-.remove {
-  bottom: 1.125rem;
-  float: right;
-  position: absolute;
-  right: 0;
-  text-align: right;
-  width: 45%;
-}
-
-.remove button {
-  background-color: transparent;
-  color: #777;
-  float: none;
-  text-decoration: underline;
-  text-transform: uppercase;
-}
-
-.item-heading {
-  padding-left: 4.375rem;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-.basket-product {
-  border-bottom: 1px solid #ccc;
-  padding: 1rem 0;
-  position: relative;
-}
-
-.product-image {
-  width: 35%;
-}
-
-.product-details {
-  width: 65%;
-}
-
-.product-frame {
-  border: 1px solid #aaa;
-}
-
-.product-details {
-  padding: 0 1.5rem;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-.quantity-field {
-  background-color: #ccc;
-  border: 1px solid #aaa;
-  border-radius: 4px;
-  font-size: 0.625rem;
-  padding: 2px;
-  width: 3.75rem;
-}
-
-aside {
-  float: right;
-  position: relative;
-  width: 30%;
-}
-
-.summary {
-  background-color: #eee;
-  border: 1px solid #aaa;
-  padding: 1rem;
-  position: fixed;
-  width: 250px;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-.summary-total-items {
-  color: #666;
-  font-size: 0.875rem;
+._btn {
+  display: inline-block;
+  background-color: #bdc3c7;
+  border: none;
+  padding: .5em .75em;
   text-align: center;
+  font-weight: 300;
+}
+._btn:hover,
+.cart-totals:hover ._btn {
+  background-color: #3498db;
+  color: #ecf0f1;
 }
 
-.summary-subtotal,
-.summary-total {
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
-  clear: both;
-  margin: 1rem 0;
+/**
+ * @section: shopping-cart;
+ */
+.shopping-cart {
+  width: 80%;
+  max-width: 60rem;
+  margin: 0 auto;
+}
+/**
+ * @extends: _grid;
+ */
+.shopping-cart--list-item {
+  border: 1px solid #bdc3c7;
+  margin-bottom: 3rem;
+  height: 10rem;
   overflow: hidden;
-  padding: 0.5rem 0;
+}
+.shopping-cart--list-item:hover,
+.shopping-cart--list-item:hover * {
+  border-color: #3498db;
+}
+.shopping-cart--list-item > ._column {
+    height: 100%; /* make vertical lines match */
 }
 
-.subtotal-title,
-.subtotal-value,
-.total-title,
-.total-value,
-.promo-title,
-.promo-value {
-  color: #111;
-  float: left;
-  width: 50%;
+/**
+ * @section: product-image;
+ * @extends: _column;
+ */
+.product-image {
+  width: 16.663198%;
+  background: url("data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7") no-repeat center / cover transparent;
 }
 
-.summary-promo {
-  -webkit-transition: all .3s ease;
-  -moz-transition: all .3s ease;
-  -o-transition: all .3s ease;
-  transition: all .3s ease;
+/**
+ * @section: product-info;
+ * @extends: _column;
+ */
+.product-info {
+  width: 70.832119%;
+  padding: .5rem;
 }
-
-.promo-title {
-  float: left;
-  width: 70%;
+.product-name {
+  font: 300 2.4em/1 "Lato", sans-serif;
+  letter-spacing: -.025em;
+  margin: 0 0 .125em;
 }
-
-.promo-value {
-  color: #8B0000;
-  float: left;
-  text-align: right;
-  width: 30%;
-}
-
-.summary-delivery {
-  padding-bottom: 3rem;
-}
-
-.subtotal-value,
-.total-value {
+.price {
+  line-height: 1;
   text-align: right;
 }
-
-.total-title {
-  font-weight: bold;
-  text-transform: uppercase;
+.product-single-price {
+  margin-top: -1rem;
+  font-size: 2.4em;
 }
 
-.summary-checkout {
-  display: block;
+/**
+ * @section: product-modifiers;
+ * @extends: _column;
+ */
+.product-modifiers {
+  width: 12.496358%;
+  text-align: right;
+  border-left: 1px solid #bdc3c7;
 }
-
-.checkout-cta {
-  display: block;
-  float: none;
-  font-size: 0.75rem;
+.product-subtract,
+.product-plus,
+.product-qty {
+  width: 33.330557%;
+  background-color: transparent;
+  color: #686868;
   text-align: center;
-  text-transform: uppercase;
-  padding: 0.625rem 0;
+}
+.product-qty {
+  padding: .35em .75em;
+}
+.product-remove {
+  font-size: .875em;
+  margin-top: 3.35rem;
+  background-color: #e74c3c;
+  color: #ecf0f1;
   width: 100%;
+  visibility: hidden;
+}
+.product-modifiers:hover .product-remove {
+  visibility: visible;
+}
+.product-remove:before {
+  margin-right: .5em;
+}
+.product-remove:hover {
+  background-color: #c0392b;
+}
+.product-total-price {
+  border-top: 1px solid #bdc3c7;
+  color: #95a5a6;
+  font-size: 1.25em;
+  padding: .5rem;
+}
+.shopping-cart--list-item:hover .product-total-price {
+  background-color: #3498db;
+  color: #ecf0f1;
 }
 
-.summary-delivery-selection {
-  background-color: #ccc;
-  border: 1px solid #aaa;
-  border-radius: 4px;
-  display: block;
-  font-size: 0.625rem;
-  height: 34px;
-  width: 100%;
+/**
+ * @section: cart-totals;
+ * @extends: _grid;
+ */
+.cart-totals {
+  border-top: 1px solid #bdc3c7;
+  margin-bottom: 3rem;
+}
+.cart-totals ._column {
+  width: 19.984013%;
+  padding: .5rem;
+  line-height: 1.2;
+}
+.cart-totals ._column:not(:last-of-type) {
+  border-right: 1px solid #bdc3c7;
+}
+.cart-totals ._column:first-of-type {
+  padding-left: 0;
+}
+.cart-totals-key {
+  font-size: 1.125em;
+  color: #bdc3c7;
+}
+.cart-totals ._column:hover .cart-totals-value,
+.cart-totals ._column:hover .cart-totals-key {
+  color: #333;
+}
+.cart-totals-value {
+  font-size: 2em;
+}
+._column.checkout {
+  text-align: right;
+  padding: 0;
+  margin-top: 1.5em;
+  vertical-align: middle;
+}
+.checkout-btn:before {
+  margin-right: .5em;
+}
+._btn.checkout-btn:hover {
+  background-color: #2980b9;
 }
 
-.yourcart {
-  text-align: center;
-  font-size: 1.5rem;
-  width 100%;
- }
-@media screen and (max-width: 640px) {
-  aside,
-  .basket,
-  .summary,
-  .item,
-  .remove {
-    width: 100%;
-  }
-  .basket-labels {
-    display: none;
-  }
-  .basket-module {
-    margin-bottom: 1rem;
-  }
-  .item {
-    margin-bottom: 1rem;
-  }
-  .product-image {
-    width: 40%;
-  }
-  .product-details {
-    width: 60%;
-  }
-  .price,
-  .subtotal {
-    width: 33%;
-  }
-  .quantity {
-    text-align: center;
-    width: 34%;
-  }
-  .quantity-field {
-    float: none;
-  }
-  .remove {
-    bottom: 0;
-    text-align: left;
-    margin-top: 0.75rem;
-    position: relative;
-  }
-  .remove button {
-    padding: 0;
-  }
-  .summary {
-    margin-top: 1.25rem;
-    position: relative;
-  }
+/**
+ * Animations
+ */
+.product-remove,
+.cart-totals * {
+  transition: all .2s ease;
 }
-
-@media screen and (min-width: 641px) and (max-width: 960px) {
-  aside {
-    padding: 0 1rem 0 0;
-  }
-  .summary {
-    width: 28%;
-  }
+.closing {
+  transition: all .5s ease;
+  transform: translate3d(0, -100%, 0);
+  opacity: 0;
 }
-
-@media screen and (max-width: 960px) {
-  main {
-    width: 100%;
-  }
-  .product-details {
-    padding: 0 1rem;
-  }
-}
-
 </style>
 
 
-<head>
+<div class="main">
+  <h1>Shopping cart</h1>
+  <h2 class="sub-heading">Free shipping from $100!</h2>
 
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Basket</title>
-  <script>
-  </script>
-</head>
-<h1 class ="yourcart">Your Cart</h1>
-<div>
-    {% if count == 0 %}
-    <p>There are no items.</p>
-    {% elif count == 1 %}
-    <p>There is 1 item.</p>
-    {% else %}
-    <p>There are {{ count }} items in your cart.</p>
-    {% endif %}
+  <section class="shopping-cart">
+    <ol class="ui-list shopping-cart--list" id="shopping-cart--list">
+{% for item in itemList %}
+        <li class="_grid shopping-cart--list-item">
+          <div class="_column product-image">
+            <img class="product-image--img" src="data:image/jpeg;base64,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" alt="Item image">
+          </div>
+
+          <div class="_column product-info">
+            <h4 class="product-name">{{ item.get_itemName() }}</h4>
+            <p class="product-desc">{{ item.get_itemGender() }}</p>
+            <div class="price product-single-price">${{ item.get_itemPrice() }}</div>
+          </div>
+
+          <div class="_column product-modifiers" data-product-price="{{price}}">
+            <div class="_grid">
+              <button class="_btn _column product-subtract">&minus;</button>
+              <div class="_column product-qty">0</div>
+              <button class="_btn _column product-plus">&plus;</button>
+            </div>
+            <button class="_btn entypo-trash product-remove">Remove</button>
+            <div class="price product-total-price">$0.00</div>
+          </div>
+        </li>
+        {% endfor %}
+
+    </ol>
+
+    <footer class="_grid cart-totals">
+      <div class="_column subtotal" id="subtotalCtr">
+        <div class="cart-totals-key">Subtotal</div>
+        <div class="cart-totals-value">$0.00</div>
+      </div>
+      <div class="_column shipping" id="shippingCtr">
+        <div class="cart-totals-key">Shipping</div>
+        <div class="cart-totals-value">$0.00</div>
+      </div>
+      <div class="_column total" id="totalCtr">
+        <div class="cart-totals-key">Total</div>
+        <div class="cart-totals-value">$0.00</div>
+      </div>
+      <div class="_column checkout">
+        <button class="_btn checkout-btn entypo-forward">Checkout</button>
+      </div>
+    </footer>
+
+  </section>
 </div>
-
-<div>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                 <th>Item Name</th>
-                 <th>Gender</th>
-                 <th>Price</th>
-                 <th>Quantity</th>
-                 <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in itemList %}
-                <tr>
-                     <td>{{ item.get_itemName() }}</td>
-                     <td>{{ item.get_itemGender() }}</td>
-                     <td>${{ item.get_itemPrice() }}</td>
-                     <td><input type="number" value="1" min="1" class="quantity-field"></td>
-                     <td><form action= "{{url_for('deleteItem', id=item.get_itemCount())}}" method="POST">
-                            <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?')">
-                        </form></td>
-
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-<a href="/checkout" class="btn btn-primary btn-lg btn-block" role="button">Proceed to checkout</a>
 {% endblock %}
