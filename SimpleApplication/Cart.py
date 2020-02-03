@@ -1,3 +1,5 @@
+from wtforms import Form
+
 class Cart:
     countID = 0
     def __init__(self,cartItem, cartQuantity, cartSubtotal):
@@ -26,3 +28,6 @@ class Cart:
 
     def set_updatePrice(self):
         pass
+
+class addtocartForm(Form):
+    pass
