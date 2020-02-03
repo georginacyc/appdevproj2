@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
-from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm
+from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement
@@ -239,8 +239,10 @@ def retrieveUsers():
 
 @app.route('/updateUser/<email>/', methods=['GET', 'POST'])
 def updateUser(email):
-    updateUserForm = CreateUserForm(request.form)
+    updateUserForm = UpdateUserForm(request.form)
+
     if request.method == 'POST' and updateUserForm.validate():
+
         userDict = {}
         db = shelve.open('storage.db', 'w')
         try:
