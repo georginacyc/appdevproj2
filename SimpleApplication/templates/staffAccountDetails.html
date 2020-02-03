@@ -1,0 +1,31 @@
+{% extends "staffBase.html" %}
+{% block title %}monoqolo - your account{% endblock %}
+{% block content %}
+{% from "includes/_formhelper.html" import render_field %}
+<div class="staffForms">
+<h1 class="display-4">Your Account</h1>
+<form method="POST" action="">
+ <div class="form-group">
+  {{ render_field(form.name, class="form-control") }}
+ </div>
+ <div class="form-group staffType">
+  {{ render_field(form.type, class="form-control") }}
+ </div>
+ <div class="form-group staffGender">
+  {{ render_field(form.gender, class="form-control")  }}
+ </div>
+ <div class="form-group staffDOB">
+  {{ render_field(form.dob, class="form-control")  }}
+ </div>
+ <div class="form-group contactNo">
+  {{ render_field(form.hp, class="form-control") }}
+ </div>
+ <div id="prof">
+ <div class="form-group">
+  {{ render_field(form.address, class="form-control") }}
+ </div>
+ </div>
+ <input type="submit" value="Submit" class="btn btn-primary"/>
+</form>
+</div>
+{% endblock %}

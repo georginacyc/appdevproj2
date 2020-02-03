@@ -17,9 +17,6 @@ class UpdateUserForm(Form):
     lastName = StringField("Last Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Doe"})
     gender = SelectField('Gender', [validators.DataRequired()],choices=[('M', 'Male'), ('F', 'Female')],default='')
 
-
-
-
 class CreateStaffForm(Form):
     fname = StringField("First Name", [validators.InputRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "John"})
     lname = StringField("Last Name", [validators.InputRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "Doe"})
@@ -39,6 +36,14 @@ class UpdateStaffForm(Form):
     address = TextAreaField("Address")
     type = RadioField("Account Type", choices=[("Staff","Staff"), ("Admin", "Admin")], default="Staff")
 
+class ShowDetailsForm(Form):
+    name = StringField("Name", [validators.Length(min=1, max=150)], render_kw={'readonly': True})
+    type = StringField("Account Type", render_kw={'readonly': True})
+    gender = StringField("Gender", render_kw={'readonly': True})
+    dob = DateField("Date of Birth", format='%d/%m/%Y', render_kw={'readonly': True})
+    hp = StringField("Contact Number", render_kw={'readonly': True})
+    address = TextAreaField("Address", render_kw={'readonly': True})
+
 class LogInForm(Form):
     email = EmailField("Email", [validators.InputRequired()], render_kw={"placeholder": "johndoe@domain.com"})
     password = PasswordField("Password", [validators.InputRequired()], render_kw={"placeholder": "password"})
@@ -47,11 +52,6 @@ class CreateAnnouncement(Form):
     date = DateField("Date", [validators.DataRequired()], format='%d/%m/%Y', default=datetime.date.today, render_kw={'readonly': True})
     title = StringField("Title", [validators.DataRequired(), validators.Length(min=1, max=150)])
     description = TextAreaField("Description (Optional)", default="")
-
-class ReadMoreAnnouncement(Form):
-    date = DateField("Date", format='%d/%m/%Y', render_kw={'readonly': True})
-    title = StringField("Title", [validators.Length(min=1, max=150)], render_kw={'readonly': True})
-    description = TextAreaField("Description (Optional)", default="", render_kw={'readonly': True})
 
 class ContactUsForm(Form):
     fname = StringField("First Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Lily"})

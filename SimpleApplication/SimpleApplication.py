@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.utils import secure_filename
-from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm, ReadMoreAnnouncement
+from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm, ShowDetailsForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement
@@ -611,9 +611,12 @@ def deleteStaff(eID):
     return redirect(url_for('staffAccounts'))
 
 
-@app.route('/staffAccountDetails/<email>', methods=['GET', 'POST'])
-def updateStaff(email):
-    updateStaffForm = UpdateStaffForm(request.form)
+@app.route('/staffAccountDetails', methods=['GET', 'POST'])
+def staffAccountDetails():
+    showDetailsForm = ShowDetailsForm(request.form)
+
+    email = session["email"]
+
     split = email.split("@")
     eID = split[0]
 
@@ -622,15 +625,15 @@ def updateStaff(email):
     staffDict = db['Staff']
     db.close()
 
-    staff = staffDict.get(eID2)
-    updateStaffForm.fname.data = staff.get_fname()
-    updateStaffForm.lname.data = staff.get_lname()
-    updateStaffForm.gender.data = staff.get_gender()
-    updateStaffForm.hp.data = staff.get_hp()
-    updateStaffForm.address.data = staff.get_address()
-    updateStaffForm.type.data = staff.get_type()
+    staff = staffDict.get(eID)
+    showDetailsForm.name.data = staff.get_fname() + " " + staff.get_lname()
+    showDetailsForm.type.data = staff.get_type()
+    showDetailsForm.gender.data = staff.get_gender()
+    showDetailsForm.dob.data = staff.get_dob()
+    showDetailsForm.hp.data = staff.get_hp()
+    showDetailsForm.address.data = staff.get_address()
 
-    return render_template('updateStaff.html', form=updateStaffForm)
+    return render_template('staffAccountDetails.html', form=showDetailsForm)
 
 
 @app.route('/createAnnouncement', methods=['GET', 'POST'])
