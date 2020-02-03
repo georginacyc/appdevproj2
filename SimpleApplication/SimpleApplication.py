@@ -316,9 +316,9 @@ def createStaff():
 
     if request.method == 'POST' and createStaffForm.validate():
         staffDict = {}
+        db = shelve.open('storage.db', 'c')
         try:
-            db = shelve.open('storage.db', 'c')
-            Staff.Staff.count = db['staffCount']
+            Staff.Staff.count = int(db['staffCount'])
             staffDict = db['Staff']
         except:
             print("Error in retrieving Staff from storage.db.")
@@ -529,15 +529,15 @@ def createAnnouncement():
         db = shelve.open('storage.db', 'c')
         try:
             annDict = db['Announcements']
-            count = db['annCount']
+            Announcement.Announcement.count = int(db["annCount"])
         except:
             print("Error in retrieving Staff from storage.db.")
-        if count == None:
-            Announcement.Announcement.count = 0
+
         announcement = Announcement.Announcement(createAnnouncementForm.date.data, createAnnouncementForm.title.data)
         announcement.set_description(createAnnouncementForm.description.data)
 
         annDict[Announcement.Announcement.count] = announcement
+
         sort = dict(sorted(annDict.items(), key=lambda x: x[0], reverse=True))
         print(sort.keys())
 
@@ -573,8 +573,8 @@ def retrieveAnnouncements():
 def deleteDict():
     dict = {}
     # db = shelve.open("storage.db", "w")
-    # db["Users"] = dict
-    # # db["annCount"] = dict
+    # db["Staff"] = dict
+    # # db["staffCount"] = dict
     # db.close()
     # print("Cleared")
 
