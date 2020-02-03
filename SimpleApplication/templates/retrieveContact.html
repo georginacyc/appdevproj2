@@ -1,7 +1,7 @@
-{% extends "base.html" %}
+{% extends "staffBase.html" %}
 {% block title %}Library Loan System - Retrieve Users{% endblock %}
 {% block content %}
-<h1 class="display-4">Contact Us</h1>
+<h1 class="display-4">Customer Inquiries</h1>
 <div>
     {% if count == 0 %}
     <p>There are no inquiries.</p>
@@ -25,13 +25,13 @@
         <tbody>
         {% for contact in contactList %}
         <tr>
-            <td>{{ user.get_fname() }}</td>
-            <td>{{ user.get_lname() }}</td>
-            <td>{{ user.get_email() }}</td>
-            <td>{{ user.get_text() }}</td>
+            <td>{{ contact.get_fname() }}</td>
+            <td>{{ contact.get_lname() }}</td>
+            <td>{{ contact.get_email() }}</td>
+            <td>{{ contact.get_text() }}</td>
             <td>
-                <form action="{{ url_for('deleteContact', email=user.get_email()) }}" method="POST">
-                    <input type="submit" value="Delete" class="btn btndanger" onclick>
+                <form action="{{ url_for('deleteContact', email=contact.get_email()) }}" method="POST">
+                    <input type="submit" value="Resolve" class="btn btn-primary" onclick="return confirm('Are you sure you want to delete this inquiry?')">
                 </form>
             </td>
         </tr>
@@ -39,4 +39,5 @@
         </tbody>
     </table>
 </div>
+
 {% endblock %}

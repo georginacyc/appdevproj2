@@ -47,7 +47,7 @@ def contactUs():
         contactDict[contact.get_email()] = contact
         db['Contact'] = contactDict
         db.close()
-        return redirect(url_for('retrieveContact'))
+        return redirect(url_for('home'))
     return render_template('contactUs.html', form=contactUsForm)
 
 
@@ -70,10 +70,10 @@ def retrieveContact():
 def deleteContact(email):
     contactDict = {}
     db = shelve.open('storage.db', 'w')
-    contactDict = db['Users']
+    contactDict = db['Contact']
 
     contactDict.pop(email)  # action of removing the record
-    db['Users'] = contactDict  # put back to persistence
+    db['Contact'] = contactDict  # put back to persistence
     db.close()
 
     # after we delete successfully
@@ -645,10 +645,10 @@ def retrieveAnnouncements():
 def deleteDict():
     dict = {}
     # db = shelve.open("storage.db", "w")
-    # db["Users"] = dict
-    # # db["annCount"] = dict
-    # db.close()
-    # print("Cleared")
+    #     # db["Announcements"] = dict
+    #     # # db["annCount"] = dict
+    #     # db.close()
+    #     # print("Cleared")
 
 
 @app.route('/deleteAnnouncement/<int:id>', methods=['GET', 'POST'])

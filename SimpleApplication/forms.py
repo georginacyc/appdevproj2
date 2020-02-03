@@ -5,7 +5,7 @@ import datetime
 
 class CreateUserForm(Form):
     firstName = StringField("First Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Lily"})
-    lastName = StringField("last Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Doe"})
+    lastName = StringField("Last Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Doe"})
     DOB = DateField("Date of Birth", [validators.DataRequired()], format='%d-%m-%Y', render_kw={"placeholder": "DD-MM-YYYY"})
     gender = SelectField('Gender', [validators.DataRequired()],choices=[("", "Select"),('M', 'Male'), ('F', 'Female')],default='')
     email= EmailField('Email', [validators.InputRequired()])
@@ -14,7 +14,7 @@ class CreateUserForm(Form):
 
 class UpdateUserForm(Form):
     firstName = StringField("First Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Lily"})
-    lastName = StringField("last Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Doe"})
+    lastName = StringField("Last Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Doe"})
     gender = RadioField('Gender', [validators.DataRequired()],choices=[('M', 'Male'), ('F', 'Female')],default='')
 
 
@@ -51,6 +51,6 @@ class CreateAnnouncement(Form):
 
 class ContactUsForm(Form):
     fname = StringField("First Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Lily"})
-    lname = StringField("last Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Doe"})
+    lname = StringField("Last Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Doe"})
     email= EmailField('Email', [validators.InputRequired()])
-    text = StringField("Text",[validators.Length(min=1, max=500),validators.DataRequired()],render_kw={"placeholder": "Didn't receive order..."})
+    text = StringField("Inquiries",[validators.Length(min=1, max=500),validators.DataRequired()],render_kw={"placeholder": "Didn't receive order..."})
