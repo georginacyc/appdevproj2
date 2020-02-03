@@ -703,7 +703,7 @@ def catalogueHers():
     return render_template('catalogueHers.html', itemList=itemList, count=len(itemList))
 
 
-@app.route('/itemDetailsHis/<id>/', methods=['GET', 'POST'])
+@app.route('/catalogueItemDetailsHis/<id>/', methods=['GET', 'POST'])
 def itemDetailsHis(id):
     itemDict = {}
     db = shelve.open('storage.db', 'r')
@@ -713,9 +713,9 @@ def itemDetailsHis(id):
     itemList = []
     item = itemDict.get(id)
     itemList.append(item)
-    return render_template('itemDetailsHis.html', itemList=itemList, count=len(itemList))
+    return render_template('catalogueItemDetailsHis.html', itemList=itemList, count=len(itemList))
 
-@app.route('/itemDetailsHers/<id>/', methods=['GET', 'POST'])
+@app.route('/catalogueItemDetailsHers/<id>/', methods=['GET', 'POST'])
 def itemDetailsHers(id):
     itemDict = {}
     db = shelve.open('storage.db', 'r')
@@ -725,7 +725,7 @@ def itemDetailsHers(id):
     itemList = []
     item = itemDict.get(id)
     itemList.append(item)
-    return render_template('itemDetailsHers.html', itemList=itemList, count=len(itemList))
+    return render_template('catalogueItemDetailsHers.html', itemList=itemList, count=len(itemList))
 
 if __name__ == '__main__':
     app.run()
