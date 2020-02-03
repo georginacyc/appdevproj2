@@ -5,7 +5,7 @@ from Cart import Cart, addtocartForm
 from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement
+import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, ContactUs
 
 app = Flask(__name__)
 
@@ -26,18 +26,18 @@ def contactUs():
 
     if request.method == 'POST' and contactUsForm.validate():
         contactDict = {}
-        db = shelve.open('storage.db', 'w')
+        db = shelve.open('storage.db', 'c')
         try:
-            contactDict = db['contact']
+            contactDict = db['Contact']
         except:
             print("Error in retrieving Items from storage.db.")
-        item = Item.Item(contactUsForm.fname.data, contactUsForm.lname.data,
+        contact = ContactUs.Contact(contactUsForm.fname.data, contactUsForm.lname.data,
                          contactUsForm.email.data, contactUsForm.text.data)
-        contactDict[item.get_Contact()] = item
+        contactDict[contact.get_email()] = contact
         db['Contact'] = contactDict
         db.close()
-
-        return render_template('contactUS.html', form=contactUsForm)
+        return redirect(url_for('home'))
+    return render_template('contactUs.html', form=contactUsForm)
 
 
 @app.route('/retrieveContact')
@@ -59,10 +59,10 @@ def retrieveContact():
 def deleteContact(email):
     contactDict = {}
     db = shelve.open('storage.db', 'w')
-    contactDict = db['Users']
+    contactDict = db['Contact']
 
     contactDict.pop(email)  # action of removing the record
-    db['Users'] = contactDict  # put back to persistence
+    db['Contact'] = contactDict  # put back to persistence
     db.close()
 
     # after we delete successfully
@@ -445,7 +445,7 @@ def login():
 
     if request.method == 'POST' and loginForm.validate():
         email = loginForm.email.data
-        emailSplit = email.split("@")
+        email = email.split("@")
         domain = email[1]
 
         userDict = {}
@@ -463,11 +463,11 @@ def login():
                 print("Error in retrieving Staff from storage.db")
 
             for user, object in userDict.items():
-                if user == emailSplit[0]:
+                if user == email[0]:
                     field1 = True
                     if object.get_password() == loginForm.password.data:
                         field2 = True
-                        # logged[email[0]] = object.get_fname()
+                        logged[email[0]] = object.get_fname()
         else:
             print("User account.")
             try:
@@ -477,23 +477,24 @@ def login():
                 print("Error in retrieving User from storage.db")
             finally:
                 for user, object in userDict.items():
-                    if user == email:
+                    if user == email[0]:
                         field3 = True
-                        print("1")
-                        if object.get_pw() == loginForm.password.data:
-                            field4 = True
-                            print("2")
+                    if object.get_pw() == loginForm.password.data:
+                        field4 = True
                         # logged[email[0]] = object.get_firstname()
 
         if field1 == True and field2 == True:
+            db['Logged'] = logged
+            db.close()
             print("Successfully logged in!")
             return redirect(url_for('staffHome'))
         elif field3 == True and field4 == True:
+            db['Logged'] = logged
             db.close()
             return redirect(url_for('home'))
-        elif field1 == False and field2 == True or field3 == False and field4 == True:
-            print("Invalid Email.")
         elif field1 == True and field2 == False or field3 == True and field4 == False:
+            print("Invalid Email.")
+        elif field1 == False and field2 == True or field3 == False and field4 == True:
             print("Invalid Password.")
         else:
             print("Invalid credentials. Please try again.")
@@ -630,10 +631,10 @@ def retrieveAnnouncements():
 def deleteDict():
     dict = {}
     # db = shelve.open("storage.db", "w")
-    # db["Users"] = dict
-    # # db["annCount"] = dict
-    # db.close()
-    # print("Cleared")
+    #     # db["Announcements"] = dict
+    #     # # db["annCount"] = dict
+    #     # db.close()
+    #     # print("Cleared")
 
 
 @app.route('/deleteAnnouncement/<int:id>', methods=['GET', 'POST'])
