@@ -7,7 +7,7 @@ class CreateUserForm(Form):
     firstName = StringField("First Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Lily"})
     lastName = StringField("last Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Doe"})
     DOB = DateField("Date of Birth", [validators.DataRequired()], format='%d-%m-%Y', render_kw={"placeholder": "DD-MM-YYYY"})
-    gender = SelectField('Gender', [validators.DataRequired()],choices=[('', 'Select'), ('F', 'Female'), ('M', 'Male')],default='')
+    gender = SelectField('Gender', [validators.DataRequired()],choices=[("", "Select"),('M', 'Male'), ('F', 'Female')],default='')
     email= EmailField('Email', [validators.InputRequired()])
     pw = PasswordField("Password", [validators.InputRequired(), EqualTo('confirmpw', message="Passwords must match.")])
     confirmpw = PasswordField("Confirm Password")
@@ -15,7 +15,7 @@ class CreateUserForm(Form):
 class UpdateUserForm(Form):
     firstName = StringField("First Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Lily"})
     lastName = StringField("last Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Doe"})
-    gender = SelectField('Gender', [validators.DataRequired()],choices=[('', 'Select'), ('F', 'Female'), ('M', 'Male')],default='')
+    gender = RadioField('Gender', [validators.DataRequired()],choices=[('M', 'Male'), ('F', 'Female')],default='')
 
 
 
