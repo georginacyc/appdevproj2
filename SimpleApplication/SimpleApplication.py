@@ -3,7 +3,7 @@ from werkzeug.utils import secure_filename
 from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm, ShowDetailsForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, ContactUs, Cart
+import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random
 
 app = Flask(__name__)
 
@@ -18,36 +18,22 @@ def home():
     return render_template('home.html')
 
 
-@app.route('/cart', methods=['GET', 'POST'])
+@app.route('/createCart', methods=['GET', 'POST'])
 def cart():
-    global db
-    cartDict = {}
-    try:
-        db = shelve.open('storage.db', 'r')
-        cartDict = db['Cart']
-    except:
-        print("Error")
-    finally:
-        db.close()
+    if request.method == 'POST':
+        cartDict = {}
+        db = shelve.open('storage.db', 'c')
+        try:
+            cartDict = db['Cart']
+        except:
+            print("Error in retrieving Items from storage,db.")
 
-    cartList = []
-    for key in cartDict:
-        item = cartDict.get(key)
-        cartList.append(item)
-    return render_template('cart.html', cartList=cartList, count=len(cartList))
 
-@app.route('/deleteCart/<cart>/', methods=['GET', 'POST'])
-def deleteCart(cart):
-    cartDict = {}
-    db = shelve.open('storage.db', 'w')
-    cartDict = db['Cart']
 
-    cartDict.pop(cart)  # action of removing the record
-    db['Cart'] = cartDict  # put back to persistence
-    db.close()
 
-    # after we delete successfully
-    return redirect(url_for('cart'))
+@app.route('/checkout')
+def checkout():
+    return render_template('checkout.html')
 
 
 @app.route('/contactUs', methods=['GET', 'POST'])
@@ -56,18 +42,19 @@ def contactUs():
 
     if request.method == 'POST' and contactUsForm.validate():
         contactDict = {}
-        db = shelve.open('storage.db', 'c')
+        db = shelve.open('storage.db', 'w')
         try:
-            contactDict = db['Contact']
+            contactDict = db['contact']
         except:
             print("Error in retrieving Items from storage.db.")
-        contact = ContactUs.Contact(contactUsForm.fname.data, contactUsForm.lname.data,
+        item = Item.Item(contactUsForm.fname.data, contactUsForm.lname.data,
                          contactUsForm.email.data, contactUsForm.text.data)
-        contactDict[contact.get_email()] = contact
+        contactDict[item.get_Contact()] = item
         db['Contact'] = contactDict
         db.close()
-        return redirect(url_for('home'))
-    return render_template('contactUs.html', form=contactUsForm)
+
+        return render_template('contactUS.html', form=contactUsForm)
+
 
 
 @app.route('/retrieveContact')
@@ -84,15 +71,14 @@ def retrieveContact():
 
     return render_template('retrieveContact.html', contactList=contactList, count=len(contactList))
 
-
 @app.route('/deleteContact/<email>/', methods=['GET', 'POST'])
 def deleteContact(email):
     contactDict = {}
     db = shelve.open('storage.db', 'w')
-    contactDict = db['Contact']
+    contactDict = db['Users']
 
     contactDict.pop(email)  # action of removing the record
-    db['Contact'] = contactDict  # put back to persistence
+    db['Users'] = contactDict  # put back to persistence
     db.close()
 
     # after we delete successfully
@@ -312,6 +298,7 @@ def updateUser(email):
         user.set_firstName(updateUserForm.firstName.data)
         user.set_lastName(updateUserForm.lastName.data)
         user.set_gender(updateUserForm.gender.data)
+        user.set_email(updateUserForm.email.data)
         userDict[email] = user
         db['Users'] = userDict
 
@@ -327,6 +314,7 @@ def updateUser(email):
         updateUserForm.firstName.data = user.get_firstName()
         updateUserForm.lastName.data = user.get_lastName()
         updateUserForm.gender.data = user.get_gender()
+        updateUserForm.email.data= user.get_email()
 
 
         return render_template('updateUser.html', form=updateUserForm)
@@ -487,6 +475,48 @@ def updateStaff(eID):
         staff.set_hp(updateStaffForm.hp.data)
         staff.set_address(updateStaffForm.address.data)
         staff.set_type(updateStaffForm.type.data)
+
+        if updateStaffForm.resetpass.data == True:
+            passList = []
+            count = 0
+
+            lowercase = list(string.ascii_lowercase)
+            uppercase = list(string.ascii_uppercase)
+            digits = list(string.digits)
+            symbols = list(string.punctuation)
+
+            while count < 8:
+                x = random.randint(1, 4)
+                if x == 1:
+                    i = random.choice(lowercase)
+                    passList.append(i)
+                    count +=1
+
+                elif x == 2:
+                    i = random.choice(uppercase)
+                    passList.append(i)
+                    count +=1
+
+                elif x == 3:
+                    i = random.choice(digits)
+                    passList.append(i)
+                    count +=1
+
+                elif x == 4:
+                    i = random.choice(symbols)
+                    passList.append(i)
+                    count +=1
+
+                else:
+                    print("weird number")
+
+            newpass = "".join(passList)
+
+            staff.set_password(newpass)
+
+            print("Successfully resetted password. New password is", newpass)
+            session["newPass"] = newpass
+
 
         staffDict[staff.get_eID()] = staff
         db['Staff'] = staffDict
