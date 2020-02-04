@@ -490,6 +490,7 @@ def updateStaff(eID):
         updateStaffForm.lname.data = staff.get_lname()
         updateStaffForm.gender.data = staff.get_gender()
         updateStaffForm.hp.data = staff.get_hp()
+        updateStaffForm.dob.data = staff.get_dob()
         updateStaffForm.address.data = staff.get_address()
         updateStaffForm.type.data = staff.get_type()
 
