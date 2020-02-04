@@ -386,7 +386,7 @@ def createItem():
             print("Error in retrieving Items from storage.db.")
         item = Item.Item(createItemForm.itemSerial.data, createItemForm.itemName.data,
                          createItemForm.itemCategory.data, createItemForm.itemGender.data,
-                         createItemForm.itemCost.data, createItemForm.itemPrice.data)
+                         createItemForm.itemCost.data, createItemForm.itemPrice.data,createItemForm.itemDescription.data)
         itemsDict[item.get_itemSerial()] = item
         db['Items'] = itemsDict
         db['itemcount'] = Item.Item.countID
@@ -411,7 +411,7 @@ def updateItem(id):
         item.set_itemGender(updateItemForm.itemGender.data)
         item.set_itemCost(updateItemForm.itemCost.data)
         item.set_itemPrice(updateItemForm.itemPrice.data)
-
+        item.set_itemDescription(updateItemForm.itemDescription.data)
         db['Items'] = itemDict
         db.close()
         return redirect(url_for('itempage'))
@@ -428,6 +428,7 @@ def updateItem(id):
         updateItemForm.itemGender.data = item.get_itemGender()
         updateItemForm.itemCost.data = item.get_itemCost()
         updateItemForm.itemPrice.data = item.get_itemPrice()
+        updateItemForm.itemDescription.data = item.get_itemDescription()
         return render_template('updateItem.html', form=updateItemForm)
 
 
