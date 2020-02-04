@@ -588,8 +588,8 @@ def login():
                         print("1")
                         if object.get_pw() == loginForm.password.data:
                             field4 = True
-                            session["email"] = email
-                            session["name"] = object.get_firstName()
+                            session["useremail"] = email
+                            session["username"] = object.get_firstName()
 
         if field1 == True and field2 == True:
             print("Successfully logged in!")
@@ -614,6 +614,8 @@ def logout():
         session["email"] = dict
         session["name"] = dict
         session["type"] = dict
+        session["useremail"] = dict
+        session["username"] = dict
     except:
         print("No user logged in, or some other error lol")
 
