@@ -722,7 +722,7 @@ def retrieveNormalAnnouncements():
 def deleteDict():
     dict = {}
     # db = shelve.open("storage.db", "w")
-    # db["Staff"] = dict
+    # db["Items"] = dict
     # # db["staffCount"] = dict
     # db.close()
     # print("Cleared")

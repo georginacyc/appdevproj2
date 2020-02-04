@@ -1,4 +1,4 @@
-from wtforms import Form, StringField, RadioField, SelectField, TextAreaField, validators, DateField, PasswordField
+from wtforms import Form, StringField, RadioField, SelectField, TextAreaField, validators, DateField, PasswordField, BooleanField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import EqualTo
 import datetime
@@ -36,6 +36,7 @@ class UpdateStaffForm(Form):
     dob = DateField("Date of Birth", format='%d/%m/%Y', render_kw={'readonly': True})
     address = TextAreaField("Address")
     type = RadioField("Account Type", choices=[("Staff","Staff"), ("Admin", "Admin")], default="Staff")
+    resetpass = BooleanField("Reset Password")
 
 class ShowDetailsForm(Form):
     name = StringField("Name", [validators.Length(min=1, max=150)], render_kw={'readonly': True})
