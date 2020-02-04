@@ -4,7 +4,7 @@ from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, Up
 from Cart import Cart, addtocartForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart
+import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs
 
 app = Flask(__name__)
 

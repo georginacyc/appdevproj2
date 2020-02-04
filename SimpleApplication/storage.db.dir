@@ -9,3 +9,4 @@
 'StockOrder', (32256, 423)
 'stockordercount', (32768, 5)
 'Cart', (55808, 2567)
+'Contact', (58880, 227)

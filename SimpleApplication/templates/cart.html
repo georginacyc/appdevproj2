@@ -232,18 +232,18 @@ h1, .sub-heading {
 
           <div class="_column product-info">
             <h4 class="product-name">{{ cart.get_itemName() }}</h4>
-            <p class="product-desc">{{ cart.get_itemGender() }}</p>
+            <p class="product-desc">{{ cart.get_itemDescription()  }}</p>
             <div class="price product-single-price">${{ cart.get_itemPrice() }}</div>
           </div>
 
-          <div class="_column product-modifiers" data-product-price="{{price}}">
+          <div class="_column product-modifiers" data-product-price="">
             <div class="_grid">
               <button class="_btn _column product-subtract">&minus;</button>
               <div class="_column product-qty">1</div>
               <button class="_btn _column product-plus">&plus;</button>
             </div>
             <form action="{{ url_for('deleteCart', cart=cart.get_itemSerial())}}" method="POST">
-                    <input type="submit" value="Delete" class="btn btndanger" onclick>
+                    <input type="submit" value="Delete" class="product-remove" onclick>
                 </form>
             <div class="price product-total-price">${{ cart.get_itemPrice() }}</div>
           </div>
