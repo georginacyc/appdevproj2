@@ -12,7 +12,7 @@ class Item:
         self.__itemQuantity = 0
         self.__itemDescription = itemDescription
         self.set_itemStockStatus()
-
+ 
     #get attributes
     def get_itemCount(self):
         return self.__itemCount
