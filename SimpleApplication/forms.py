@@ -44,6 +44,9 @@ class ShowDetailsForm(Form):
     dob = DateField("Date of Birth", format='%d/%m/%Y', render_kw={'readonly': True})
     hp = StringField("Contact Number", render_kw={'readonly': True})
     address = TextAreaField("Address", render_kw={'readonly': True})
+    oldpass = PasswordField("Old Password", [validators.InputRequired()])
+    newpass =  PasswordField("New Password", [validators.InputRequired(), EqualTo('confirm', message="Passwords must match.")])
+    confirm = PasswordField("Confirm New Password")
 
 class LogInForm(Form):
     email = EmailField("Email", [validators.InputRequired()], render_kw={"placeholder": "johndoe@domain.com"})

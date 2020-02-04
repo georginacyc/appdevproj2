@@ -624,15 +624,26 @@ def staffAccountDetails():
     staffDict = {}
     db = shelve.open('storage.db', 'r')
     staffDict = db['Staff']
-    db.close()
-
     staff = staffDict.get(eID)
-    showDetailsForm.name.data = staff.get_fname() + " " + staff.get_lname()
-    showDetailsForm.type.data = staff.get_type()
-    showDetailsForm.gender.data = staff.get_gender()
-    showDetailsForm.dob.data = staff.get_dob()
-    showDetailsForm.hp.data = staff.get_hp()
-    showDetailsForm.address.data = staff.get_address()
+
+    if request.method == "POST" and showDetailsForm.validate():
+        if showDetailsForm.oldpass.data == staff.get_password():
+            print("Successfully changed password!")
+            staff.set_password(showDetailsForm.newpass.data)
+
+            staffDict[eID] = staff
+            db["Staff"] = staffDict
+            db.close()
+
+            return redirect(url_for('logout'))
+
+    else:
+        showDetailsForm.name.data = staff.get_fname() + " " + staff.get_lname()
+        showDetailsForm.type.data = staff.get_type()
+        showDetailsForm.gender.data = staff.get_gender()
+        showDetailsForm.dob.data = staff.get_dob()
+        showDetailsForm.hp.data = staff.get_hp()
+        showDetailsForm.address.data = staff.get_address()
 
     return render_template('staffAccountDetails.html', form=showDetailsForm)
 
