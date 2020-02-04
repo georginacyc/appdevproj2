@@ -3,7 +3,7 @@ from werkzeug.utils import secure_filename
 from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm, ShowDetailsForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement
+import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random
 
 app = Flask(__name__)
 
@@ -298,6 +298,7 @@ def updateUser(email):
         user.set_firstName(updateUserForm.firstName.data)
         user.set_lastName(updateUserForm.lastName.data)
         user.set_gender(updateUserForm.gender.data)
+        user.set_email(updateUserForm.email.data)
         userDict[email] = user
         db['Users'] = userDict
 
@@ -313,6 +314,7 @@ def updateUser(email):
         updateUserForm.firstName.data = user.get_firstName()
         updateUserForm.lastName.data = user.get_lastName()
         updateUserForm.gender.data = user.get_gender()
+        updateUserForm.email.data= user.get_email()
 
 
         return render_template('updateUser.html', form=updateUserForm)
@@ -473,6 +475,48 @@ def updateStaff(eID):
         staff.set_hp(updateStaffForm.hp.data)
         staff.set_address(updateStaffForm.address.data)
         staff.set_type(updateStaffForm.type.data)
+
+        if updateStaffForm.resetpass.data == True:
+            passList = []
+            count = 0
+
+            lowercase = list(string.ascii_lowercase)
+            uppercase = list(string.ascii_uppercase)
+            digits = list(string.digits)
+            symbols = list(string.punctuation)
+
+            while count < 8:
+                x = random.randint(1, 4)
+                if x == 1:
+                    i = random.choice(lowercase)
+                    passList.append(i)
+                    count +=1
+
+                elif x == 2:
+                    i = random.choice(uppercase)
+                    passList.append(i)
+                    count +=1
+
+                elif x == 3:
+                    i = random.choice(digits)
+                    passList.append(i)
+                    count +=1
+
+                elif x == 4:
+                    i = random.choice(symbols)
+                    passList.append(i)
+                    count +=1
+
+                else:
+                    print("weird number")
+
+            newpass = "".join(passList)
+
+            staff.set_password(newpass)
+
+            print("Successfully resetted password. New password is", newpass)
+            session["newPass"] = newpass
+
 
         staffDict[staff.get_eID()] = staff
         db['Staff'] = staffDict
