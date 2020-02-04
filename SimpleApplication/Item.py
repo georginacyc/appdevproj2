@@ -1,6 +1,6 @@
 class Item:
     countID = 0
-    def __init__(self,itemSerial,itemName,itemCategory,itemGender,itemCost,itemPrice,itemDescription):
+    def __init__(self,itemSerial,itemName,itemCategory,itemGender,itemCost,itemPrice,itemDescription,itemCartQuantity):
         self.__class__.countID +=1
         self.__itemCount = self.__class__.countID
         self.__itemName = itemName
@@ -11,6 +11,7 @@ class Item:
         self.__itemPrice = itemPrice
         self.__itemQuantity = 0
         self.__itemDescription = itemDescription
+        self.__itemCartQuantity = itemCartQuantity
         self.set_itemStockStatus()
  
     #get attributes
@@ -34,6 +35,8 @@ class Item:
         return self.__itemStockStatus
     def get_itemDescription(self):
         return self.__itemDescription
+    def get_itemCartQuantity(self):
+        return self.__itemCartQuantity
 
     #set attributes
 
@@ -53,6 +56,8 @@ class Item:
         self.__itemQuantity += itemQuantity
     def set_itemDescription(self,itemDescription):
         self.__itemDescription = itemDescription
+    def set_itemCartQuantity(self,itemCartQuantity):
+        self.__itemCartQuantity = itemCartQuantity
 
     def set_itemStockStatus(self):
         quantity = self.__itemQuantity

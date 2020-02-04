@@ -95,7 +95,7 @@ h1, .sub-heading {
  * @extends: _column;
  */
 .product-info {
-  width: 70.832119%;
+  width: 85%;
   padding: .5rem;
 
 }
@@ -112,6 +112,9 @@ h1, .sub-heading {
 .product-single-price {
   margin-top: -1rem;
   font-size: 2.4em;
+  overflow: hidden;
+  width: 140px;
+  float:right;
 }
 
 /**
@@ -156,6 +159,7 @@ h1, .sub-heading {
   color: #95a5a6;
   font-size: 1.25em;
   padding: .5rem;
+
 }
 .shopping-cart--list-item:hover .product-total-price {
   background-color: #3498db;
@@ -174,6 +178,7 @@ h1, .sub-heading {
   width: 19.984013%;
   padding: .5rem;
   line-height: 1.2;
+
 }
 .cart-totals ._column:not(:last-of-type) {
   border-right: 1px solid #bdc3c7;
@@ -188,9 +193,11 @@ h1, .sub-heading {
 .cart-totals ._column:hover .cart-totals-value,
 .cart-totals ._column:hover .cart-totals-key {
   color: #333;
+  font: 300 1.25em/1.4 "Lato", sans-serif;
 }
 .cart-totals-value {
   font-size: 2em;
+  font: 300 2em/1.4 "Lato", sans-serif;
 }
 ._column.checkout {
   text-align: right;
