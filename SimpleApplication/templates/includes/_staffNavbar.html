@@ -29,10 +29,10 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 {% if session["type"] == "Admin" %}
-                <a class="dropdown-item" href="/staffAccounts">Manage Staff Accounts</a>
-                <a class="dropdown-item" href="/retrieveAnnouncements">Manage Announcements</a>
                 <a class="dropdown-item" href="/createStaff">New Staff</a>
                 <a class="dropdown-item" href="/createAnnouncement">Create Announcement</a>
+                <a class="dropdown-item" href="/staffAccounts">Manage Staff Accounts</a>
+                <a class="dropdown-item" href="/retrieveAnnouncements">Manage Announcements</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="/">Log Out</a>
                 {% else %}
