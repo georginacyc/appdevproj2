@@ -3,7 +3,7 @@
 {% block content %}
 {% from "includes/_formhelper.html" import render_field %}
 <style>
-    /* picture with button guy  */
+
 body{
   margin:0;
 }
@@ -16,6 +16,15 @@ body{
  width: 1700px;
  padding: 0 ;
 }
+.banner{
+  background-color: #3f3f3f;
+  padding-left: 45%;
+  color:white;
+  text-shadow: 2px;
+
+
+}
+
 
 /* buttons */
 .btn-group button {
@@ -81,7 +90,7 @@ display: block;
 
 .carousel-caption {
 position: absolute;
-top: 50%;
+top: 60%;
 transform: translateY(-50%);
 }
 .carousel-caption h1{
@@ -133,10 +142,15 @@ margin-bottom: 1rem;
  text-align: center;
  font-size: 2.5em;
 }
-
 </style>
 <html>
 <body>
+<div class="banner">
+<b><a>SALE!!! FINAL CLEARANCE</a>
+<br><a>ALL NEW COLLECTIONS</a>
+<br><a>  UP TO 40% OFF</a></b>
+</div>
+<!-- Container -->
 
 <div class= "container">
   <img src="https://www.brazenmodels.com.au/wp-content/uploads/2019/03/brazen-models-3.jpg" class="image1">
@@ -145,8 +159,8 @@ margin-bottom: 1rem;
  <h3>WHERE TRUE FASHION BEGINS</h3>
  <h4>Shop now at MONOQLO</h4>
  <div class="btn-group">
-  <button>SHOP HIS</button>
-  <button>SHOP HERS</button>
+     <a href="/catalogueHis"><button>SHOP HIS</button></a>
+     <a href="/catalogueHers"><button>SHOP HERS</button></a>
 </div>
 </div>
   <footer>
@@ -194,4 +208,5 @@ margin-bottom: 1rem;
 
 </body>
 </html>
+
 {% endblock %}

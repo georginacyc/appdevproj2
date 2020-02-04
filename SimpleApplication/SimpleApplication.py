@@ -817,12 +817,18 @@ def catalogueHers():
     itemDict = db['Items']
     db.close()
 
-    itemList = []
+    itemList=[]
+    itemTopsList = []
+    itemBotsList = []
     for key in itemDict:
         if key[9] == "F":
             item = itemDict.get(key)
             itemList.append(item)
-    return render_template('catalogueHers.html', itemList=itemList, count=len(itemList))
+            if key[8] == "T":
+                itemTopsList.append(item)
+            elif key[8] == "B":
+                itemBotsList.append(item)
+    return render_template('catalogueHers.html', itemList=itemList, itemTopsList=itemTopsList, itemBotsList=itemBotsList, count=len(itemList))
 
 
 @app.route('/catalogueItemDetailsHis/<id>/', methods=['GET', 'POST'])

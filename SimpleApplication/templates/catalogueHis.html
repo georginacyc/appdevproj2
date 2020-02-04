@@ -21,10 +21,11 @@
 }
 
 .card {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* this adds the "card" effect */
-  padding: 16px;
-  text-align: center;
-  background-color: #f1f1f1;
+    height:100px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* this adds the "card" effect */
+    padding: 16px;
+    text-align: center;
+    background-color: #f1f1f1;
 }
 
 .card:hover {
@@ -52,9 +53,8 @@
     {% for item in itemList %}
       <div class="column">
         <div class="card">
-            <h4>{{ item.get_itemName() }}</h4>
+            <h4>{{item.get_itemName()}}</h4>
             <p>${{item.get_itemPrice()}}</p>
-            <input type="submit" value="Add to cart" class="btn btn-primary" onclick="return confirm('Add this item to Cart?')">
             <br>
             <a href="/catalogueItemDetailsHis/{{item.get_itemSerial()}}" class="btn btn-info">View Item Details</a>
         </div>

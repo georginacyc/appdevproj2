@@ -1,40 +1,20 @@
 {% extends "base.html" %}
 {% block title %}Item{% endblock %}
 {% block content %}
-{% from "includes/_formHelper.html" import render_field %}
-<div>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                 <th>Item Photo</th>
-                 <th>Item Name</th>
-                 <th>Item Serial</th>
-                 <th>Item Category</th>
-                 <th>Item Gender</th>
-                 <th>Item Price</th>
-                 <th></th>
-                 <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in itemList %}
-                <tr>
-                     <td>Photo goes here</td>
-                     <td>{{ item.get_itemName() }}</td>
-                     <td>{{ item.get_itemSerial() }}</td>
-                     <td>{{ item.get_itemCategory() }}</td>
-                     <td>{{ item.get_itemGender() }}</td>
-                     <td>${{ item.get_itemPrice() }}</td>
-                     <td>
-                         <form method="POST" action="">
-                            <input type="submit"  value="Add to Cart" class="btn btn-success" onclick="return confirm('Add this item to cart?')">
-                         </form>
-                     </td>
-
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+<body>
+{% for item in itemList %}
+<h2>{{ item.get_itemName() }}</h2>
+<p>Serial No. {{ item.get_itemSerial() }}</p>
+<br>
+<h3>${{item.get_itemPrice()}}</h3>
+<br>
+<p>Availability: {{item.get_itemStockStatus()}}</p>
+<br>
+<form method="POST" action="">
+    <input type="submit" value="Add to Cart" class="btn btn-success" onclick="return confirm('Add this item to cart?')">
+</form>
+<br><br>
+<a href="/catalogueHis" class="btn btn-info">Back</a>
+{% endfor %}
+</body>
 {% endblock %}
-
