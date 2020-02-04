@@ -298,6 +298,7 @@ def updateUser(email):
         user.set_firstName(updateUserForm.firstName.data)
         user.set_lastName(updateUserForm.lastName.data)
         user.set_gender(updateUserForm.gender.data)
+        user.set_email(updateUserForm.email.data)
         userDict[email] = user
         db['Users'] = userDict
 
@@ -313,6 +314,7 @@ def updateUser(email):
         updateUserForm.firstName.data = user.get_firstName()
         updateUserForm.lastName.data = user.get_lastName()
         updateUserForm.gender.data = user.get_gender()
+        updateUserForm.email.data= user.get_email()
 
 
         return render_template('updateUser.html', form=updateUserForm)
