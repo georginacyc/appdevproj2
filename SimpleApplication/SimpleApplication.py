@@ -5,7 +5,7 @@ from Cart import Cart, addtocartForm
 from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, ContactUs
+import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, ContactUs, Cart
 
 app = Flask(__name__)
 
@@ -16,8 +16,35 @@ def home():
 
 
 @app.route('/cart', methods=['GET', 'POST'])
-def checkout():
-    return render_template('checkout.html')
+def cart():
+    global db
+    cartDict = {}
+    try:
+        db = shelve.open('storage.db', 'r')
+        cartDict = db['Cart']
+    except:
+        print("Error")
+    finally:
+        db.close()
+
+    cartList = []
+    for key in cartDict:
+        item = cartDict.get(key)
+        cartList.append(item)
+    return render_template('cart.html', cartList=cartList, count=len(cartList))
+
+@app.route('/deleteCart/<cart>/', methods=['GET', 'POST'])
+def deleteCart(cart):
+    cartDict = {}
+    db = shelve.open('storage.db', 'w')
+    cartDict = db['Cart']
+
+    cartDict.pop(cart)  # action of removing the record
+    db['Cart'] = cartDict  # put back to persistence
+    db.close()
+
+    # after we delete successfully
+    return redirect(url_for('cart'))
 
 
 @app.route('/contactUs', methods=['GET', 'POST'])
@@ -716,6 +743,7 @@ def itemDetails(id):
             print("Error in retrieving cart from storage db.")
         cartDict[serial] = item
         db['Cart'] = cartDict
+        print(cartDict.keys())
         db.close()
 
     return render_template('catalogueItemDetailsHers.html', itemList=itemList, count=len(itemList))
