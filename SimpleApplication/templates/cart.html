@@ -222,26 +222,26 @@ h1, .sub-heading {
 
   <section class="shopping-cart">
     <ol class="ui-list shopping-cart--list" id="shopping-cart--list">
-{% for item in itemList %}
+{% for cart in cartList %}
         <li class="_grid shopping-cart--list-item">
-          <div class="_column product-image">
-            <img class="product-image--img" src="data:image/jpeg;base64,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" alt="Item image">
-          </div>
+
 
           <div class="_column product-info">
-            <h4 class="product-name">{{ item.get_itemName() }}</h4>
-            <p class="product-desc">{{ item.get_itemGender() }}</p>
-            <div class="price product-single-price">${{ item.get_itemPrice() }}</div>
+            <h4 class="product-name">{{ cart.get_itemName() }}</h4>
+            <p class="product-desc">{{ cart.get_itemGender() }}</p>
+            <div class="price product-single-price">${{ cart.get_itemPrice() }}</div>
           </div>
 
           <div class="_column product-modifiers" data-product-price="{{price}}">
             <div class="_grid">
               <button class="_btn _column product-subtract">&minus;</button>
-              <div class="_column product-qty">0</div>
+              <div class="_column product-qty">1</div>
               <button class="_btn _column product-plus">&plus;</button>
             </div>
-            <button class="_btn entypo-trash product-remove">Remove</button>
-            <div class="price product-total-price">$0.00</div>
+            <form action="{{ url_for('deleteCart', cart=cart.get_itemSerial())}}" method="POST">
+                    <input type="submit" value="Delete" class="btn btndanger" onclick>
+                </form>
+            <div class="price product-total-price">${{ cart.get_itemPrice() }}</div>
           </div>
         </li>
         {% endfor %}
@@ -251,7 +251,7 @@ h1, .sub-heading {
     <footer class="_grid cart-totals">
       <div class="_column subtotal" id="subtotalCtr">
         <div class="cart-totals-key">Subtotal</div>
-        <div class="cart-totals-value">$0.00</div>
+        <div class="cart-totals-value"></div>
       </div>
       <div class="_column shipping" id="shippingCtr">
         <div class="cart-totals-key">Shipping</div>
