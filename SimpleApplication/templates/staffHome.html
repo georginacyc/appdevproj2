@@ -1,6 +1,28 @@
 {% extends "staffBase.html" %}
-{% block title %}monoqlo - Staff Home{% endblock %}
+{% block title %}monoqlo - staff home{% endblock %}
 {% block content %}
-<h1 class="display-4">Hello</h1>
-<p>welcome to monoqlo - staff!</p>
+<h1 class="display-4">welcome back, {{ session["name"] }}!</h1>
+
+<br>
+<br>
+
+<div id="homeAnnounce">
+    <p class="display-4">Latest Announcements</p>
+    <table class="table">
+        <tbody>
+         {% for ann in annList %}
+            <tr>
+                <td id="annDate">{{ ann.get_date() }}</td>
+                <td id="annTitle">{{ ann.get_title() }}</td>
+                <td id="annDesc">{{ ann.get_description() }}</td>
+            </tr>
+         {% endfor %}
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 {% endblock %}

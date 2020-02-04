@@ -1,13 +1,16 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.utils import secure_filename
-
-from Cart import Cart, addtocartForm
-from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm
+from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm, ShowDetailsForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, ContactUs, Cart
 
 app = Flask(__name__)
+
+
+app.config.from_mapping(
+    SECRET_KEY='yeet'
+)
 
 
 @app.route('/')
@@ -98,12 +101,54 @@ def deleteContact(email):
 
 @app.route('/staffHome')
 def staffHome():
-    return render_template('staffHome.html')
+    annDict = {}
+
+    try:
+        db = shelve.open("storage.db", "r")
+        annDict = db["Announcements"]
+    except:
+        print("db error")
+    else:
+        db.close()
+
+    #  loop through dict to save in list
+    annList = []
+    keyList = []
+    count = 0
+    for key in annDict:
+        if count < 5:
+            announcement = annDict.get(key)
+            annList.append(announcement)
+            keyList.append(key)
+        else:
+            break
+
+        count += 1
+
+    return render_template('staffHome.html', annList=annList, keyList=keyList)
+
+
+@app.route('/readMoreAnn/<key>')
+def readMoreAnn(key):
+    readMoreAnn = ReadMoreAnnouncement(request.form)
+
+    annDict = {}
+    db = shelve.open('storage.db', 'r')
+    annDict = db['Announcements']
+    db.close()
+    announcement = annDict.get(key)
+    readMoreAnn.date.data = announcement.get_date()
+    readMoreAnn.title.data = announcement.get_title()
+    readMoreAnn.description.data = announcement.get_description()
+
+    return render_template('staffHome.html', form=readMoreAnn)
 
 
 @app.route('/inventory')
 def inventory():
     return render_template('viewStock.html')
+
+
 
 
 @app.route('/viewStockOrders')
@@ -253,8 +298,10 @@ def retrieveUsers():
 
 @app.route('/updateUser/<email>/', methods=['GET', 'POST'])
 def updateUser(email):
-    updateUserForm = CreateUserForm(request.form)
+    updateUserForm = UpdateUserForm(request.form)
+
     if request.method == 'POST' and updateUserForm.validate():
+
         userDict = {}
         db = shelve.open('storage.db', 'w')
         try:
@@ -280,6 +327,7 @@ def updateUser(email):
         updateUserForm.firstName.data = user.get_firstName()
         updateUserForm.lastName.data = user.get_lastName()
         updateUserForm.gender.data = user.get_gender()
+
 
         return render_template('updateUser.html', form=updateUserForm)
 
@@ -401,9 +449,9 @@ def createStaff():
 
     if request.method == 'POST' and createStaffForm.validate():
         staffDict = {}
+        db = shelve.open('storage.db', 'c')
         try:
-            db = shelve.open('storage.db', 'c')
-            Staff.Staff.count = db['staffCount']
+            Staff.Staff.count = int(db['staffCount'])
             staffDict = db['Staff']
         except:
             print("Error in retrieving Staff from storage.db.")
@@ -456,6 +504,7 @@ def updateStaff(eID):
         updateStaffForm.lname.data = staff.get_lname()
         updateStaffForm.gender.data = staff.get_gender()
         updateStaffForm.hp.data = staff.get_hp()
+        updateStaffForm.dob.data = staff.get_dob()
         updateStaffForm.address.data = staff.get_address()
         updateStaffForm.type.data = staff.get_type()
 
@@ -472,11 +521,10 @@ def login():
 
     if request.method == 'POST' and loginForm.validate():
         email = loginForm.email.data
-        email = email.split("@")
-        domain = email[1]
+        emailSplit = email.split("@")
+        domain = emailSplit[1]
 
         userDict = {}
-        logged = {}
         try:
             db = shelve.open('storage.db', 'c')
         except:
@@ -485,43 +533,43 @@ def login():
         if domain == "monoqlo.com":
             try:
                 userDict = db['Staff']
-                db['Logged'] = {}
             except:
                 print("Error in retrieving Staff from storage.db")
 
             for user, object in userDict.items():
-                if user == email[0]:
+                if user == emailSplit[0]:
                     field1 = True
                     if object.get_password() == loginForm.password.data:
                         field2 = True
-                        logged[email[0]] = object.get_fname()
+                        session["email"] = email
+                        session["name"] = object.get_fname()
+                        session["type"] = object.get_type()
+
         else:
             print("User account.")
             try:
                 userDict = db['Users']
-
             except:
                 print("Error in retrieving User from storage.db")
             finally:
                 for user, object in userDict.items():
-                    if user == email[0]:
+                    if user == email:
                         field3 = True
-                    if object.get_pw() == loginForm.password.data:
-                        field4 = True
-                        # logged[email[0]] = object.get_firstname()
+                        print("1")
+                        if object.get_pw() == loginForm.password.data:
+                            field4 = True
+                            session["email"] = email
+                            session["name"] = object.get_firstName()
 
         if field1 == True and field2 == True:
-            db['Logged'] = logged
-            db.close()
             print("Successfully logged in!")
             return redirect(url_for('staffHome'))
         elif field3 == True and field4 == True:
-            db['Logged'] = logged
             db.close()
             return redirect(url_for('home'))
-        elif field1 == True and field2 == False or field3 == True and field4 == False:
-            print("Invalid Email.")
         elif field1 == False and field2 == True or field3 == False and field4 == True:
+            print("Invalid Email.")
+        elif field1 == True and field2 == False or field3 == True and field4 == False:
             print("Invalid Password.")
         else:
             print("Invalid credentials. Please try again.")
@@ -529,40 +577,13 @@ def login():
     return render_template('login.html', form=loginForm)
 
 
-@app.before_request
-def accountCheck():
-    user = {}
-    staffs = {}
-
-    admin = False
-
-    try:
-        db = shelve.open('storage.db', 'r')
-        user = db['Logged']
-        staffs = db['Staff']
-        db.close()
-    except:
-        print("Error in retrieving storage.db")
-
-    if user != {}:
-        staff = list(user.keys())[0]
-        for id, name in user.items():
-            for key, object in staffs.items():
-                if id == key:
-                    if object.get_type == "Admin":
-                        pass
-
-    else:
-        print("No user signed in")
-
-
 @app.route('/logout')
 def logout():
     dict = {}
     try:
-        db = shelve.open('storage.db', 'r')
-        db['Logged'] = dict
-        db.close()
+        session["email"] = dict
+        session["name"] = dict
+        session["type"] = dict
     except:
         print("No user logged in, or some other error lol")
 
@@ -605,6 +626,42 @@ def deleteStaff(eID):
     return redirect(url_for('staffAccounts'))
 
 
+@app.route('/staffAccountDetails', methods=['GET', 'POST'])
+def staffAccountDetails():
+    showDetailsForm = ShowDetailsForm(request.form)
+
+    email = session["email"]
+
+    split = email.split("@")
+    eID = split[0]
+
+    staffDict = {}
+    db = shelve.open('storage.db', 'r')
+    staffDict = db['Staff']
+    staff = staffDict.get(eID)
+
+    if request.method == "POST" and showDetailsForm.validate():
+        if showDetailsForm.oldpass.data == staff.get_password():
+            print("Successfully changed password!")
+            staff.set_password(showDetailsForm.newpass.data)
+
+            staffDict[eID] = staff
+            db["Staff"] = staffDict
+            db.close()
+
+            return redirect(url_for('logout'))
+
+    else:
+        showDetailsForm.name.data = staff.get_fname() + " " + staff.get_lname()
+        showDetailsForm.type.data = staff.get_type()
+        showDetailsForm.gender.data = staff.get_gender()
+        showDetailsForm.dob.data = staff.get_dob()
+        showDetailsForm.hp.data = staff.get_hp()
+        showDetailsForm.address.data = staff.get_address()
+
+    return render_template('staffAccountDetails.html', form=showDetailsForm)
+
+
 @app.route('/createAnnouncement', methods=['GET', 'POST'])
 def createAnnouncement():
     createAnnouncementForm = CreateAnnouncement(request.form)
@@ -614,15 +671,15 @@ def createAnnouncement():
         db = shelve.open('storage.db', 'c')
         try:
             annDict = db['Announcements']
-            count = db['annCount']
+            Announcement.Announcement.count = int(db["annCount"])
         except:
             print("Error in retrieving Staff from storage.db.")
-        if count == None:
-            Announcement.Announcement.count = 0
+
         announcement = Announcement.Announcement(createAnnouncementForm.date.data, createAnnouncementForm.title.data)
         announcement.set_description(createAnnouncementForm.description.data)
 
         annDict[Announcement.Announcement.count] = announcement
+
         sort = dict(sorted(annDict.items(), key=lambda x: x[0], reverse=True))
         print(sort.keys())
 
@@ -654,14 +711,35 @@ def retrieveAnnouncements():
     return render_template("retrieveAnnouncements.html", annList=annList)
 
 
+@app.route('/retrieveNormalAnnouncements')
+def retrieveNormalAnnouncements():
+    annDict = {}
+
+    try:
+        db = shelve.open("storage.db", "r")
+        annDict = db["Announcements"]
+    except:
+        print("db error")
+    else:
+        db.close()
+
+    #  loop through dict to save in list
+    annList = []
+    for key in annDict:
+        announcement = annDict.get(key)
+        annList.append(announcement)
+
+    return render_template("retrieveNormalAnnouncements.html", annList=annList)
+
+
 @app.before_request
 def deleteDict():
     dict = {}
     # db = shelve.open("storage.db", "w")
-    #     # db["Announcements"] = dict
-    #     # # db["annCount"] = dict
-    #     # db.close()
-    #     # print("Cleared")
+    # db["itemcount"] = dict
+    # # db["staffCount"] = dict
+    # db.close()
+    # print("Cleared")
 
 
 @app.route('/deleteAnnouncement/<int:id>', methods=['GET', 'POST'])
@@ -702,7 +780,6 @@ def catalogueHis():
             itemList.append(item)
     return render_template('catalogueHis.html', itemList=itemList, count=len(itemList))
 
-
 @app.route('/catalogueHers')
 def catalogueHers():
     itemDict = {}
@@ -718,10 +795,8 @@ def catalogueHers():
     return render_template('catalogueHers.html', itemList=itemList, count=len(itemList))
 
 
-
-
-@app.route('/catalogueItemDetailsHers/<id>/', methods=['GET', 'POST'])
-def itemDetails(id):
+@app.route('/catalogueItemDetailsHis/<id>/', methods=['GET', 'POST'])
+def itemDetailsHis(id):
     itemDict = {}
     db = shelve.open('storage.db', 'r')
     itemDict = db['Items']
@@ -730,24 +805,19 @@ def itemDetails(id):
     itemList = []
     item = itemDict.get(id)
     itemList.append(item)
+    return render_template('catalogueItemDetailsHis.html', itemList=itemList, count=len(itemList))
 
-    serial=item.get_itemSerial()
-    addtocart = addtocartForm(request.form)
-    if request.method == 'POST' and addtocart.validate():
-        cartDict = {}
-        db = shelve.open('storage.db', 'c')
-        try:
-            cartDict = db['Cart']
-            print("created")
-        except:
-            print("Error in retrieving cart from storage db.")
-        cartDict[serial] = item
-        db['Cart'] = cartDict
-        print(cartDict.keys())
-        db.close()
+@app.route('/catalogueItemDetailsHers/<id>/', methods=['GET', 'POST'])
+def itemDetailsHers(id):
+    itemDict = {}
+    db = shelve.open('storage.db', 'r')
+    itemDict = db['Items']
+    db.close()
 
+    itemList = []
+    item = itemDict.get(id)
+    itemList.append(item)
     return render_template('catalogueItemDetailsHers.html', itemList=itemList, count=len(itemList))
-
 
 if __name__ == '__main__':
     app.run()

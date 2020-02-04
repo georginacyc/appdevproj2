@@ -1,4 +1,4 @@
-from wtforms import Form, StringField, RadioField, SelectField, TextAreaField, validators, DateField, PasswordField
+from wtforms import Form, StringField, RadioField, SelectField, TextAreaField, validators, DateField, PasswordField, BooleanField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import EqualTo
 import datetime
@@ -17,9 +17,6 @@ class UpdateUserForm(Form):
     lastName = StringField("Last Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Doe"})
     gender = SelectField('Gender', [validators.DataRequired()],choices=[('M', 'Male'), ('F', 'Female')],default='')
 
-
-
-
 class CreateStaffForm(Form):
     fname = StringField("First Name", [validators.InputRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "John"})
     lname = StringField("Last Name", [validators.InputRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "Doe"})
@@ -34,10 +31,23 @@ class CreateStaffForm(Form):
 class UpdateStaffForm(Form):
     fname = StringField("First Name", [validators.Length(min=1, max=150)], render_kw={"placeholder": "John"})
     lname = StringField("Last Name", [validators.Length(min=1, max=150)], render_kw={"placeholder": "Doe"})
-    gender = SelectField("Gender", choices=[("", "Select"), ("F", "Female"), ("M", "Male")], default = "")
+    gender = SelectField("Gender", choices=[("", "Select"), ("F", "Female"), ("M", "Male")], default = "", render_kw={'readonly': True})
     hp = StringField("Contact Number", render_kw={"placeholder": "65500999"})
+    dob = DateField("Date of Birth", format='%d/%m/%Y', render_kw={'readonly': True})
     address = TextAreaField("Address")
     type = RadioField("Account Type", choices=[("Staff","Staff"), ("Admin", "Admin")], default="Staff")
+    resetpass = BooleanField("Reset Password")
+
+class ShowDetailsForm(Form):
+    name = StringField("Name", [validators.Length(min=1, max=150)], render_kw={'readonly': True})
+    type = StringField("Account Type", render_kw={'readonly': True})
+    gender = StringField("Gender", render_kw={'readonly': True})
+    dob = DateField("Date of Birth", format='%d/%m/%Y', render_kw={'readonly': True})
+    hp = StringField("Contact Number", render_kw={'readonly': True})
+    address = TextAreaField("Address", render_kw={'readonly': True})
+    oldpass = PasswordField("Old Password", [validators.InputRequired()])
+    newpass =  PasswordField("New Password", [validators.InputRequired(), EqualTo('confirm', message="Passwords must match.")])
+    confirm = PasswordField("Confirm New Password")
 
 class LogInForm(Form):
     email = EmailField("Email", [validators.InputRequired()], render_kw={"placeholder": "johndoe@domain.com"})
@@ -47,7 +57,6 @@ class CreateAnnouncement(Form):
     date = DateField("Date", [validators.DataRequired()], format='%d/%m/%Y', default=datetime.date.today, render_kw={'readonly': True})
     title = StringField("Title", [validators.DataRequired(), validators.Length(min=1, max=150)])
     description = TextAreaField("Description (Optional)", default="")
-
 
 class ContactUsForm(Form):
     fname = StringField("First Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Lily"})
