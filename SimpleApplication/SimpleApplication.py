@@ -630,7 +630,7 @@ def login():
 
 @app.route('/logout')
 def logout():
-    dict = {}
+    dict = ""
     try:
         session["email"] = dict
         session["name"] = dict
