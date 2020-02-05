@@ -630,13 +630,13 @@ def login():
 
 @app.route('/logout')
 def logout():
-    dict = ""
     try:
-        session["email"] = dict
-        session["name"] = dict
-        session["type"] = dict
-        session["useremail"] = dict
-        session["username"] = dict
+        session["email"] = ""
+        session["name"] = ""
+        session["type"] = ""
+        session["useremail"] = ""
+        session["username"] = ""
+        print("logged out")
     except:
         print("No user logged in, or some other error lol")
 
