@@ -6,32 +6,39 @@
 <div>
     <table class="table table-striped">
         <thead>
-            <tr>
-                <th>S/N</th>
-                <th>Order Number</th>
-                <th>Order Date</th>
-                <th>Item Ordered</th>
-                <th>Ordered Quantity</th>
-                <th>Shipment Date</th>
-                <th>Shipment Status</th>
-                <th>Received Date</th>
-                <th>Shipment Status</th>
-            </tr>
+        <tr>
+            <th>S/N</th>
+            <th>Order Number</th>
+            <th>Order Date</th>
+            <th>Item Ordered</th>
+            <th>Ordered Quantity</th>
+            <th>Shipment Date</th>
+            <th>Shipment Status</th>
+            <th>Received Date</th>
+            <th>Shipment Status</th>
+        </tr>
         </thead>
         <tbody>
-            {% for stockorder in stockorderList %}
-                <tr>
-                     <td>{{ stockorder.get_stockorderCount() }}</td>
-                     <td>{{ stockorder.get_stockorderNumber() }}</td>
-                     <td>{{ stockorder.get_stockorderDate() }}</td>
-                     <td>{{ stockorder.get_stockItemSerial() }}</td>
-                     <td>{{ stockorder.get_stockorderQuantity() }}</td>
-                     <td>{{ stockorder.get_shipmentDate() }}</td>
-                     <td>{{ stockorder.get_shipmentStatus() }}</td>
-                     <td>{{ stockorder.get_receivedDate() }}</td>
-                     <td><a href="/updateStockOrder/{{stockorder.get_stockorderNumber()}}" class="btn btn-info"  >Receive Order</a></td>
-                </tr>
-            {% endfor %}
+        {% for stockorder in stockorderList %}
+        <tr>
+            <td>{{ stockorder.get_stockorderCount() }}</td>
+            <td>{{ stockorder.get_stockorderNumber() }}</td>
+            <td>{{ stockorder.get_stockorderDate() }}</td>
+            <td>{{ stockorder.get_stockItemSerial() }}</td>
+            <td>{{ stockorder.get_stockorderQuantity() }}</td>
+            <td>{{ stockorder.get_shipmentDate() }}</td>
+            <td>{{ stockorder.get_shipmentStatus() }}</td>
+            <td>{{ stockorder.get_receivedDate() }}</td>
+            {% if stockorder.get_shipmentStatus() == "Received" %}
+            <td>
+                Received
+            </td>
+            {% else %}
+            <td><a href="/updateStockOrder/{{stockorder.get_stockorderNumber()}}" class="btn btn-info">Receive Order</a>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
         </tbody>
     </table>
 </div>

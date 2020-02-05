@@ -1,6 +1,6 @@
 class Item:
     countID = 0
-    def __init__(self,itemSerial,itemName,itemCategory,itemGender,itemCost,itemPrice,itemDescription,):
+    def __init__(self,itemSerial,itemName,itemCategory,itemGender,itemCost,itemPrice,itemDescription):
         self.__class__.countID +=1
         self.__itemCount = self.__class__.countID
         self.__itemName = itemName
