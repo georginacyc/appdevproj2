@@ -4,9 +4,11 @@
 <style>
 [class*="entypo-"]:before { font-family: 'entypo', sans-serif; }
 body {
-  background-color: #ecf0f1;
-  font: 300 1.25em/1.4 "Lato", sans-serif;
+  background-color: white;
   color: #686868;
+}
+     {
+     font: 300 1.25em/1.4 "Lato", sans-serif;
 }
 h1, h2, h3, h4, h5, h6 { font-weight: 400; }
 h1, .sub-heading {
@@ -93,8 +95,9 @@ h1, .sub-heading {
  * @extends: _column;
  */
 .product-info {
-  width: 70.832119%;
+  width: 85%;
   padding: .5rem;
+
 }
 .product-name {
   font: 300 2.4em/1 "Lato", sans-serif;
@@ -104,10 +107,14 @@ h1, .sub-heading {
 .price {
   line-height: 1;
   text-align: right;
+  font: 300 1.25em/1.4 "Lato", sans-serif;
 }
 .product-single-price {
   margin-top: -1rem;
   font-size: 2.4em;
+  overflow: hidden;
+  width: 140px;
+  float:right;
 }
 
 /**
@@ -152,6 +159,7 @@ h1, .sub-heading {
   color: #95a5a6;
   font-size: 1.25em;
   padding: .5rem;
+
 }
 .shopping-cart--list-item:hover .product-total-price {
   background-color: #3498db;
@@ -170,6 +178,7 @@ h1, .sub-heading {
   width: 19.984013%;
   padding: .5rem;
   line-height: 1.2;
+
 }
 .cart-totals ._column:not(:last-of-type) {
   border-right: 1px solid #bdc3c7;
@@ -184,9 +193,11 @@ h1, .sub-heading {
 .cart-totals ._column:hover .cart-totals-value,
 .cart-totals ._column:hover .cart-totals-key {
   color: #333;
+  font: 300 1.25em/1.4 "Lato", sans-serif;
 }
 .cart-totals-value {
   font-size: 2em;
+  font: 300 2em/1.4 "Lato", sans-serif;
 }
 ._column.checkout {
   text-align: right;
@@ -228,18 +239,18 @@ h1, .sub-heading {
 
           <div class="_column product-info">
             <h4 class="product-name">{{ cart.get_itemName() }}</h4>
-            <p class="product-desc">{{ cart.get_itemGender() }}</p>
+            <p class="product-desc">{{ cart.get_itemDescription()  }}</p>
             <div class="price product-single-price">${{ cart.get_itemPrice() }}</div>
           </div>
 
-          <div class="_column product-modifiers" data-product-price="{{price}}">
+          <div class="_column product-modifiers" data-product-price="">
             <div class="_grid">
               <button class="_btn _column product-subtract">&minus;</button>
               <div class="_column product-qty">1</div>
               <button class="_btn _column product-plus">&plus;</button>
             </div>
             <form action="{{ url_for('deleteCart', cart=cart.get_itemSerial())}}" method="POST">
-                    <input type="submit" value="Delete" class="btn btndanger" onclick>
+                    <input type="submit" value="Delete" class="product-remove" onclick>
                 </form>
             <div class="price product-total-price">${{ cart.get_itemPrice() }}</div>
           </div>

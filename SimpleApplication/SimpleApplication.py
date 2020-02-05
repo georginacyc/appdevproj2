@@ -4,7 +4,7 @@ from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, Up
 from Cart import Cart, addtocartForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart
+import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs
 
 app = Flask(__name__)
 
@@ -609,8 +609,8 @@ def login():
                         print("1")
                         if object.get_pw() == loginForm.password.data:
                             field4 = True
-                            session["email"] = email
-                            session["name"] = object.get_firstName()
+                            session["useremail"] = email
+                            session["username"] = object.get_firstName()
 
         if field1 == True and field2 == True:
             print("Successfully logged in!")
@@ -630,11 +630,13 @@ def login():
 
 @app.route('/logout')
 def logout():
-    dict = {}
     try:
-        session["email"] = dict
-        session["name"] = dict
-        session["type"] = dict
+        session["email"] = ""
+        session["name"] = ""
+        session["type"] = ""
+        session["useremail"] = ""
+        session["username"] = ""
+        print("logged out")
     except:
         print("No user logged in, or some other error lol")
 
