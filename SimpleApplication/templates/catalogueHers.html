@@ -3,62 +3,109 @@
 {% block content %}
 <style>
     * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 .column {
-  float: left;
-  width: 15%;
-  padding: 0 10px;
+    float: left;
+    width: 15%;
+    padding: 10px 10px;
 }
 
 .cardRow {margin: 0 -5px;}
 
 .cardRow:after {
-  content: "";
-  display: table;
-  clear: both;
-}
+    content: "";
+    display: table;
+    clear: both;
+    }
 
 .card {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* this adds the "card" effect */
-  padding: 16px;
-  text-align: center;
-  background-color: #f1f1f1;
-}
+    height:250px;
+    position: relative;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    padding: 16px;
+    text-align: center;
+    background-color: #f1f1f1;
+    }
+
+.card a {
+    margin-top:auto;
+    }
+.card h4 {
+    margin-bottom:auto;
+    }
+.card p {
+    position:absolute;
+    bottom:100px;
+    left:50%;
+    margin-left:-7.5%;
+    }
 
 .card:hover {
-  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    }
 
 @media screen and (max-width: 600px) {
-  .column {
+    .column {
     width: 100%;
     display: block;
     margin-bottom: 20px;
-  }
+    }
 
  .wrap a{
-  position: absolute;
-  width:100%;
-  height:100%;
-  top:0px;
-  left:0px;
-}
-}
+    position: absolute;
+    width:100%;
+    height:100%;
+    top:0px;
+    left:0px;
+    }
+ }
+
+.categoryLabel {
+    background-color:black;
+    color:white;
+    padding:5px
+    }
+
+
 </style>
 <h2>Ladies'</h2>
 <hr><br>
-<div class="cardRows">
-    {% for item in itemList %}
-      <div class="column">
-        <div class="card">
-            <h4>{{ item.get_itemName() }}</h4>
-            <p>${{item.get_itemPrice()}}</p>
-            <input type="submit" value="Add to cart" class="btn btn-primary" onclick="return confirm('Add this item to Cart?')">
-            <br>
-            <a href="/catalogueItemDetailsHers/{{item.get_itemSerial()}}" class="btn btn-info">View Item Details</a>
-        </div>
-      </div>
-    {% endfor %}
+<div id="topsContainer">
+    <div class="categoryLabel">
+        <h1>Clothes</h1>
+    </div>
+    <br>
+    <div class="cardRows">
+        {% for item in itemList %}
+            <div class="column">
+                <div class="card">
+                    <h4>{{item.get_itemName()}}</h4>
+                    <p>${{item.get_itemPrice()}}</p>
+                    <br>
+                    <a href="/catalogueItemDetailsHers/{{item.get_itemSerial()}}" class="btn btn-info">View Item Details</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 </div>
+<!--<div id="botsContainer">
+    <div class="categoryLabel">
+        <h1>Bottoms</h1>
+    </div>
+    <br>
+    <div class="cardRows">
+        {% for item in itemBotsList %}
+            <div class="column">
+                <div class="card">
+                    <h4>{{item.get_itemName()}}</h4>
+                    <p>${{item.get_itemPrice()}}</p>
+                    <br>
+                    <a href="/catalogueItemDetailsHers/{{item.get_itemSerial()}}" class="btn btn-info">View Item Details</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>-->
 {% endblock %}
