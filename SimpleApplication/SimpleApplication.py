@@ -18,6 +18,10 @@ app.config.from_mapping(
 def home():
     return render_template('home.html')
 
+@app.route('/testcart')
+def testcart():
+    return render_template('testcart.html')
+
 
 @app.route('/cart', methods=['GET', 'POST'])
 def cart():
