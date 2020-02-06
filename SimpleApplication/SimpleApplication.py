@@ -36,6 +36,10 @@ def retrieveFiles():
 def home():
     return render_template('home.html')
 
+@app.route('/testcart')
+def testcart():
+    return render_template('testcart.html')
+
 
 @app.route('/cart', methods=['GET', 'POST'])
 def cart():
@@ -528,40 +532,9 @@ def updateStaff(eID):
         staff.set_type(updateStaffForm.type.data)
 
         if updateStaffForm.resetpass.data == True:
-            passList = []
-            count = 0
+            hp = staff.get_hp()
 
-            lowercase = list(string.ascii_lowercase)
-            uppercase = list(string.ascii_uppercase)
-            digits = list(string.digits)
-            symbols = list(string.punctuation)
-
-            while count < 8:
-                x = random.randint(1, 4)
-                if x == 1:
-                    i = random.choice(lowercase)
-                    passList.append(i)
-                    count += 1
-
-                elif x == 2:
-                    i = random.choice(uppercase)
-                    passList.append(i)
-                    count += 1
-
-                elif x == 3:
-                    i = random.choice(digits)
-                    passList.append(i)
-                    count += 1
-
-                elif x == 4:
-                    i = random.choice(symbols)
-                    passList.append(i)
-                    count += 1
-
-                else:
-                    print("weird number")
-
-            newpass = "".join(passList)
+            newpass = staff.get_fname() + hp[-4:]
 
             staff.set_password(newpass)
 
