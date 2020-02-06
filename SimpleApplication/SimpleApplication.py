@@ -790,11 +790,14 @@ def retrieveNormalAnnouncements():
 @app.before_request
 def deleteDict():
     dict = {}
-    # db = shelve.open("storage.db", "w")
-    # db["itemcount"] = dict
+    #db = shelve.open("storage.db", "w")
+    #db["itemcount"] = dict
+    #db["Items"] = dict
+    #db["StockOrder"] = dict
+    #db["stockordercount"] = dict
     # # db["staffCount"] = dict
-    # db.close()
-    # print("Cleared")
+    #db.close()
+    print("Cleared")
 
 
 @app.route('/deleteAnnouncement/<int:id>', methods=['GET', 'POST'])
