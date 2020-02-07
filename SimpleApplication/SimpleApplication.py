@@ -797,7 +797,7 @@ def deleteDict():
     #db["stockordercount"] = dict
     # # db["staffCount"] = dict
     #db.close()
-    print("Cleared")
+    #print("Cleared")
 
 
 @app.route('/deleteAnnouncement/<int:id>', methods=['GET', 'POST'])
