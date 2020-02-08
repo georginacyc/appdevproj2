@@ -11,7 +11,7 @@ class Item:
         self.__itemPrice = itemPrice
         self.__itemQuantity = 0
         self.__itemDescription = itemDescription
-        self.__itemCartQuantity = 0
+        self.__itemCartQuantity = 1
         self.set_itemStockStatus()
  
     #get attributes
@@ -56,8 +56,8 @@ class Item:
         self.__itemQuantity += itemQuantity
     def set_itemDescription(self,itemDescription):
         self.__itemDescription = itemDescription
-    def set_itemCartQuantity(self,itemCartQuantity):
-        self.__itemCartQuantity = itemCartQuantity
+    # def set_itemCartQuantity(self,itemCartQuantity):
+    #     self.__itemCartQuantity = itemCartQuantity
 
     def set_itemStockStatus(self):
         quantity = self.__itemQuantity

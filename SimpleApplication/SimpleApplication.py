@@ -18,9 +18,38 @@ app.config.from_mapping(
 def home():
     return render_template('home.html')
 
-@app.route('/testcart')
+@app.route('/testcart', methods=['GET', 'POST'])
 def testcart():
-    return render_template('testcart.html')
+    global db
+    cartDict = {}
+    try:
+        db = shelve.open('storage.db', 'r')
+        cartDict = db['Cart']
+    except:
+        print("Error")
+    finally:
+        db.close()
+
+    cartList = []
+    for key in cartDict:
+        item = cartDict.get(key)
+        cartList.append(item)
+    return render_template('testcart.html', cartList=cartList, count=len(cartList))
+
+
+@app.route('/deletetestCart/<cart>/', methods=['GET', 'POST'])
+def deletetestCart(cart):
+    cartDict = {}
+    db = shelve.open('storage.db', 'w')
+    cartDict = db['Cart']
+
+    cartDict.pop(cart)  # action of removing the record
+    db['Cart'] = cartDict  # put back to persistence
+    db.close()
+
+    # after we delete successfully
+    return redirect(url_for('testcart'))
+
 
 
 @app.route('/cart', methods=['GET', 'POST'])
