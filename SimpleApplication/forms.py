@@ -20,7 +20,7 @@ class UpdateUserForm(Form):
 class CreateStaffForm(Form):
     fname = StringField("First Name", [validators.InputRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "John"})
     lname = StringField("Last Name", [validators.InputRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "Doe"})
-    gender = SelectField("Gender", [validators.DataRequired()], choices=[("", "Select"), ("F", "Female"), ("M", "Male")], default = "")
+    gender = RadioField("Gender", [validators.DataRequired()], choices=[("Female", "Female"), ("Male", "Male")], default = "")
     hp = StringField("Contact Number", [validators.InputRequired()], render_kw={"placeholder": "65500999"})
     dob = DateField("Date of Birth", [validators.DataRequired()], format='%d/%m/%Y', render_kw={"placeholder": "DD/MM/YYYY"})
     password =  PasswordField("Password", [validators.InputRequired(), EqualTo('confirm', message="Passwords must match.")])
@@ -31,7 +31,7 @@ class CreateStaffForm(Form):
 class UpdateStaffForm(Form):
     fname = StringField("First Name", [validators.Length(min=1, max=150)], render_kw={"placeholder": "John"})
     lname = StringField("Last Name", [validators.Length(min=1, max=150)], render_kw={"placeholder": "Doe"})
-    gender = SelectField("Gender", choices=[("", "Select"), ("F", "Female"), ("M", "Male")], default = "", render_kw={'readonly': True})
+    gender = SelectField("Gender", choices=[("", "Select"), ("Female", "Female"), ("Male", "Male")], default = "", render_kw={'readonly': True})
     hp = StringField("Contact Number", render_kw={"placeholder": "65500999"})
     dob = DateField("Date of Birth", format='%d/%m/%Y', render_kw={'readonly': True})
     address = TextAreaField("Address")
@@ -45,7 +45,7 @@ class ShowDetailsForm(Form):
     dob = DateField("Date of Birth", format='%d/%m/%Y', render_kw={'readonly': True})
     hp = StringField("Contact Number", render_kw={'readonly': True})
     address = TextAreaField("Address", render_kw={'readonly': True})
-    oldpass = PasswordField("Old Password", [validators.InputRequired()])
+    oldpass = PasswordField("Current Password", [validators.InputRequired()])
     newpass =  PasswordField("New Password", [validators.InputRequired(), EqualTo('confirm', message="Passwords must match.")])
     confirm = PasswordField("Confirm New Password")
 

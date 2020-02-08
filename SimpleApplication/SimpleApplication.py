@@ -1,22 +1,44 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.utils import secure_filename
-from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm, ShowDetailsForm
+from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, \
+    ContactUsForm, ShowDetailsForm
 from Cart import Cart, addtocartForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs
+import os
+
+UPLOAD_FOLDER = 'static/files'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app = Flask(__name__)
-
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 app.config.from_mapping(
     SECRET_KEY='yeet'
 )
 
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def retrieveFiles():
+    entries = os.listdir(app.config['UPLOAD_FOLDER'])
+    fileList = []
+    for entry in entries:
+        fileList.append(entry)
+    return fileList
+
+
 @app.route('/')
 def home():
     return render_template('home.html')
+
+@app.route('/testcart')
+def testcart():
+    return render_template('testcart.html')
 
 
 @app.route('/cart', methods=['GET', 'POST'])
@@ -37,6 +59,7 @@ def cart():
         cartList.append(item)
     return render_template('cart.html', cartList=cartList, count=len(cartList))
 
+
 @app.route('/deleteCart/<cart>/', methods=['GET', 'POST'])
 def deleteCart(cart):
     cartDict = {}
@@ -49,7 +72,6 @@ def deleteCart(cart):
 
     # after we delete successfully
     return redirect(url_for('cart'))
-
 
 
 @app.route('/checkout')
@@ -69,7 +91,7 @@ def contactUs():
         except:
             print("Error in retrieving Items from storage.db.")
         contact = ContactUs.Contact(contactUsForm.fname.data, contactUsForm.lname.data,
-                         contactUsForm.email.data, contactUsForm.text.data)
+                                    contactUsForm.email.data, contactUsForm.text.data)
         contactDict[contact.get_email()] = contact
         db['Contact'] = contactDict
         db.close()
@@ -104,6 +126,7 @@ def deleteContact(email):
 
     # after we delete successfully
     return redirect(url_for('retrieveContact'))
+
 
 @app.route('/staffHome')
 def staffHome():
@@ -153,8 +176,6 @@ def readMoreAnn(key):
 @app.route('/inventory')
 def inventory():
     return render_template('viewStock.html')
-
-
 
 
 @app.route('/viewStockOrders')
@@ -334,8 +355,7 @@ def updateUser(email):
         updateUserForm.firstName.data = user.get_firstName()
         updateUserForm.lastName.data = user.get_lastName()
         updateUserForm.gender.data = user.get_gender()
-        updateUserForm.email.data= user.get_email()
-
+        updateUserForm.email.data = user.get_email()
 
         return render_template('updateUser.html', form=updateUserForm)
 
@@ -404,13 +424,27 @@ def createItem():
             Item.Item.countID = db['itemcount']
         except:
             print("Error in retrieving Items from storage.db.")
-        item = Item.Item(createItemForm.itemSerial.data, createItemForm.itemName.data,
-                         createItemForm.itemCategory.data, createItemForm.itemGender.data,
-                         createItemForm.itemCost.data, createItemForm.itemPrice.data,createItemForm.itemDescription.data)
-        itemsDict[item.get_itemSerial()] = item
-        db['Items'] = itemsDict
-        db['itemcount'] = Item.Item.countID
-        db.close()
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(str(createItemForm.itemSerial.data + ".jpg"))
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+            item = Item.Item(createItemForm.itemSerial.data, createItemForm.itemName.data,
+                             createItemForm.itemCategory.data, createItemForm.itemGender.data,
+                             createItemForm.itemCost.data, createItemForm.itemPrice.data,
+                             createItemForm.itemDescription.data)
+            itemsDict[item.get_itemSerial()] = item
+            db['Items'] = itemsDict
+            db['itemcount'] = Item.Item.countID
+            db.close()
 
         return redirect(url_for('itempage'))
     return render_template('createItem.html', form=createItemForm)
@@ -498,46 +532,14 @@ def updateStaff(eID):
         staff.set_type(updateStaffForm.type.data)
 
         if updateStaffForm.resetpass.data == True:
-            passList = []
-            count = 0
+            hp = staff.get_hp()
 
-            lowercase = list(string.ascii_lowercase)
-            uppercase = list(string.ascii_uppercase)
-            digits = list(string.digits)
-            symbols = list(string.punctuation)
-
-            while count < 8:
-                x = random.randint(1, 4)
-                if x == 1:
-                    i = random.choice(lowercase)
-                    passList.append(i)
-                    count +=1
-
-                elif x == 2:
-                    i = random.choice(uppercase)
-                    passList.append(i)
-                    count +=1
-
-                elif x == 3:
-                    i = random.choice(digits)
-                    passList.append(i)
-                    count +=1
-
-                elif x == 4:
-                    i = random.choice(symbols)
-                    passList.append(i)
-                    count +=1
-
-                else:
-                    print("weird number")
-
-            newpass = "".join(passList)
+            newpass = staff.get_fname() + hp[-4:]
 
             staff.set_password(newpass)
 
             print("Successfully resetted password. New password is", newpass)
             session["newPass"] = newpass
-
 
         staffDict[staff.get_eID()] = staff
         db['Staff'] = staffDict
@@ -788,11 +790,14 @@ def retrieveNormalAnnouncements():
 @app.before_request
 def deleteDict():
     dict = {}
-    # db = shelve.open("storage.db", "w")
-    # db["itemcount"] = dict
+    #db = shelve.open("storage.db", "w")
+    #db["itemcount"] = dict
+    #db["Items"] = dict
+    #db["StockOrder"] = dict
+    #db["stockordercount"] = dict
     # # db["staffCount"] = dict
-    # db.close()
-    # print("Cleared")
+    #db.close()
+    #print("Cleared")
 
 
 @app.route('/deleteAnnouncement/<int:id>', methods=['GET', 'POST'])
@@ -833,6 +838,7 @@ def catalogueHis():
             itemList.append(item)
     return render_template('catalogueHis.html', itemList=itemList, count=len(itemList))
 
+
 @app.route('/catalogueHers')
 def catalogueHers():
     itemDict = {}
@@ -840,7 +846,7 @@ def catalogueHers():
     itemDict = db['Items']
     db.close()
 
-    itemList=[]
+    itemList = []
     itemTopsList = []
     itemBotsList = []
     for key in itemDict:
@@ -851,7 +857,8 @@ def catalogueHers():
                 itemTopsList.append(item)
             elif key[8] == "B":
                 itemBotsList.append(item)
-    return render_template('catalogueHers.html', itemList=itemList, itemTopsList=itemTopsList, itemBotsList=itemBotsList, count=len(itemList))
+    return render_template('catalogueHers.html', itemList=itemList, itemTopsList=itemTopsList,
+                           itemBotsList=itemBotsList, count=len(itemList))
 
 
 @app.route('/catalogueItemDetailsHis/<id>/', methods=['GET', 'POST'])
@@ -865,7 +872,7 @@ def itemDetailsHis(id):
     item = itemDict.get(id)
     itemList.append(item)
 
-    serial=item.get_itemSerial()
+    serial = item.get_itemSerial()
     addtocart = addtocartForm(request.form)
     if request.method == 'POST' and addtocart.validate():
         cartDict = {}
@@ -882,6 +889,7 @@ def itemDetailsHis(id):
 
     return render_template('catalogueItemDetailsHis.html', itemList=itemList, count=len(itemList))
 
+
 @app.route('/catalogueItemDetailsHers/<id>/', methods=['GET', 'POST'])
 def itemDetailsHers(id):
     itemDict = {}
@@ -893,7 +901,7 @@ def itemDetailsHers(id):
     item = itemDict.get(id)
     itemList.append(item)
 
-    serial=item.get_itemSerial()
+    serial = item.get_itemSerial()
     addtocart = addtocartForm(request.form)
     if request.method == 'POST' and addtocart.validate():
         cartDict = {}
@@ -908,7 +916,6 @@ def itemDetailsHers(id):
         print(cartDict.keys())
         db.close()
     return render_template('catalogueItemDetailsHers.html', itemList=itemList, count=len(itemList))
-
 
 
 if __name__ == '__main__':
