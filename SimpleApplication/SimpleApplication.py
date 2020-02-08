@@ -7,6 +7,8 @@ from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs
 import os
+import plotly.graph_objects as go
+
 
 UPLOAD_FOLDER = 'static/files'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -36,9 +38,38 @@ def retrieveFiles():
 def home():
     return render_template('home.html')
 
-@app.route('/testcart')
+@app.route('/testcart', methods=['GET', 'POST'])
 def testcart():
-    return render_template('testcart.html')
+    global db
+    cartDict = {}
+    try:
+        db = shelve.open('storage.db', 'r')
+        cartDict = db['Cart']
+    except:
+        print("Error")
+    finally:
+        db.close()
+
+    cartList = []
+    for key in cartDict:
+        item = cartDict.get(key)
+        cartList.append(item)
+    return render_template('testcart.html', cartList=cartList, count=len(cartList))
+
+
+@app.route('/deletetestCart/<cart>/', methods=['GET', 'POST'])
+def deletetestCart(cart):
+    cartDict = {}
+    db = shelve.open('storage.db', 'w')
+    cartDict = db['Cart']
+
+    cartDict.pop(cart)  # action of removing the record
+    db['Cart'] = cartDict  # put back to persistence
+    db.close()
+
+    # after we delete successfully
+    return redirect(url_for('testcart'))
+
 
 
 @app.route('/cart', methods=['GET', 'POST'])
@@ -484,6 +515,27 @@ def updateItem(id):
         updateItemForm.itemPrice.data = item.get_itemPrice()
         updateItemForm.itemDescription.data = item.get_itemDescription()
         return render_template('updateItem.html', form=updateItemForm)
+
+
+@app.route('/customerDemo')
+def customerDemo():
+    femCount = 0
+    maleCount = 0
+
+    usersDict = {}
+
+    db = shelve.open('storage.db', 'c')
+    usersDict = db["Users"]
+
+    for x in usersDict.values():
+        if x.get_gender() == "F":
+            femCount += 1
+        else:
+            maleCount += 1
+
+
+
+    return render_template("customerDemo.html")
 
 
 @app.route('/createStaff', methods=['GET', 'POST'])
