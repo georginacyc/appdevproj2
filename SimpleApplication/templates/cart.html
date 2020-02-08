@@ -231,11 +231,11 @@ h1, .sub-heading {
   var check = false;
 
   function changeVal(el) {
-    var qt = parseFloat(el.parent().children(".qt").html());
-    var price = parseFloat(el.parent().children(".price").html());
+    var qt = parseFloat(el.parent().children(".product-qty").html());
+    var price = parseFloat(el.parent().children(".product-single-price").html());
     var eq = Math.round(price * qt * 100) / 100;
 
-    el.parent().children(".full-price").html( eq + "€" );
+    el.parent().children(".product-total-price").html( eq + "€" );
 
     changeTotal();
   }
@@ -244,13 +244,13 @@ h1, .sub-heading {
 
     var price = 0;
 
-    $(".full-price").each(function(index){
-      price += parseFloat($(".full-price").eq(index).html());
+    $(".product-total-price").each(function(index){
+      price += parseFloat($(".product-total-price").eq(index).html());
     });
 
     price = Math.round(price * 100) / 100;
     var tax = Math.round(price * 0.05 * 100) / 100
-    var shipping = parseFloat($(".shipping span").html());
+    var shipping = parseFloat($(".").html());
     var fullPrice = Math.round((price + tax + shipping) *100) / 100;
 
     if(price == 0) {
@@ -283,27 +283,27 @@ h1, .sub-heading {
         }, 200);
     });
 
-    $(".qt-plus").click(function(){
-      $(this).parent().children(".qt").html(parseInt($(this).parent().children(".qt").html()) + 1);
+    $(".product-plus").click(function(){
+      $(this).parent().children(".product-qty").html(parseInt($(this).parent().children(".product-qty").html()) + 1);
 
-      $(this).parent().children(".full-price").addClass("added");
+      $(this).parent().children(".product-total-price").addClass("added");
 
       var el = $(this);
-      window.setTimeout(function(){el.parent().children(".full-price").removeClass("added"); changeVal(el);}, 150);
+      window.setTimeout(function(){el.parent().children(".product-total-price").removeClass("added"); changeVal(el);}, 150);
     });
 
-    $(".qt-minus").click(function(){
+    $(".product-subtract").click(function(){
 
-      child = $(this).parent().children(".qt");
+      child = $(this).parent().children(".product-qty");
 
       if(parseInt(child.html()) > 1) {
         child.html(parseInt(child.html()) - 1);
       }
 
-      $(this).parent().children(".full-price").addClass("minused");
+      $(this).parent().children(".product-total-price").addClass("minused");
 
       var el = $(this);
-      window.setTimeout(function(){el.parent().children(".full-price").removeClass("minused"); changeVal(el);}, 150);
+      window.setTimeout(function(){el.parent().children(".product-total-price").removeClass("minused"); changeVal(el);}, 150);
     });
 
     window.setTimeout(function(){$(".is-open").removeClass("is-open")}, 1200);
@@ -352,15 +352,15 @@ h1, .sub-heading {
     <footer class="_grid cart-totals">
       <div class="_column subtotal" id="subtotalCtr">
         <div class="cart-totals-key">Subtotal</div>
-        <div class="cart-totals-value"></div>
+        <div class="cart-totals-value">0.00</div>
       </div>
       <div class="_column shipping" id="shippingCtr">
         <div class="cart-totals-key">Shipping</div>
-        <div class="cart-totals-value">$0.00</div>
+        <div class="cart-totals-value">$<span>0.00</span></div>
       </div>
       <div class="_column total" id="totalCtr">
         <div class="cart-totals-key">Total</div>
-        <div class="cart-totals-value">$0.00</div>
+        <div class="cart-totals-value">$<span>0.00</span></div>
       </div>
       <div class="_column checkout">
         <button class="_btn checkout-btn entypo-forward">Checkout</button>
