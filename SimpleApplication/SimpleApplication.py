@@ -7,6 +7,8 @@ from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs
 import os
+import plotly.graph_objects as go
+
 
 UPLOAD_FOLDER = 'static/files'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -484,6 +486,27 @@ def updateItem(id):
         updateItemForm.itemPrice.data = item.get_itemPrice()
         updateItemForm.itemDescription.data = item.get_itemDescription()
         return render_template('updateItem.html', form=updateItemForm)
+
+
+@app.route('/customerDemo')
+def customerDemo():
+    femCount = 0
+    maleCount = 0
+
+    usersDict = {}
+
+    db = shelve.open('storage.db', 'c')
+    usersDict = db["Users"]
+
+    for x in usersDict.values():
+        if x.get_gender() == "F":
+            femCount += 1
+        else:
+            maleCount += 1
+
+
+
+    return render_template("customerDemo.html")
 
 
 @app.route('/createStaff', methods=['GET', 'POST'])
