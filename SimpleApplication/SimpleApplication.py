@@ -6,12 +6,30 @@ from Cart import Cart, addtocartForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs
+import os
+
+UPLOAD_FOLDER = 'static/files'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 app.config.from_mapping(
     SECRET_KEY='yeet'
 )
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def retrieveFiles():
+    entries = os.listdir(app.config['UPLOAD_FOLDER'])
+    fileList = []
+    for entry in entries:
+        fileList.append(entry)
+    return fileList
 
 
 @app.route('/')
@@ -435,14 +453,27 @@ def createItem():
             Item.Item.countID = db['itemcount']
         except:
             print("Error in retrieving Items from storage.db.")
-        item = Item.Item(createItemForm.itemSerial.data, createItemForm.itemName.data,
-                         createItemForm.itemCategory.data, createItemForm.itemGender.data,
-                         createItemForm.itemCost.data, createItemForm.itemPrice.data,
-                         createItemForm.itemDescription.data)
-        itemsDict[item.get_itemSerial()] = item
-        db['Items'] = itemsDict
-        db['itemcount'] = Item.Item.countID
-        db.close()
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(str(createItemForm.itemSerial.data + ".jpg"))
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+            item = Item.Item(createItemForm.itemSerial.data, createItemForm.itemName.data,
+                             createItemForm.itemCategory.data, createItemForm.itemGender.data,
+                             createItemForm.itemCost.data, createItemForm.itemPrice.data,
+                             createItemForm.itemDescription.data)
+            itemsDict[item.get_itemSerial()] = item
+            db['Items'] = itemsDict
+            db['itemcount'] = Item.Item.countID
+            db.close()
 
         return redirect(url_for('itempage'))
     return render_template('createItem.html', form=createItemForm)
@@ -788,11 +819,14 @@ def retrieveNormalAnnouncements():
 @app.before_request
 def deleteDict():
     dict = {}
-    # db = shelve.open("storage.db", "w")
-    # db["itemcount"] = dict
+    #db = shelve.open("storage.db", "w")
+    #db["itemcount"] = dict
+    #db["Items"] = dict
+    #db["StockOrder"] = dict
+    #db["stockordercount"] = dict
     # # db["staffCount"] = dict
-    # db.close()
-    # print("Cleared")
+    #db.close()
+    #print("Cleared")
 
 
 @app.route('/deleteAnnouncement/<int:id>', methods=['GET', 'POST'])
