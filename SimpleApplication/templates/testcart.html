@@ -406,6 +406,7 @@ a:hover {
   }
 
   $(document).ready(function(){
+    changeTotal();
 
     $(".remove").click(function(){
       var el = $(this);
@@ -457,7 +458,7 @@ a:hover {
     });
   });
   function saveTotal() {
-  var totalpricey = document.getElementById("totalprice");
+  var totalprice = document.getElementById("totalprice").textContent;
   sessionStorage.setItem("total", totalprice);
 }
 
