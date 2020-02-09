@@ -1,13 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.utils import secure_filename
 from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, \
-    ContactUsForm, ShowDetailsForm, PaymentForm, ShippingForm
+    ContactUsForm, ShowDetailsForm, PaymentForm, ShippingForm, UpdateUserDetailsForm
 from Cart import Cart, addtocartForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping
 import os
-import plotly.graph_objects as go
+#import plotly.graph_objects as go
 
 
 UPLOAD_FOLDER = 'static/files'
@@ -394,10 +394,11 @@ def updateUser(email):
 
     if request.method == 'POST' and updateUserForm.validate():
 
+        email = session["useremail"]
         userDict = {}
         db = shelve.open('storage.db', 'w')
         try:
-            userDict = db['Users']
+            userDict = db['useremail']
         except:
             print("Error in retrieving User from storage.db")
         user = userDict.get(email)
@@ -424,6 +425,41 @@ def updateUser(email):
 
         return render_template('updateUser.html', form=updateUserForm)
 
+@app.route('/userDetails/<email>/', methods=['GET', 'POST'])
+def userDetails(email):
+    updateUserDetailsForm = UpdateUserDetailsForm(request.form)
+
+    if request.method == 'POST' and updateUserDetailsForm.validate():
+
+        userDict = {}
+        db = shelve.open('storage.db', 'w')
+        try:
+            userDict = db['Users']
+        except:
+            print("Error in retrieving User from storage.db")
+        user = userDict.get(email)
+        user.set_firstName(updateUserDetailsForm.firstName.data)
+        user.set_lastName(updateUserDetailsForm.lastName.data)
+        user.set_gender(updateUserDetailsForm.gender.data)
+        user.set_email(updateUserDetailsForm.email.data)
+        userDict[email] = user
+        db['Users'] = userDict
+
+        db.close()
+
+        return redirect(url_for('userDetails'))
+    else:
+        userDict = {}
+        db = shelve.open('storage.db', 'r')
+        userDict = db['Users']
+        db.close()
+        user = userDict.get(email)
+        updateUserDetailsForm.firstName.data = user.get_firstName()
+        updateUserDetailsForm.lastName.data = user.get_lastName()
+        updateUserDetailsForm.gender.data = user.get_gender()
+        updateUserDetailsForm.email.data = user.get_email()
+
+        return render_template('userDetails.html', form=updateUserDetailsForm)
 
 @app.route('/deleteUser/<email>/', methods=['GET', 'POST'])
 def deleteUser(email):
