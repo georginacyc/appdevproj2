@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.utils import secure_filename
 from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, \
-    ContactUsForm, ShowDetailsForm
+    ContactUsForm, ShowDetailsForm, PaymentForm, ShippingForm
 from Cart import Cart, addtocartForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs
+import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping
 import os
 import plotly.graph_objects as go
 
@@ -108,6 +108,40 @@ def deleteCart(cart):
 @app.route('/checkout')
 def checkout():
     return render_template('checkout.html')
+
+
+@app.route('/address', methods=['GET', 'POST'])
+def address():
+    shippingForm = ShippingForm(request.form)
+
+    if request.method == 'POST' and shippingForm.validate():
+        shippingDict = {}
+        db = shelve.open('storage.db', 'c')
+        try:
+            shippingDict = db['Shipping']
+        except:
+            print("Error in retrieving Items from storage.db.")
+        shipping = Shipping.Shipping(shippingForm.fname.data, shippingForm.lname.data,
+                                    shippingForm.email.data, shippingForm.hp.data, shippingForm.address.data, shippingForm.address2.data, shippingForm.postal.data)
+        shippingDict[shipping.get_email()] = shipping
+        db['Shipping'] = shippingDict
+        db.close()
+        return redirect(url_for('home'))
+    return render_template('address.html', form=shippingForm)
+
+@app.route('/retrieveAddress')
+def retrieveAddress():
+    shippingDict = {}
+    db = shelve.open('storage.db', 'r')
+    shippingDict = db['Shipping']
+    db.close()
+
+    shippingList = []
+    for email in shippingDict:
+        shipping = shippingDict.get(email)
+        shippingList.append(shipping)
+
+    return render_template('retrieveShipping.html', shippingList=shippingList, count=len(shippingList))
 
 
 @app.route('/contactUs', methods=['GET', 'POST'])

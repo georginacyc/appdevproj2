@@ -1,0 +1,44 @@
+
+{% extends "staffBase.html" %}
+{% block title %}Library Loan System - Retrieve Users{% endblock %}
+{% block content %}
+<h1 class="display-4">Customer Transactions</h1>
+<div>
+    {% if count == 0 %}
+    <p>There are no inquiries.</p>
+    {% elif count == 1 %}
+    <p>There is 1 inquiries.</p>
+    {% else %}
+    <p>There are {{ count }} inquiries.</p>
+    {% endif %}
+</div>
+<div>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Contact Number</th>
+            <th>Address</th>
+            <th>Address 2</th>
+            <th>Postal Code</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for shipping in shippingList %}
+        <tr>
+            <td>{{ shipping.get_fname() }}</td>
+            <td>{{ shipping.get_lname() }}</td>
+            <td>{{ shipping.get_email() }}</td>
+            <td>{{ shipping.get_hp() }}</td>
+            <td>{{ shipping.get_address() }}</td>
+            <td>{{ shipping.get_address2() }}</td>
+            <td>{{ shipping.get_postal() }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
