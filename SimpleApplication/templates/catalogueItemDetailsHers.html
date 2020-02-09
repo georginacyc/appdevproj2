@@ -5,6 +5,7 @@
 {% for item in itemList %}
 <h2>{{ item.get_itemName() }}</h2>
 <p>Serial No. {{ item.get_itemSerial() }}</p>
+<img src="static/files/{{item.get_itemSerial() + '.jpg'}}" alt="Avatar" style="width:100%">
 <br>
 <h3>${{item.get_itemPrice()}}</h3>
 <br>

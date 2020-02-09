@@ -15,7 +15,7 @@
             <a class="nav-link" href="/itempage"><i class='fas fa-tshirt'></i> items</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="/retrieveUsers"><i class='fas fa-user-tie'></i> customer accounts</a>
+            <a class="nav-link" href="/customerDemo"><i class='fas fa-poll'></i> customer demographic</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="/retrieveContact"><i class='fas fa-question'></i> inquiries</a>
@@ -29,17 +29,18 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 {% if session["type"] == "Admin" %}
-                <a class="dropdown-item" href="/createStaff">New Staff</a>
-                <a class="dropdown-item" href="/createAnnouncement">Create Announcement</a>
-                <a class="dropdown-item" href="/staffAccounts">Manage Staff Accounts</a>
-                <a class="dropdown-item" href="/retrieveAnnouncements">Manage Announcements</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="/logout">Log Out</a>
+                    <a class="dropdown-item" href="/retrieveUsers">User Accounts</a>
+                    <a class="dropdown-item" href="/createStaff">New Staff</a>
+                    <a class="dropdown-item" href="/createAnnouncement">Create Announcement</a>
+                    <a class="dropdown-item" href="/staffAccounts">Manage Staff Accounts</a>
+                    <a class="dropdown-item" href="/retrieveAnnouncements">Manage Announcements</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/logout">Log Out</a>
                 {% else %}
-                <a class="dropdown-item" href="/retrieveNormalAnnouncements">All Announcements</a>
-                <a class="dropdown-item" href="/staffAccountDetails">Your Details</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="/logout">Log Out</a>
+                    <a class="dropdown-item" href="/retrieveNormalAnnouncements">All Announcements</a>
+                    <a class="dropdown-item" href="/staffAccountDetails">Your Details</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/logout">Log Out</a>
                 {% endif %}
             </div>
         </li>
