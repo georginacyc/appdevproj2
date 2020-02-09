@@ -247,10 +247,17 @@ input[type='password']:focus {
 }
 </style>
 <script>
-function showTotal() {
-  var x = sessionStorage.getItem("total");
-  document.getElementById("totalshow").innerHTML = x;
-  }
+<!--function showTotal() {-->
+<!--  var x = sessionStorage.getItem("total");-->
+<!--  document.getElementById("totalshow").innerHTML = x;-->
+<!--  }-->
+window.onload = function showTotal() {
+  var y = sessionStorage.getItem("total");
+    document.getElementById("totalshowcredit").innerHTML = y;
+
+  var z = sessionStorage.getItem("total");
+    document.getElementById("totalshowpaypal").innerHTML = z;
+ }
 
 function deleteValue() {
 sessionStorage.clear();
@@ -287,8 +294,8 @@ $('.next-btn').on('click', function(e) {
 
 
 </script>
-<button onclick="showTotal()"> Retrieve Total</button>
-<div id="totalshow"></div>
+<!--<button onclick="showTotal()"> Retrieve Total</button>-->
+<!--<div id="totalshow"></div>-->
 <div class="checkout-panel">
   <div class="panel-body">
     <h2 class="title">Checkout</h2>
@@ -303,7 +310,7 @@ $('.next-btn').on('click', function(e) {
 
         <span class="radio-input">
           <input id="card" type="radio" name="payment">
-          Pay $131.26 with credit card
+          Pay $<span id="totalshowcredit"></span> with credit card
         </span>
       </label>
 
@@ -311,7 +318,7 @@ $('.next-btn').on('click', function(e) {
         <img src="https://designmodo.com/demo/checkout-panel/img/paypal_logo.png"/>
         <span class="radio-input">
           <input id="paypal" type="radio" name="payment">
-          Pay $131.26 with PayPal
+          Pay $<span id="totalshowpaypal"></span> with PayPal
         </span>
       </label>
     </div>
