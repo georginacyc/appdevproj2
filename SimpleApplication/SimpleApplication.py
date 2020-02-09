@@ -489,6 +489,19 @@ def updateItem(id):
         db = shelve.open('storage.db', 'w')
         itemDict = db['Items']
 
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(str(updateItemForm.itemSerial.data + ".jpg"))
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
         item = itemDict.get(id)
         item.set_itemName(updateItemForm.itemName.data)
         item.set_itemSerial(updateItemForm.itemSerial.data)
