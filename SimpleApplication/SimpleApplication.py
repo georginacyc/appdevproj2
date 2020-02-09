@@ -1,13 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.utils import secure_filename
 from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, \
-    ContactUsForm, ShowDetailsForm, UpdateUserDetailsForm
+    ContactUsForm, ShowDetailsForm, PaymentForm, ShippingForm
 from Cart import Cart, addtocartForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs
+import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping
 import os
-# import plotly.graph_objects as go
+import plotly.graph_objects as go
 
 
 UPLOAD_FOLDER = 'static/files'
@@ -108,6 +108,40 @@ def deleteCart(cart):
 @app.route('/checkout')
 def checkout():
     return render_template('checkout.html')
+
+
+@app.route('/address', methods=['GET', 'POST'])
+def address():
+    shippingForm = ShippingForm(request.form)
+
+    if request.method == 'POST' and shippingForm.validate():
+        shippingDict = {}
+        db = shelve.open('storage.db', 'c')
+        try:
+            shippingDict = db['Shipping']
+        except:
+            print("Error in retrieving Items from storage.db.")
+        shipping = Shipping.Shipping(shippingForm.fname.data, shippingForm.lname.data,
+                                    shippingForm.email.data, shippingForm.hp.data, shippingForm.address.data, shippingForm.address2.data, shippingForm.postal.data)
+        shippingDict[shipping.get_email()] = shipping
+        db['Shipping'] = shippingDict
+        db.close()
+        return redirect(url_for('home'))
+    return render_template('address.html', form=shippingForm)
+
+@app.route('/retrieveAddress')
+def retrieveAddress():
+    shippingDict = {}
+    db = shelve.open('storage.db', 'r')
+    shippingDict = db['Shipping']
+    db.close()
+
+    shippingList = []
+    for email in shippingDict:
+        shipping = shippingDict.get(email)
+        shippingList.append(shipping)
+
+    return render_template('retrieveShipping.html', shippingList=shippingList, count=len(shippingList))
 
 
 @app.route('/contactUs', methods=['GET', 'POST'])
@@ -405,46 +439,6 @@ def deleteUser(email):
     return redirect(url_for('retrieveUsers'))
 
 
-@app.route('/userDetails/<useremail>/', methods=['GET','POST'])
-def userDetails(useremail):
-    updateUserDetailsForm = UpdateUserDetailsForm(request.form)
-
-    if request.method == 'POST' and updateUserDetailsForm.validate():
-
-        email = session["useremail"]
-
-        userDict = {}
-        db = shelve.open('storage.db', 'w')
-        try:
-            userDict = db['Users']
-        except:
-            print("Error in retrieving User from storage.db")
-        user = userDict.get(email)
-        user.set_firstName(updateUserDetailsForm.firstName.data)
-        user.set_lastName(updateUserDetailsForm.lastName.data)
-        user.set_gender(updateUserDetailsForm.gender.data)
-        user.set_email(updateUserDetailsForm.email.data)
-        userDict[email] = user
-        db['Users'] = userDict
-
-        db.close()
-
-        return redirect(url_for('userDetails'))
-    else:
-        userDict = {}
-        db = shelve.open('storage.db', 'r')
-        userDict = db['Users']
-        db.close()
-        user = userDict.get(email)
-        updateUserDetailsForm.firstName.data = user.get_firstName()
-        updateUserDetailsForm.lastName.data = user.get_lastName()
-        updateUserDetailsForm.gender.data = user.get_gender()
-        updateUserDetailsForm.email.data = user.get_email()
-
-        return render_template('userDetails.html', form=updateUserDetailsForm)
-
-
-
 @app.route('/deleteItem/<id>/', methods=['GET', 'POST'])
 def deleteItem(id):
     itemDict = {}
@@ -528,6 +522,19 @@ def updateItem(id):
         itemDict = {}
         db = shelve.open('storage.db', 'w')
         itemDict = db['Items']
+
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(str(updateItemForm.itemSerial.data + ".jpg"))
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
         item = itemDict.get(id)
         item.set_itemName(updateItemForm.itemName.data)
