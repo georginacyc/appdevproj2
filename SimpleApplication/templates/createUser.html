@@ -2,7 +2,24 @@
 {% block title %}Library Loan System - Create User{% endblock %}
 {% block content %}
 {% from "includes/_formhelper.html" import render_field %}
-<h1 class="display-4">SIGN UP</h1>
+<style>
+    .content {
+        width: 50%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .titleHR {
+        width: 10%;
+        margin-left: 0;
+        height: 2px;
+        color: black;
+        border-style: none;
+        background-color: black;
+    }
+</style>
+<div class="content">
+<h1 class="display-4">CREATE ACCOUNT</h1>
+<hr class="titleHR">
 <form method="POST" action="">
  <div class="form-group">
   {{ render_field(form.firstName, class="form-control") }}
