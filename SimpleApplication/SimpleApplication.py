@@ -7,7 +7,7 @@ from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping
 import os, pygal
-from collections import Counter
+
 
 
 
@@ -16,6 +16,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
 
 app.config.from_mapping(
     SECRET_KEY='yeet'
@@ -570,7 +571,12 @@ def updateItem(id):
             flash('No selected file')
             return redirect(request.url)
         if file and allowed_file(file.filename):
-            filename = secure_filename(str(updateItemForm.itemSerial.data + ".jpg"))
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(os.path.join(app.config['UPLOAD_FOLDER'],filename))
+
+            if os.path.exists(filepath):
+                os.remove(filepath)
+
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
         item = itemDict.get(id)
