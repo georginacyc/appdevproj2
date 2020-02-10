@@ -67,17 +67,20 @@
     color:white;
     padding:5px
     }
-
-
 </style>
+<body>
 <h2>Men's</h2>
 <hr><br>
+<div class="blocktest">
+<div class="categoryLabel">
+    <h2>Tops</h2>
+</div>
 <div class="cardRows">
-    {% for item in itemList %}
+    {% for item in itemTopsList %}
       <div class="column">
         <div class="card">
 <!--            <div class="productImage" style="background-image: url(static/files/81331919TM.jpg);"></div>-->
-            <img src="static/files/81331919TM.jpg" alt="imagePic" style="width:100%">
+            <img src="static/files/{{item.get_itemSerial() + '.jpg'}}" alt="imagePic" style="width:100%">
             <h4>{{item.get_itemName()}}</h4>
             <p>{{"$" + "%0.2f" % item.get_itemPrice()}}</p>
             <br>
@@ -86,4 +89,26 @@
       </div>
     {% endfor %}
 </div>
+</div>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<div class="blocktest">
+<div class="categoryLabel">
+    <h2>Bottoms</h2>
+</div>
+
+<div class="cardRows">
+    {% for item in itemBotsList %}
+      <div class="column">
+        <div class="card">
+            <img src="static/files/{{item.get_itemSerial()+'.jpg'}}" alt="imagePic" style="width:100%">
+            <h4>{{item.get_itemName()}}</h4>
+            <p>{{"$" + "%0.2f" % item.get_itemPrice()}}</p>
+            <br>
+            <a href="/catalogueItemDetailsHis/{{item.get_itemSerial()}}" class="btn btn-info">View Item Details</a>
+        </div>
+      </div>
+    {% endfor %}
+</div>
+</div>
+</body>
 {% endblock %}

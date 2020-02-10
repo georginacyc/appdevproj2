@@ -598,12 +598,7 @@ def updateItem(id):
             flash('No selected file')
             return redirect(request.url)
         if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            filepath = os.path.join(os.path.join(app.config['UPLOAD_FOLDER'],filename))
-
-            if os.path.exists(filepath):
-                os.remove(filepath)
-
+            filename = secure_filename(str(updateItemForm.itemSerial.data + ".jpg"))
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
         item = itemDict.get(id)
@@ -932,6 +927,7 @@ def createAnnouncement():
         annDict[Announcement.Announcement.count] = announcement
 
         sort = dict(sorted(annDict.items(), key=lambda x: x[0], reverse=True))
+        print(sort.keys())
 
         db['Announcements'] = sort
         db['annCount'] = Announcement.Announcement.count
@@ -1027,11 +1023,17 @@ def catalogueHis():
     db.close()
 
     itemList = []
+    itemTopsList = []
+    itemBotsList = []
     for key in itemDict:
         if key[9] == "M":
             item = itemDict.get(key)
             itemList.append(item)
-    return render_template('catalogueHis.html', itemList=itemList, count=len(itemList))
+            if key[8] == "T":
+                itemTopsList.append(item)
+            elif key[8] == "B":
+                itemBotsList.append(item)
+    return render_template('catalogueHis.html', itemList=itemList, itemTopsList=itemTopsList,itemBotsList=itemBotsList, count=len(itemList))
 
 
 @app.route('/catalogueHers')
@@ -1052,8 +1054,7 @@ def catalogueHers():
                 itemTopsList.append(item)
             elif key[8] == "B":
                 itemBotsList.append(item)
-    return render_template('catalogueHers.html', itemList=itemList, itemTopsList=itemTopsList,
-                           itemBotsList=itemBotsList, count=len(itemList))
+    return render_template('catalogueHers.html', itemList=itemList, itemTopsList=itemTopsList,itemBotsList=itemBotsList, count=len(itemList))
 
 
 @app.route('/catalogueItemDetailsHis/<id>/', methods=['GET', 'POST'])
