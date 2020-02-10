@@ -1,13 +1,26 @@
 {% extends "staffBase.html" %}
 {% block title %}View Stock Orders{% endblock %}
 {% block content %}
-{% include 'includes/_staffInventoryNav.html' %}
+<h1 class="display-4">Inventory</h1>
+<hr>
+<nav  class="navbar navbar-expand-lg bg-light">
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <a class="nav-link" href="/viewStock"> view stock on hand</a>
+        </li>
+        <li class="disabled">
+            <a class="nav-link" style="text-decoration: underline;font-weight:bold"> view stock orders</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/createStockOrder"> order stock</a>
+        </li>
+    </ul>
+</nav>
 <hr>
 <div>
     <table class="table table-striped">
         <thead>
         <tr>
-            <th>S/N</th>
             <th>Order Number</th>
             <th>Order Date</th>
             <th>Item Ordered</th>
@@ -21,7 +34,6 @@
         <tbody>
         {% for stockorder in stockorderList %}
         <tr>
-            <td>{{ stockorder.get_stockorderCount() }}</td>
             <td>{{ stockorder.get_stockorderNumber() }}</td>
             <td>{{ stockorder.get_stockorderDate() }}</td>
             <td>{{ stockorder.get_stockItemSerial() }}</td>

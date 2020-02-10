@@ -1,14 +1,40 @@
 {% extends "staffBase.html" %}
 {% block title %}monoqlo - staff home{% endblock %}
 {% block content %}
+<style>
+    #homeAnnounce {
+        height: 100%;
+        border-style: solid;
+        width: 50%;
+        margin-left: auto;
+        margin-right: auto;
+        padding-top: 0.5%;
+    }
+    #homeAnnounce p {
+        text-align: center;
+        font-weight: bold;
+    }
+    #annDate {
+        color: grey;
+    }
+    #annTitle {
+        font-weight: bold;
+    }
+    #annDesc {
+        font-style: italic;
+    }
+    #staffNav {
+        color: black;
+    }
+</style>
+<div class="back">
 <h1 class="display-4">welcome back, {{ session["name"] }}!</h1>
+    <br>
+    <br>
 
-<br>
-<br>
-
-<div id="homeAnnounce">
+    <div id="homeAnnounce">
     <p class="display-4">Latest Announcements</p>
-    <table class="table">
+    <table class="table table-hover">
         <tbody>
          {% for ann in annList %}
             <tr>
@@ -17,12 +43,8 @@
                 <td id="annDesc">{{ ann.get_description() }}</td>
             </tr>
          {% endfor %}
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
         </tbody>
     </table>
+    </div>
 </div>
 {% endblock %}

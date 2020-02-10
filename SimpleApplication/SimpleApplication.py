@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.utils import secure_filename
-from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, \
-    ContactUsForm, ShowDetailsForm, PaymentForm, ShippingForm, UpdateUserDetailsForm
+from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm, ShowDetailsForm, PaymentForm, ShippingForm, UpdateUserDetailsForm
+
 from Cart import Cart, addtocartForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
@@ -11,13 +11,15 @@ import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, 
 # from pygal.style import CleanStyle, LightStyle
 
 
+import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping
+import os, pygal
+from pygal.style import LightStyle, CleanStyle
 
 UPLOAD_FOLDER = 'static/files'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
 
 app.config.from_mapping(
     SECRET_KEY='yeet'
@@ -240,7 +242,7 @@ def deleteContact(email):
 
 
 @app.route('/staffHome')
-def staffHome():
+def staffHome():  # staff Home route
     annDict = {}
 
     try:
@@ -255,7 +257,7 @@ def staffHome():
     annList = []
     keyList = []
     count = 0
-    for key in annDict:
+    for key in annDict:  # to display 5 latest announcements
         if count < 5:
             announcement = annDict.get(key)
             annList.append(announcement)
@@ -267,21 +269,6 @@ def staffHome():
 
     return render_template('staffHome.html', annList=annList, keyList=keyList)
 
-
-@app.route('/readMoreAnn/<key>')
-def readMoreAnn(key):
-    readMoreAnn = ReadMoreAnnouncement(request.form)
-
-    annDict = {}
-    db = shelve.open('storage.db', 'r')
-    annDict = db['Announcements']
-    db.close()
-    announcement = annDict.get(key)
-    readMoreAnn.date.data = announcement.get_date()
-    readMoreAnn.title.data = announcement.get_title()
-    readMoreAnn.description.data = announcement.get_description()
-
-    return render_template('staffHome.html', form=readMoreAnn)
 
 
 @app.route('/inventory')
@@ -357,7 +344,7 @@ def updateStockOrder(id):
         stockorderDict = db['StockOrder']
 
         stockorder = stockorderDict.get(id)
-        stockorder.set_shipmentStatus(updateStockOrderForm.shipmentStatus.data)
+        stockorder.set_shipmentStatus("Received")
         stockorder.set_receivedDate(updateStockOrderForm.receivedDate.data)
         db['StockOrder'] = stockorderDict
         db.close()
@@ -373,7 +360,6 @@ def updateStockOrder(id):
         print(stockorder)
         updateStockOrderForm.stockorderDate.data = stockorder.get_stockorderDate()
         updateStockOrderForm.shipmentDate.data = stockorder.get_shipmentDate()
-        updateStockOrderForm.shipmentStatus.data = stockorder.get_shipmentStatus()
         updateStockOrderForm.receivedDate.data = stockorder.get_receivedDate()
         updateStockOrderForm.stockItemSerial.data = stockorder.get_stockItemSerial()
         updateStockOrderForm.stockorderQuantity.data = stockorder.get_stockorderQuantity()
@@ -409,7 +395,7 @@ def createUser():
             print("Error in retrieving Users from storage.db.")
         finally:
             user = User.User(createUserForm.firstName.data, createUserForm.lastName.data,
-                             createUserForm.gender.data, createUserForm.DOB.data, createUserForm.email.data,
+                             createUserForm.DOB.data, createUserForm.gender.data, createUserForm.email.data,
                              createUserForm.pw.data, createUserForm.confirmpw.data)
             usersDict[user.get_email()] = user
             db['Users'] = usersDict
@@ -615,12 +601,7 @@ def updateItem(id):
             flash('No selected file')
             return redirect(request.url)
         if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            filepath = os.path.join(os.path.join(app.config['UPLOAD_FOLDER'],filename))
-
-            if os.path.exists(filepath):
-                os.remove(filepath)
-
+            filename = secure_filename(str(updateItemForm.itemSerial.data + ".jpg"))
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
         item = itemDict.get(id)
@@ -651,7 +632,7 @@ def updateItem(id):
         return render_template('updateItem.html', form=updateItemForm)
 
 
-@app.route('/customerDemo')
+@app.route('/customerDemo')  # route to show customer analytics/demographic
 def customerDemo():
     femCount = 0
     maleCount = 0
@@ -662,41 +643,40 @@ def customerDemo():
     db = shelve.open('storage.db', 'c')
     usersDict = db["Users"]
 
-    for x in usersDict.values():
+    for x in usersDict.values():  # for loop through dictionary to count gender
         if x.get_gender() == "F" or x.get_gender() == "Female":
             femCount += 1
         elif x.get_gender() == "M" or x.get_gender() == "Male":
             maleCount += 1
 
-    for x in usersDict.values():
-        dob = str(x.get_DOB())
-        print(dob)
+    for x in usersDict.values():  # for loop to get a list of all the ages of our customers
+        dob = str(x.get_DOB())  # str the dob to be able to .split()
         splitted = dob.split("-")
-        print(splitted)
-        year = splitted[0]
+        year = splitted[0]  # retrieve year
 
-        age = 2020 - int(year)
+        age = 2020 - int(year)  # get age
 
         ageList.append(age)
 
-    pie = pygal.Pie(style=LightStyle)
-    pie.title = "Proportion of Male and Female Customers"
-    pie.add("Female", femCount)
-    pie.add("Male", maleCount)
-    pie = pie.render_data_uri()
+    pie = pygal.Pie(style=LightStyle)  # creating pie chart
+    pie.title = "Proportion of Male and Female Customers"  # title of pie chart
+    pie.add("Female", femCount)  # adds "Female" as an attribute of the chart and its count
+    pie.add("Male", maleCount)  # adds "Male" as an attribute of the chart and its count
+    pie = pie.render_data_uri()  # renders chart
 
-    ageCount = {}
-    for x in ageList:
-        ageCount[x] = ageCount.get(x, 0) + 1
+    ageCount = {}  # dictionary to hold count of individual ages
+    for x in ageList:  # x = age
+        ageCount[x] = ageCount.get(x, 0) + 1  # plus one to the value of the key, creating it with value zero if key does not exist
 
-    pie2 = pygal.Pie(style=CleanStyle)
-    pie2.title = "Proportion of Customer Ages"
-    for age, count in ageCount.items():
-        age = str(age)
-        pie2.add(age, count)
-    pie2 = pie2.render_data_uri()
+    pie2 = pygal.Pie(style=CleanStyle)  # creating pie chart
+    pie2.title = "Proportion of Customer Ages"  # title
+    for age, count in ageCount.items():  # for loop to add an attribute for every unique age
+        age = str(age)  # str age to overcome a problem with .render_data_uri()
+        pie2.add(age, count)  # adds attribute and count
+    pie2 = pie2.render_data_uri()  # render
 
     return render_template("customerDemo.html", chart = pie, chart2 = pie2)
+
 
 
 @app.route('/createStaff', methods=['GET', 'POST'])
@@ -715,19 +695,19 @@ def createStaff():
                             createStaffForm.hp.data, createStaffForm.dob.data, createStaffForm.password.data,
                             createStaffForm.address.data, createStaffForm.type.data)
 
-        staffDict[staff.get_eID()] = staff
-        db['Staff'] = staffDict
-        db['staffCount'] = Staff.Staff.count
+        staffDict[staff.get_eID()] = staff  # creates a key value pair in staffDict to "register" staff. key is Employee ID, value is staff object
+        db['Staff'] = staffDict  # put dict back in persistence
+        db['staffCount'] = Staff.Staff.count  # since eID is unique and incremental, count is saved back into persistence
 
         db.close()
-        return redirect(url_for('staffAccounts'))
+        return redirect(url_for('staffAccounts'))  # for admin to look at staff accounts, to check that staff account is created successfully
     return render_template('createStaff.html', form=createStaffForm)
 
 
 @app.route('/updateStaff/<int:eID>', methods=['GET', 'POST'])
 def updateStaff(eID):
     updateStaffForm = UpdateStaffForm(request.form)
-    eID2 = str(eID).zfill(6)
+    eID2 = str(eID).zfill(6)  # eID is 6 digits long, so first few accounts will have leading zeroes. This is to fill the leading zeroes
     if request.method == 'POST' and updateStaffForm.validate():
         staffDict = {}
         db = shelve.open('storage.db', 'c')
@@ -736,7 +716,9 @@ def updateStaff(eID):
         except:
             print("Error in retrieving Staff from storage.db.")
 
-        staff = staffDict.get(eID2)
+        staff = staffDict.get(eID2)  # gets staff object that admin is updating
+
+        # updates the following fields
         staff.set_fname(updateStaffForm.fname.data)
         staff.set_lname(updateStaffForm.lname.data)
         staff.set_gender(updateStaffForm.gender.data)
@@ -744,16 +726,19 @@ def updateStaff(eID):
         staff.set_address(updateStaffForm.address.data)
         staff.set_type(updateStaffForm.type.data)
 
+        # checks if admin wants to reset the password of staff account
         if updateStaffForm.resetpass.data == True:
             hp = staff.get_hp()
 
+            # format of pw = staff first name and last 4 digits of hp
             newpass = staff.get_fname() + hp[-4:]
 
+            # sets the new password
             staff.set_password(newpass)
 
             print("Successfully resetted password. New password is", newpass)
-            session["newPass"] = newpass
 
+        # puts newly updated staff object back into persistence
         staffDict[staff.get_eID()] = staff
         db['Staff'] = staffDict
         db.close()
@@ -765,7 +750,9 @@ def updateStaff(eID):
         staffDict = db['Staff']
         db.close()
 
+        # retrieves staff object in question
         staff = staffDict.get(eID2)
+        # sets fields of form
         updateStaffForm.fname.data = staff.get_fname()
         updateStaffForm.lname.data = staff.get_lname()
         updateStaffForm.gender.data = staff.get_gender()
@@ -786,9 +773,9 @@ def login():
     field4 = False
 
     if request.method == 'POST' and loginForm.validate():
-        email = loginForm.email.data
-        emailSplit = email.split("@")
-        domain = emailSplit[1]
+        email = loginForm.email.data  # retrieves email from login form
+        emailSplit = email.split("@")  # splits email for staff account check
+        domain = emailSplit[1]  # gets domain of emaill
 
         userDict = {}
         try:
@@ -796,20 +783,20 @@ def login():
         except:
             print("Unable to retrieve storage.db")
 
-        if domain == "monoqlo.com":
+        if domain == "monoqlo.com":  # checks if email is company issued
             try:
                 userDict = db['Staff']
             except:
                 print("Error in retrieving Staff from storage.db")
 
-            for user, object in userDict.items():
-                if user == emailSplit[0]:
+            for user, object in userDict.items():  # loops through each key value pair in staffDict
+                if user == emailSplit[0]:  # since staff objects are stored with eID as key, which is the first half of their email, we check if emailSplit[0] matches the key
                     field1 = True
-                    if object.get_password() == loginForm.password.data:
+                    if object.get_password() == loginForm.password.data:  # if eID matches, this checks password
                         field2 = True
-                        session["email"] = email
-                        session["name"] = object.get_fname()
-                        session["type"] = object.get_type()
+                        session["email"] = email  # sets session email as given email
+                        session["name"] = object.get_fname()  # sets staff first name in session
+                        session["type"] = object.get_type()  # sets staff account type in session
 
         else:
             print("User account.")
@@ -827,24 +814,24 @@ def login():
                             session["useremail"] = email
                             session["username"] = object.get_firstName()
 
-        if field1 == True and field2 == True:
+        if field1 == True and field2 == True:  # if staff login passes both email and password, they will be redirected to staffHome
             print("Successfully logged in!")
             return redirect(url_for('staffHome'))
         elif field3 == True and field4 == True:
             db.close()
             return redirect(url_for('home'))
-        elif field1 == False and field2 == True or field3 == False and field4 == True:
+        elif field1 == False and field2 == True or field3 == False and field4 == True:  # invalid email entered
             print("Invalid Email.")
-        elif field1 == True and field2 == False or field3 == True and field4 == False:
+        elif field1 == True and field2 == False or field3 == True and field4 == False:  # invalid password
             print("Invalid Password.")
-        else:
+        else:  # both fields invalid
             print("Invalid credentials. Please try again.")
 
     return render_template('login.html', form=loginForm)
 
 
 @app.route('/logout')
-def logout():
+def logout():  # when users logout, session storages are cleared and they are redirected back home.html
     try:
         session["email"] = ""
         session["name"] = ""
@@ -859,7 +846,7 @@ def logout():
 
 
 @app.route('/staffAccounts')
-def staffAccounts():
+def staffAccounts():  # lists staff accounts
     staffDict = {}
 
     try:
@@ -880,12 +867,12 @@ def staffAccounts():
 
 
 @app.route('/deleteStaff/<int:eID>', methods=['GET', 'POST'])
-def deleteStaff(eID):
+def deleteStaff(eID):  # delete staff from persistence
     staffDict = {}
     db = shelve.open("storage.db", "w")
     staffDict = db["Staff"]
 
-    eID2 = str(eID).zfill(6)
+    eID2 = str(eID).zfill(6)  # fills eID just in case
     staffDict.pop(eID2)  # action of removing the record
     db["Staff"] = staffDict  # put back to persistence
     db.close()
@@ -895,31 +882,32 @@ def deleteStaff(eID):
 
 
 @app.route('/staffAccountDetails', methods=['GET', 'POST'])
-def staffAccountDetails():
+def staffAccountDetails():  # for normal staff to see their own account details
     showDetailsForm = ShowDetailsForm(request.form)
 
-    email = session["email"]
+    email = session["email"]  # retrieves staff's email
 
     split = email.split("@")
-    eID = split[0]
+    eID = split[0]  # gets eID from email
 
     staffDict = {}
     db = shelve.open('storage.db', 'r')
     staffDict = db['Staff']
-    staff = staffDict.get(eID)
+    staff = staffDict.get(eID)  # retrieves their object
 
-    if request.method == "POST" and showDetailsForm.validate():
-        if showDetailsForm.oldpass.data == staff.get_password():
+    if request.method == "POST" and showDetailsForm.validate():  # if they choose to change their password
+        if showDetailsForm.oldpass.data == staff.get_password():  # checks to see if they can enter their current password for security measures
             print("Successfully changed password!")
-            staff.set_password(showDetailsForm.newpass.data)
+            staff.set_password(showDetailsForm.newpass.data)  # sets new password
 
-            staffDict[eID] = staff
+            staffDict[eID] = staff  # puts updated staff object back into storage
             db["Staff"] = staffDict
             db.close()
 
-            return redirect(url_for('logout'))
+            return redirect(url_for('logout'))  # logs them out to let them log in with their new password
 
     else:
+        #  sets fields of form
         showDetailsForm.name.data = staff.get_fname() + " " + staff.get_lname()
         showDetailsForm.type.data = staff.get_type()
         showDetailsForm.gender.data = staff.get_gender()
@@ -931,7 +919,7 @@ def staffAccountDetails():
 
 
 @app.route('/createAnnouncement', methods=['GET', 'POST'])
-def createAnnouncement():
+def createAnnouncement():  # for admin to create announcement
     createAnnouncementForm = CreateAnnouncement(request.form)
 
     if request.method == 'POST' and createAnnouncementForm.validate():
@@ -943,22 +931,23 @@ def createAnnouncement():
         except:
             print("Error in retrieving Staff from storage.db.")
 
+        # creates announcement object
         announcement = Announcement.Announcement(createAnnouncementForm.date.data, createAnnouncementForm.title.data)
         announcement.set_description(createAnnouncementForm.description.data)
 
-        annDict[Announcement.Announcement.count] = announcement
+        annDict[Announcement.Announcement.count] = announcement  # puts it into dict, with count as key
 
-        sort = dict(sorted(annDict.items(), key=lambda x: x[0], reverse=True))
+        sort = dict(sorted(annDict.items(), key=lambda x: x[0], reverse=True))  # sorts dict so that the most recent one will be first for retrieving purposes
 
         db['Announcements'] = sort
-        db['annCount'] = Announcement.Announcement.count
+        db['annCount'] = Announcement.Announcement.count  # saves count so that future announcements can be sorted
         db.close()
         return redirect(url_for('retrieveAnnouncements'))
     return render_template('createAnnouncement.html', form=createAnnouncementForm)
 
 
 @app.route('/retrieveAnnouncements')
-def retrieveAnnouncements():
+def retrieveAnnouncements():  # to display announcements for admin
     annDict = {}
 
     try:
@@ -979,7 +968,7 @@ def retrieveAnnouncements():
 
 
 @app.route('/retrieveNormalAnnouncements')
-def retrieveNormalAnnouncements():
+def retrieveNormalAnnouncements():  # to display announcements for normal staff
     annDict = {}
 
     try:
@@ -1000,20 +989,20 @@ def retrieveNormalAnnouncements():
 
 
 @app.before_request
-def deleteDict():
+def deleteDict():  # to use for deletion of any persistence
     dict = {}
-    # db = shelve.open("storage.db", "w")
-    # db["Users"] = dict
-    # # db["Items"] = dict
-    # # db["StockOrder"] = dict
-    # # db["stockordercount"] = dict
+    #db = shelve.open("storage.db", "w")
+    #db["itemcount"] = dict
+    #db["Items"] = dict
+    #db["StockOrder"] = dict
+    #db["stockordercount"] = dict
     # # db["staffCount"] = dict
-    # db.close()
-    # print("Cleared")
+    #db.close()
+    #print("Cleared")
 
 
 @app.route('/deleteAnnouncement/<int:id>', methods=['GET', 'POST'])
-def deleteAnnouncement(id):
+def deleteAnnouncement(id):  # for admin to delete annnouncements
     annDict = {}
     db = shelve.open("storage.db", "w")
     annDict = db["Announcements"]
@@ -1044,11 +1033,18 @@ def catalogueHis():
     db.close()
 
     itemList = []
+    itemTopsList = []
+    itemBotsList = []
     for key in itemDict:
         if key[9] == "M":
             item = itemDict.get(key)
             itemList.append(item)
-    return render_template('catalogueHis.html', itemList=itemList, count=len(itemList))
+            if key[8] == "T":
+                itemTopsList.append(item)
+            elif key[8] == "B":
+                itemBotsList.append(item)
+    return render_template('catalogueHis.html', itemList=itemList, itemTopsList=itemTopsList,
+                           itemBotsList=itemBotsList, count=len(itemList))
 
 
 @app.route('/catalogueHers')
@@ -1128,7 +1124,6 @@ def itemDetailsHers(id):
         print(cartDict.keys())
         db.close()
     return render_template('catalogueItemDetailsHers.html', itemList=itemList, count=len(itemList))
-
 
 if __name__ == '__main__':
     app.run()

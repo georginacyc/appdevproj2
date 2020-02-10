@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Item{% endblock %}
+{% block title %}Catalogue - Hers{% endblock %}
 {% block content %}
 <style>
     * {
@@ -73,11 +73,24 @@
 <h2>Ladies'</h2>
 <hr><br>
 <div class="cardRows">
-    {% for item in itemList %}
+    {% for item in itemTopsList %}
       <div class="column">
         <div class="card">
 <!--            <div class="productImage" style="background-image: url(static/files/81331919TM.jpg);"></div>-->
             <img src="static/files/{{item.get_itemSerial() + '.jpg'}}" alt="imagePic" style="width:100%">
+            <h4>{{item.get_itemName()}}</h4>
+            <p>{{"$" + "%0.2f" % item.get_itemPrice()}}</p>
+            <br>
+            <a href="/catalogueItemDetailsHers/{{item.get_itemSerial()}}" class="btn btn-info">View Item Details</a>
+        </div>
+      </div>
+    {% endfor %}
+</div>
+<div class="cardRows">
+    {% for item in itemBotsList %}
+      <div class="column">
+        <div class="card">
+            <img src="static/files/{{item.get_itemSerial()+'.jpg'}}" alt="imagePic" style="width:100%">
             <h4>{{item.get_itemName()}}</h4>
             <p>{{"$" + "%0.2f" % item.get_itemPrice()}}</p>
             <br>
