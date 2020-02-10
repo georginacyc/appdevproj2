@@ -2,17 +2,29 @@
 {% block title %}monoqolo - new staff{% endblock %}
 {% block content %}
 <style>
-   #chart {
-      width: 50%;
+   .chart {
+      width: 45%;
+      margin-left: auto;
+      margin-right: auto;
+      display: inline-block;
+   }
+   .pies {
+      margin-left: auto;
+      margin-right: auto;
+   }
+   .yeet {
+      right: 0;
    }
 </style>
 
-<div id="chart">
-   <embed type="image/svg+xml" src={{ chart|safe }}>
-</div>
+<div class="pies">
+   <div class="chart">
+      <embed type="image/svg+xml" src={{ chart|safe }}>
+   </div>
 
-<div id="chart2">
-   <embed type="image/svg+xml" src={{ chart2|safe }}>
+   <div class="chart yeet">
+      <embed type="image/svg+xml" src={{ chart2|safe }}>
+   </div>
 </div>
 
 {% endblock %}

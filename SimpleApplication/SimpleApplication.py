@@ -7,7 +7,7 @@ from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping
 import os, pygal
-
+from pygal.style import CleanStyle, LightStyle
 
 
 
@@ -39,6 +39,33 @@ def retrieveFiles():
 @app.route('/')
 def home():
     return render_template('home.html')
+
+@app.route('/invoice')
+def invoice():
+    cartDict = {}
+    db = shelve.open('storage.db', 'r')
+    cartDict = db['Cart']
+    db.close()
+
+    cartList = []
+    for key in cartDict:
+        item = cartDict.get(key)
+        cartList.append(item)
+
+
+    shippingDict = {}
+    db = shelve.open('storage.db', 'r')
+    shippingDict = db['Shipping']
+    db.close()
+
+    shippingList = []
+    for email in shippingDict:
+        shipping = shippingDict.get(email)
+        shippingList.append(shipping)
+
+    return render_template('invoice.html', cartList=cartList, shippingList=shippingList)
+
+
 
 @app.route('/testcart', methods=['GET', 'POST'])
 def testcart():
@@ -74,37 +101,37 @@ def deletetestCart(cart):
 
 
 
-@app.route('/cart', methods=['GET', 'POST'])
-def cart():
-    global db
-    cartDict = {}
-    try:
-        db = shelve.open('storage.db', 'r')
-        cartDict = db['Cart']
-    except:
-        print("Error")
-    finally:
-        db.close()
-
-    cartList = []
-    for key in cartDict:
-        item = cartDict.get(key)
-        cartList.append(item)
-    return render_template('cart.html', cartList=cartList, count=len(cartList))
-
-
-@app.route('/deleteCart/<cart>/', methods=['GET', 'POST'])
-def deleteCart(cart):
-    cartDict = {}
-    db = shelve.open('storage.db', 'w')
-    cartDict = db['Cart']
-
-    cartDict.pop(cart)  # action of removing the record
-    db['Cart'] = cartDict  # put back to persistence
-    db.close()
-
-    # after we delete successfully
-    return redirect(url_for('cart'))
+# @app.route('/cart', methods=['GET', 'POST'])
+# def cart():
+#     global db
+#     cartDict = {}
+#     try:
+#         db = shelve.open('storage.db', 'r')
+#         cartDict = db['Cart']
+#     except:
+#         print("Error")
+#     finally:
+#         db.close()
+#
+#     cartList = []
+#     for key in cartDict:
+#         item = cartDict.get(key)
+#         cartList.append(item)
+#     return render_template('cart.html', cartList=cartList, count=len(cartList))
+#
+#
+# @app.route('/deleteCart/<cart>/', methods=['GET', 'POST'])
+# def deleteCart(cart):
+#     cartDict = {}
+#     db = shelve.open('storage.db', 'w')
+#     cartDict = db['Cart']
+#
+#     cartDict.pop(cart)  # action of removing the record
+#     db['Cart'] = cartDict  # put back to persistence
+#     db.close()
+#
+#     # after we delete successfully
+#     return redirect(url_for('cart'))
 
 
 @app.route('/checkout')
@@ -128,7 +155,7 @@ def address():
         shippingDict[shipping.get_email()] = shipping
         db['Shipping'] = shippingDict
         db.close()
-        return redirect(url_for('home'))
+        return redirect(url_for('invoice'))
     return render_template('address.html', form=shippingForm)
 
 @app.route('/retrieveAddress')
@@ -635,26 +662,24 @@ def customerDemo():
 
         ageList.append(age)
 
-    pie = pygal.Pie()
+    pie = pygal.Pie(style=LightStyle)
     pie.title = "Proportion of Male and Female Customers"
     pie.add("Female", femCount)
     pie.add("Male", maleCount)
-    pie = pie.render()
+    pie = pie.render_data_uri()
 
     ageCount = {}
     for x in ageList:
         ageCount[x] = ageCount.get(x, 0) + 1
-    print(ageCount)
 
-    # pie2 = pygal.Pie()
-    # pie2.title = "Proportion of Customer Ages"
-    # for age, count in ageCount.items():
-    #     print("yeet")
-    #     pie2.add(age, count)
-    #     print("yeet2")
-    # pie2 = pie2.render()
+    pie2 = pygal.Pie(style=CleanStyle)
+    pie2.title = "Proportion of Customer Ages"
+    for age, count in ageCount.items():
+        age = str(age)
+        pie2.add(age, count)
+    pie2 = pie2.render_data_uri()
 
-    return render_template("customerDemo.html", chart = pie)
+    return render_template("customerDemo.html", chart = pie, chart2 = pie2)
 
 
 @app.route('/createStaff', methods=['GET', 'POST'])
@@ -907,7 +932,6 @@ def createAnnouncement():
         annDict[Announcement.Announcement.count] = announcement
 
         sort = dict(sorted(annDict.items(), key=lambda x: x[0], reverse=True))
-        print(sort.keys())
 
         db['Announcements'] = sort
         db['annCount'] = Announcement.Announcement.count
