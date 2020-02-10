@@ -6,9 +6,8 @@ from Cart import Cart, addtocartForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping
-import os
-
-
+import os, pygal
+from collections import Counter
 
 
 
@@ -365,7 +364,7 @@ def createUser():
             print("Error in retrieving Users from storage.db.")
         finally:
             user = User.User(createUserForm.firstName.data, createUserForm.lastName.data,
-                             createUserForm.DOB.data, createUserForm.gender.data, createUserForm.email.data,
+                             createUserForm.gender.data, createUserForm.DOB.data, createUserForm.email.data,
                              createUserForm.pw.data, createUserForm.confirmpw.data)
             usersDict[user.get_email()] = user
             db['Users'] = usersDict
@@ -608,6 +607,7 @@ def customerDemo():
     maleCount = 0
 
     usersDict = {}
+    ageList = []
 
     db = shelve.open('storage.db', 'c')
     usersDict = db["Users"]
@@ -618,11 +618,35 @@ def customerDemo():
         elif x.get_gender() == "M" or x.get_gender() == "Male":
             maleCount += 1
 
+    for x in usersDict.values():
+        dob = str(x.get_DOB())
+        print(dob)
+        splitted = dob.split("-")
+        print(splitted)
+        year = splitted[0]
+
+        age = 2020 - int(year)
+
+        ageList.append(age)
+
     pie = pygal.Pie()
     pie.title = "Proportion of Male and Female Customers"
     pie.add("Female", femCount)
     pie.add("Male", maleCount)
     pie = pie.render()
+
+    ageCount = {}
+    for x in ageList:
+        ageCount[x] = ageCount.get(x, 0) + 1
+    print(ageCount)
+
+    # pie2 = pygal.Pie()
+    # pie2.title = "Proportion of Customer Ages"
+    # for age, count in ageCount.items():
+    #     print("yeet")
+    #     pie2.add(age, count)
+    #     print("yeet2")
+    # pie2 = pie2.render()
 
     return render_template("customerDemo.html", chart = pie)
 
@@ -931,14 +955,14 @@ def retrieveNormalAnnouncements():
 @app.before_request
 def deleteDict():
     dict = {}
-    #db = shelve.open("storage.db", "w")
-    #db["itemcount"] = dict
-    #db["Items"] = dict
-    #db["StockOrder"] = dict
-    #db["stockordercount"] = dict
+    # db = shelve.open("storage.db", "w")
+    # db["Users"] = dict
+    # # db["Items"] = dict
+    # # db["StockOrder"] = dict
+    # # db["stockordercount"] = dict
     # # db["staffCount"] = dict
-    #db.close()
-    #print("Cleared")
+    # db.close()
+    # print("Cleared")
 
 
 @app.route('/deleteAnnouncement/<int:id>', methods=['GET', 'POST'])
