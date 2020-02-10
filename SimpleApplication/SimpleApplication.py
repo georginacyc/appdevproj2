@@ -11,10 +11,6 @@ import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, 
 # from pygal.style import CleanStyle, LightStyle
 
 
-import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping
-import os, pygal
-from pygal.style import LightStyle, CleanStyle
-
 UPLOAD_FOLDER = 'static/files'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
@@ -66,7 +62,20 @@ def invoice():
         shipping = shippingDict.get(email)
         shippingList.append(shipping)
 
-    return render_template('invoice.html', cartList=cartList, shippingList=shippingList)
+
+    paymentDict = {}
+    db = shelve.open('storage.db', 'r')
+    paymentDict = db['Payment']
+    db.close()
+
+    paymentList = []
+    for cardno in paymentDict:
+        shipping = paymentDict.get(cardno)
+        paymentList.append(shipping)
+
+
+
+    return render_template('invoice.html', cartList=cartList, shippingList=shippingList, paymentList=paymentList)
 
 
 
@@ -154,8 +163,22 @@ def checkout():
         paymentDict[payment.get_name()] = payment
         db['Payment'] = paymentDict
         db.close()
-        return redirect(url_for('address'))
+        return redirect(url_for('invoice'))
     return render_template('checkout.html', form=paymentForm)
+
+@app.route('/retrievepayment')
+def retrievePayment():
+    paymentDict = {}
+    db = shelve.open('storage.db', 'r')
+    paymentDict = db['Payment']
+    db.close()
+
+    paymentList = []
+    for cardno in paymentDict:
+        shipping = paymentDict.get(cardno)
+        paymentList.append(shipping)
+
+    return render_template('retrievepayment.html', paymentList=paymentList)
 
 
 @app.route('/address', methods=['GET', 'POST'])
@@ -174,7 +197,7 @@ def address():
         shippingDict[shipping.get_email()] = shipping
         db['Shipping'] = shippingDict
         db.close()
-        return redirect(url_for('invoice'))
+        return redirect(url_for('checkout'))
     return render_template('address.html', form=shippingForm)
 
 @app.route('/retrieveAddress')
