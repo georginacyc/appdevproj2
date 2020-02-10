@@ -6,8 +6,11 @@ from Cart import Cart, addtocartForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping
-# import os, pygal
-from collections import Counter
+import os
+import plotly.graph_objects as go
+import dash, pygal
+import dash_core_components as dcc
+import dash_html_components as html
 
 
 
@@ -280,7 +283,7 @@ def createStockOrder():
         stockorderDict = {}
         db = shelve.open('storage.db', 'c')
         try:
-            stockorderDict = db['StockOrder']
+            stockorderDict = int(db['StockOrder'])
             StockOrder.StockOrder.countID = db['stockordercount']
         except IOError:
             print("IOError")
@@ -364,7 +367,7 @@ def createUser():
             print("Error in retrieving Users from storage.db.")
         finally:
             user = User.User(createUserForm.firstName.data, createUserForm.lastName.data,
-                             createUserForm.gender.data, createUserForm.DOB.data, createUserForm.email.data,
+                             createUserForm.DOB.data, createUserForm.gender.data, createUserForm.email.data,
                              createUserForm.pw.data, createUserForm.confirmpw.data)
             usersDict[user.get_email()] = user
             db['Users'] = usersDict
@@ -426,16 +429,18 @@ def updateUser(email):
 
         return render_template('updateUser.html', form=updateUserForm)
 
-@app.route('/userDetails/<email>', methods=['GET', 'POST'])
+@app.route('/userDetails/<email>/', methods=['GET', 'POST'])
 def userDetails(email):
     updateUserDetailsForm = UpdateUserDetailsForm(request.form)
-    email = session["useremail"]
-
-    userDict = {}
-    db = shelve.open('storage.db', 'r')
-    userDict = db['email']
 
     if request.method == 'POST' and updateUserDetailsForm.validate():
+
+        userDict = {}
+        db = shelve.open('storage.db', 'w')
+        try:
+            userDict = db['Users']
+        except:
+            print("Error in retrieving User from storage.db")
         user = userDict.get(email)
         user.set_firstName(updateUserDetailsForm.firstName.data)
         user.set_lastName(updateUserDetailsForm.lastName.data)
@@ -448,6 +453,10 @@ def userDetails(email):
 
         return redirect(url_for('userDetails'))
     else:
+        userDict = {}
+        db = shelve.open('storage.db', 'r')
+        userDict = db['Users']
+        db.close()
         user = userDict.get(email)
         updateUserDetailsForm.firstName.data = user.get_firstName()
         updateUserDetailsForm.lastName.data = user.get_lastName()
@@ -601,7 +610,6 @@ def customerDemo():
     maleCount = 0
 
     usersDict = {}
-    ageList = []
 
     db = shelve.open('storage.db', 'c')
     usersDict = db["Users"]
@@ -612,39 +620,13 @@ def customerDemo():
         elif x.get_gender() == "M" or x.get_gender() == "Male":
             maleCount += 1
 
-    for x in usersDict.values():
-        dob = str(x.get_DOB())
-        print(dob)
-        splitted = dob.split("-")
-        print(splitted)
-        year = splitted[0]
-
-        age = 2020 - int(year)
-
-        ageList.append(age)
-
     pie = pygal.Pie()
     pie.title = "Proportion of Male and Female Customers"
     pie.add("Female", femCount)
     pie.add("Male", maleCount)
     pie = pie.render()
 
-    ageCount = {}
-    for x in ageList:
-        ageCount[x] = ageCount.get(x, 0) + 1
-    print(ageCount)
-
-    pie2 = pygal.Pie()
-    pie2.title = "Proportion of Customer Ages"
-    for age, count in ageCount.items():
-        age = str(age)
-        count = str(count)
-        print("yeet")
-        pie2.add(age, count)
-        print("yeet2")
-    pie2 = pie2.render()
-
-    return render_template("customerDemo.html", chart = pie, chart2 = pie2)
+    return render_template("customerDemo.html", chart = pie)
 
 
 @app.route('/createStaff', methods=['GET', 'POST'])
@@ -951,14 +933,14 @@ def retrieveNormalAnnouncements():
 @app.before_request
 def deleteDict():
     dict = {}
-    # db = shelve.open("storage.db", "w")
-    # db["Users"] = dict
-    # # db["Items"] = dict
-    # # db["StockOrder"] = dict
-    # # db["stockordercount"] = dict
+    #db = shelve.open("storage.db", "w")
+    #db["itemcount"] = dict
+    #db["Items"] = dict
+    #db["StockOrder"] = dict
+    #db["stockordercount"] = dict
     # # db["staffCount"] = dict
-    # db.close()
-    # print("Cleared")
+    #db.close()
+    #print("Cleared")
 
 
 @app.route('/deleteAnnouncement/<int:id>', methods=['GET', 'POST'])
