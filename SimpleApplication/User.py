@@ -1,6 +1,6 @@
 class User:
     countID=0
-    def __init__(self,firstName,lastName,gender,DOB,email,pw,confirmpw):
+    def __init__(self,firstName,lastName,DOB,gender,email,pw,confirmpw):
         User.countID+=1
         self.__userID=User.countID
         self.__firstName=firstName

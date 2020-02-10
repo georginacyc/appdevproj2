@@ -7,7 +7,6 @@ from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping
 import os, pygal
-from pygal.style import CleanStyle, LightStyle
 
 
 
@@ -16,7 +15,6 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
 
 app.config.from_mapping(
     SECRET_KEY='yeet'
@@ -39,33 +37,6 @@ def retrieveFiles():
 @app.route('/')
 def home():
     return render_template('home.html')
-
-@app.route('/invoice')
-def invoice():
-    cartDict = {}
-    db = shelve.open('storage.db', 'r')
-    cartDict = db['Cart']
-    db.close()
-
-    cartList = []
-    for key in cartDict:
-        item = cartDict.get(key)
-        cartList.append(item)
-
-
-    shippingDict = {}
-    db = shelve.open('storage.db', 'r')
-    shippingDict = db['Shipping']
-    db.close()
-
-    shippingList = []
-    for email in shippingDict:
-        shipping = shippingDict.get(email)
-        shippingList.append(shipping)
-
-    return render_template('invoice.html', cartList=cartList, shippingList=shippingList)
-
-
 
 @app.route('/testcart', methods=['GET', 'POST'])
 def testcart():
@@ -101,37 +72,37 @@ def deletetestCart(cart):
 
 
 
-# @app.route('/cart', methods=['GET', 'POST'])
-# def cart():
-#     global db
-#     cartDict = {}
-#     try:
-#         db = shelve.open('storage.db', 'r')
-#         cartDict = db['Cart']
-#     except:
-#         print("Error")
-#     finally:
-#         db.close()
-#
-#     cartList = []
-#     for key in cartDict:
-#         item = cartDict.get(key)
-#         cartList.append(item)
-#     return render_template('cart.html', cartList=cartList, count=len(cartList))
-#
-#
-# @app.route('/deleteCart/<cart>/', methods=['GET', 'POST'])
-# def deleteCart(cart):
-#     cartDict = {}
-#     db = shelve.open('storage.db', 'w')
-#     cartDict = db['Cart']
-#
-#     cartDict.pop(cart)  # action of removing the record
-#     db['Cart'] = cartDict  # put back to persistence
-#     db.close()
-#
-#     # after we delete successfully
-#     return redirect(url_for('cart'))
+@app.route('/cart', methods=['GET', 'POST'])
+def cart():
+    global db
+    cartDict = {}
+    try:
+        db = shelve.open('storage.db', 'r')
+        cartDict = db['Cart']
+    except:
+        print("Error")
+    finally:
+        db.close()
+
+    cartList = []
+    for key in cartDict:
+        item = cartDict.get(key)
+        cartList.append(item)
+    return render_template('cart.html', cartList=cartList, count=len(cartList))
+
+
+@app.route('/deleteCart/<cart>/', methods=['GET', 'POST'])
+def deleteCart(cart):
+    cartDict = {}
+    db = shelve.open('storage.db', 'w')
+    cartDict = db['Cart']
+
+    cartDict.pop(cart)  # action of removing the record
+    db['Cart'] = cartDict  # put back to persistence
+    db.close()
+
+    # after we delete successfully
+    return redirect(url_for('cart'))
 
 
 @app.route('/checkout')
@@ -155,7 +126,7 @@ def address():
         shippingDict[shipping.get_email()] = shipping
         db['Shipping'] = shippingDict
         db.close()
-        return redirect(url_for('invoice'))
+        return redirect(url_for('home'))
     return render_template('address.html', form=shippingForm)
 
 @app.route('/retrieveAddress')
@@ -308,7 +279,7 @@ def createStockOrder():
         stockorderDict = {}
         db = shelve.open('storage.db', 'c')
         try:
-            stockorderDict = db['StockOrder']
+            stockorderDict = int(db['StockOrder'])
             StockOrder.StockOrder.countID = db['stockordercount']
         except IOError:
             print("IOError")
@@ -392,7 +363,7 @@ def createUser():
             print("Error in retrieving Users from storage.db.")
         finally:
             user = User.User(createUserForm.firstName.data, createUserForm.lastName.data,
-                             createUserForm.gender.data, createUserForm.DOB.data, createUserForm.email.data,
+                             createUserForm.DOB.data, createUserForm.gender.data, createUserForm.email.data,
                              createUserForm.pw.data, createUserForm.confirmpw.data)
             usersDict[user.get_email()] = user
             db['Users'] = usersDict
@@ -635,7 +606,6 @@ def customerDemo():
     maleCount = 0
 
     usersDict = {}
-    ageList = []
 
     db = shelve.open('storage.db', 'c')
     usersDict = db["Users"]
@@ -646,35 +616,13 @@ def customerDemo():
         elif x.get_gender() == "M" or x.get_gender() == "Male":
             maleCount += 1
 
-    for x in usersDict.values():
-        dob = str(x.get_DOB())
-        print(dob)
-        splitted = dob.split("-")
-        print(splitted)
-        year = splitted[0]
-
-        age = 2020 - int(year)
-
-        ageList.append(age)
-
-    pie = pygal.Pie(style=LightStyle)
+    pie = pygal.Pie()
     pie.title = "Proportion of Male and Female Customers"
     pie.add("Female", femCount)
     pie.add("Male", maleCount)
-    pie = pie.render_data_uri()
+    pie = pie.render()
 
-    ageCount = {}
-    for x in ageList:
-        ageCount[x] = ageCount.get(x, 0) + 1
-
-    pie2 = pygal.Pie(style=CleanStyle)
-    pie2.title = "Proportion of Customer Ages"
-    for age, count in ageCount.items():
-        age = str(age)
-        pie2.add(age, count)
-    pie2 = pie2.render_data_uri()
-
-    return render_template("customerDemo.html", chart = pie, chart2 = pie2)
+    return render_template("customerDemo.html", chart = pie)
 
 
 @app.route('/createStaff', methods=['GET', 'POST'])
@@ -981,14 +929,14 @@ def retrieveNormalAnnouncements():
 @app.before_request
 def deleteDict():
     dict = {}
-    # db = shelve.open("storage.db", "w")
-    # db["Users"] = dict
-    # # db["Items"] = dict
-    # # db["StockOrder"] = dict
-    # # db["stockordercount"] = dict
+    #db = shelve.open("storage.db", "w")
+    #db["itemcount"] = dict
+    #db["Items"] = dict
+    #db["StockOrder"] = dict
+    #db["stockordercount"] = dict
     # # db["staffCount"] = dict
-    # db.close()
-    # print("Cleared")
+    #db.close()
+    #print("Cleared")
 
 
 @app.route('/deleteAnnouncement/<int:id>', methods=['GET', 'POST'])
@@ -1023,17 +971,11 @@ def catalogueHis():
     db.close()
 
     itemList = []
-    itemTopsList = []
-    itemBotsList = []
     for key in itemDict:
         if key[9] == "M":
             item = itemDict.get(key)
             itemList.append(item)
-            if key[8] == "T":
-                itemTopsList.append(item)
-            elif key[8] == "B":
-                itemBotsList.append(item)
-    return render_template('catalogueHis.html', itemList=itemList, itemTopsList=itemTopsList,itemBotsList=itemBotsList, count=len(itemList))
+    return render_template('catalogueHis.html', itemList=itemList, count=len(itemList))
 
 
 @app.route('/catalogueHers')
@@ -1054,7 +996,8 @@ def catalogueHers():
                 itemTopsList.append(item)
             elif key[8] == "B":
                 itemBotsList.append(item)
-    return render_template('catalogueHers.html', itemList=itemList, itemTopsList=itemTopsList,itemBotsList=itemBotsList, count=len(itemList))
+    return render_template('catalogueHers.html', itemList=itemList, itemTopsList=itemTopsList,
+                           itemBotsList=itemBotsList, count=len(itemList))
 
 
 @app.route('/catalogueItemDetailsHis/<id>/', methods=['GET', 'POST'])
