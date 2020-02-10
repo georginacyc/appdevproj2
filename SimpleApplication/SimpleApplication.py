@@ -6,7 +6,7 @@ from Cart import Cart, addtocartForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping
-import os, pygal
+# import os, pygal
 from collections import Counter
 
 
@@ -426,18 +426,16 @@ def updateUser(email):
 
         return render_template('updateUser.html', form=updateUserForm)
 
-@app.route('/userDetails/<email>/', methods=['GET', 'POST'])
+@app.route('/userDetails/<email>', methods=['GET', 'POST'])
 def userDetails(email):
     updateUserDetailsForm = UpdateUserDetailsForm(request.form)
+    email = session["useremail"]
+
+    userDict = {}
+    db = shelve.open('storage.db', 'r')
+    userDict = db['email']
 
     if request.method == 'POST' and updateUserDetailsForm.validate():
-
-        userDict = {}
-        db = shelve.open('storage.db', 'w')
-        try:
-            userDict = db['Users']
-        except:
-            print("Error in retrieving User from storage.db")
         user = userDict.get(email)
         user.set_firstName(updateUserDetailsForm.firstName.data)
         user.set_lastName(updateUserDetailsForm.lastName.data)
@@ -450,10 +448,6 @@ def userDetails(email):
 
         return redirect(url_for('userDetails'))
     else:
-        userDict = {}
-        db = shelve.open('storage.db', 'r')
-        userDict = db['Users']
-        db.close()
         user = userDict.get(email)
         updateUserDetailsForm.firstName.data = user.get_firstName()
         updateUserDetailsForm.lastName.data = user.get_lastName()
