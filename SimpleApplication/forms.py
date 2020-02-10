@@ -64,7 +64,7 @@ class ContactUsForm(Form):
     fname = StringField("First Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Lily"})
     lname = StringField("Last Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Doe"})
     email= EmailField('Email', [validators.InputRequired()])
-    text = StringField("Inquiries",[validators.Length(min=1, max=500),validators.DataRequired()],render_kw={"placeholder": "Didn't receive order..."})
+    text = TextAreaField("Inquiries",[validators.Length(min=1, max=500),validators.DataRequired()],render_kw={"placeholder": "Didn't receive order..."})
 
 class PaymentForm(Form):
     name = StringField("Name",[validators.Length(min=1, max=150),validators.DataRequired()])

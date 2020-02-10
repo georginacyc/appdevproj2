@@ -40,30 +40,6 @@
 }
 .text-right {
 	float:right;
-
-.btn {
-  font-size: 16px;
-  width: 163px;
-  height: 48px;
-  cursor: pointer;
-  transition: all .2s ease-in-out;
-  letter-spacing: 1px;
-  border: none;
-  border-radius: 23px;
-}
-
-
-.next-btn {
-  color: #fff;
-  background: #1abc9c;
-}
-
-.btn:focus {
-  outline: none;
-}
-
-.btn:hover {
-  transform: scale(1.1);
 }
 </style>
 <script>
@@ -83,7 +59,6 @@ window.onload = function showTotal() {
 	var xprice = sessionStorage.getItem("fullprice");
 	document.getElementById("showxprice").innerHTML = '$' +  xprice;
 }
-
 </script>
 <div class="container">
     <div class="row">
@@ -97,6 +72,7 @@ window.onload = function showTotal() {
     				<address>
     				<strong>Billed To:</strong><br>
     					{{ shippingList[-1].get_fname() }}<br>
+						{{ shippingList[-1].get_lname() }}<br>
     					{{ shippingList[-1].get_address() }}<br>
     					Singapore, {{ shippingList[-1].get_postal() }}
     				</address>
@@ -105,6 +81,7 @@ window.onload = function showTotal() {
     				<address>
         			<strong>Shipped To:</strong><br>
     					{{ shippingList[-1].get_fname() }}<br>
+						{{ shippingList[-1].get_lname() }}<br>
     					{{ shippingList[-1].get_address() }}<br>
     					Singapore, {{ shippingList[-1].get_postal() }}
     				</address>
@@ -193,7 +170,10 @@ window.onload = function showTotal() {
 <div class="container">
   <div class="row">
     <div class="col text-center">
-		<a href="/"><button class="btn btn-default" >Return To Home</button></a>
+<!--		<a href ="/"><button class="btn btn-default">Return to Home</button></a>-->
+		<form action="{{ url_for('cleartestCart')}}" method="POST">
+                    <input type="submit" value="Return to Home" class="btn btn-default" onclick>
+              </form>
     </div>
   </div>
 </div>

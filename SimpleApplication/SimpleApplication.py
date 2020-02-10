@@ -8,8 +8,8 @@ from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping, Payment
 import json
 
-import os, pygal
-from pygal.style import CleanStyle, LightStyle
+# import os, pygal
+# from pygal.style import CleanStyle, LightStyle
 
 
 UPLOAD_FOLDER = 'static/files'
@@ -39,6 +39,20 @@ def retrieveFiles():
 @app.route('/')
 def home():
     return render_template('home.html')
+
+@app.route('/cleartestCart', methods=['GET', 'POST'])
+def cleartestCart():
+    cartDict = {}
+    db = shelve.open('storage.db', 'w')
+    cartDict = db['Cart']
+
+    cartDict.clear()  # action of removing the record
+    db['Cart'] = cartDict  # put back to persistence
+    db.close()
+
+    # after we delete successfully
+    return redirect(url_for('home'))
+
 
 @app.route('/invoice')
 def invoice():
