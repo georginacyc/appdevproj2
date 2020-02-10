@@ -2,14 +2,34 @@
 {% block title %}monoqolo - login{% endblock %}
 {% block content %}
 {% from "includes/_formhelper.html" import render_field %}
-<h1 class="display-4">Login</h1>
-<form method="POST" action="">
- <div class="form-group">
-  {{ render_field(form.email, class="form-control") }}
- </div>
- <div class="form-group">
-  {{ render_field(form.password, class="form-control") }}
- </div>
- <input type="submit" value="Submit" class="btn btn-primary"/>
-</form>
+<style>
+    .content {
+        width: 50%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .titleHR {
+        width: 10%;
+        margin-left: 0;
+        height: 2px;
+        color: black;
+        border-style: none;
+        background-color: black;
+    }
+</style>
+
+
+<div class="content">
+    <h1 class="display-4">Login</h1>
+    <hr class="titleHR">
+    <form method="POST" action="">
+        <div class="form-group">
+            {{ render_field(form.email, class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ render_field(form.password, class="form-control") }}
+        </div>
+        <input type="submit" value="Submit" class="btn btn-primary"/>
+    </form>
+</div>
 {% endblock %}
