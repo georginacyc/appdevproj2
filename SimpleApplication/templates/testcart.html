@@ -474,6 +474,7 @@ a:hover {
 
   var xprice = document.getElementById("xprice").textContent;
   sessionStorage.setItem("fullprice", xprice );
+
 }
 
 
@@ -523,7 +524,7 @@ a:hover {
         </h2>
 
         <h2 class="price">
-          {{ cart.get_itemPrice() }}
+          {{ "%0.2f" % cart.get_itemPrice() }}
         </h2>
       </footer>
     </article>

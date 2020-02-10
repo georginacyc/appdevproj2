@@ -201,8 +201,8 @@ def address():
         return redirect(url_for('checkout'))
     return render_template('address.html', form=shippingForm)
 
-@app.route('/retrieveAddress')
-def retrieveAddress():
+@app.route('/retrieveShipping')
+def retrieveShipping():
     shippingDict = {}
     db = shelve.open('storage.db', 'r')
     shippingDict = db['Shipping']
@@ -213,8 +213,7 @@ def retrieveAddress():
         shipping = shippingDict.get(email)
         shippingList.append(shipping)
 
-    return render_template('retrieveShipping.html', shippingList=shippingList, count=len(shippingList))
-
+    return render_template('retrieveShipping.html', shippingList=shippingList)
 
 @app.route('/contactUs', methods=['GET', 'POST'])
 def contactUs():
