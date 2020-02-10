@@ -5,6 +5,12 @@ from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, Up
 from Cart import Cart, addtocartForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
+import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping, Payment
+
+# import os, pygal
+# from pygal.style import CleanStyle, LightStyle
+
+
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping
 import os, pygal
 from pygal.style import LightStyle, CleanStyle
@@ -36,6 +42,33 @@ def retrieveFiles():
 @app.route('/')
 def home():
     return render_template('home.html')
+
+@app.route('/invoice')
+def invoice():
+    cartDict = {}
+    db = shelve.open('storage.db', 'r')
+    cartDict = db['Cart']
+    db.close()
+
+    cartList = []
+    for key in cartDict:
+        item = cartDict.get(key)
+        cartList.append(item)
+
+
+    shippingDict = {}
+    db = shelve.open('storage.db', 'r')
+    shippingDict = db['Shipping']
+    db.close()
+
+    shippingList = []
+    for email in shippingDict:
+        shipping = shippingDict.get(email)
+        shippingList.append(shipping)
+
+    return render_template('invoice.html', cartList=cartList, shippingList=shippingList)
+
+
 
 @app.route('/testcart', methods=['GET', 'POST'])
 def testcart():
@@ -71,42 +104,58 @@ def deletetestCart(cart):
 
 
 
-@app.route('/cart', methods=['GET', 'POST'])
-def cart():
-    global db
-    cartDict = {}
-    try:
-        db = shelve.open('storage.db', 'r')
-        cartDict = db['Cart']
-    except:
-        print("Error")
-    finally:
-        db.close()
+# @app.route('/cart', methods=['GET', 'POST'])
+# def cart():
+#     global db
+#     cartDict = {}
+#     try:
+#         db = shelve.open('storage.db', 'r')
+#         cartDict = db['Cart']
+#     except:
+#         print("Error")
+#     finally:
+#         db.close()
+#
+#     cartList = []
+#     for key in cartDict:
+#         item = cartDict.get(key)
+#         cartList.append(item)
+#     return render_template('cart.html', cartList=cartList, count=len(cartList))
+#
+#
+# @app.route('/deleteCart/<cart>/', methods=['GET', 'POST'])
+# def deleteCart(cart):
+#     cartDict = {}
+#     db = shelve.open('storage.db', 'w')
+#     cartDict = db['Cart']
+#
+#     cartDict.pop(cart)  # action of removing the record
+#     db['Cart'] = cartDict  # put back to persistence
+#     db.close()
+#
+#     # after we delete successfully
+#     return redirect(url_for('cart'))
 
-    cartList = []
-    for key in cartDict:
-        item = cartDict.get(key)
-        cartList.append(item)
-    return render_template('cart.html', cartList=cartList, count=len(cartList))
 
-
-@app.route('/deleteCart/<cart>/', methods=['GET', 'POST'])
-def deleteCart(cart):
-    cartDict = {}
-    db = shelve.open('storage.db', 'w')
-    cartDict = db['Cart']
-
-    cartDict.pop(cart)  # action of removing the record
-    db['Cart'] = cartDict  # put back to persistence
-    db.close()
-
-    # after we delete successfully
-    return redirect(url_for('cart'))
-
-
-@app.route('/checkout')
+@app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
-    return render_template('checkout.html')
+
+    paymentForm = PaymentForm(request.form)
+
+    if request.method == 'POST' and paymentForm.validate():
+        paymentDict = {}
+        db = shelve.open('storage.db', 'c')
+        try:
+            paymentDict = db['Payment']
+        except:
+            print("Error in retrieving Items from storage.db.")
+        payment = Payment.Payment(paymentForm.name.data, paymentForm.cardno.data,
+                                    paymentForm.date.data, paymentForm.cvv.data)
+        paymentDict[payment.get_name()] = payment
+        db['Payment'] = paymentDict
+        db.close()
+        return redirect(url_for('address'))
+    return render_template('checkout.html', form=paymentForm)
 
 
 @app.route('/address', methods=['GET', 'POST'])
@@ -125,7 +174,7 @@ def address():
         shippingDict[shipping.get_email()] = shipping
         db['Shipping'] = shippingDict
         db.close()
-        return redirect(url_for('home'))
+        return redirect(url_for('invoice'))
     return render_template('address.html', form=shippingForm)
 
 @app.route('/retrieveAddress')
