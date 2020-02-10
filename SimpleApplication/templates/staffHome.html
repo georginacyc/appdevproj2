@@ -3,21 +3,23 @@
 {% block content %}
 <style>
     #homeAnnounce {
+        border-style: solid;
         width: 50%;
         margin-left: auto;
         margin-right: auto;
+        padding-top: 0.5%;
     }
     #homeAnnounce p {
         text-align: center;
         font-weight: bold;
     }
-    .annDate {
+    #annDate {
         color: grey;
     }
-    .annTitle {
+    #annTitle {
         font-weight: bold;
     }
-    .annDesc {
+    #annDesc {
         font-style: italic;
     }
     #staffNav {
@@ -31,7 +33,7 @@
 
 <div id="homeAnnounce">
     <p class="display-4">Latest Announcements</p>
-    <table class="table">
+    <table class="table table-hover">
         <tbody>
          {% for ann in annList %}
             <tr>
@@ -40,11 +42,6 @@
                 <td id="annDesc">{{ ann.get_description() }}</td>
             </tr>
          {% endfor %}
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
         </tbody>
     </table>
 </div>

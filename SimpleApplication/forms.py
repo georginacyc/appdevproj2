@@ -39,7 +39,7 @@ class CreateStaffForm(Form):
 class UpdateStaffForm(Form):
     fname = StringField("First Name", [validators.Length(min=1, max=150)], render_kw={"placeholder": "John"})
     lname = StringField("Last Name", [validators.Length(min=1, max=150)], render_kw={"placeholder": "Doe"})
-    gender = SelectField("Gender", choices=[("", "Select"), ("Female", "Female"), ("Male", "Male")], default = "", render_kw={'readonly': True})
+    gender = StringField("Gender", render_kw={'readonly': True})
     hp = StringField("Contact Number", render_kw={"placeholder": "65500999"})
     dob = DateField("Date of Birth", format='%d/%m/%Y', render_kw={'readonly': True})
     address = TextAreaField("Address")
