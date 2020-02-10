@@ -50,7 +50,7 @@ window.onload = function showTotal() {
 	document.getElementById("showtotal").innerHTML = '$' + tot;
 
 	var stot = sessionStorage.getItem("subtotal");
-	document.getElementById("showsubtotal").innerHTML = '$' + stot;
+	document.getElementById("showsubtotal").innerHTML = '$' + stot + '.0';
 
 	var tax = sessionStorage.getItem("tax");
 	document.getElementById("showtax").innerHTML = '$' + tax;
@@ -92,14 +92,16 @@ window.onload = function showTotal() {
     			<div class="col-xs-6">
     				<address>
     					<strong>Payment Method:</strong><br>
-    					Visa ending **** 4242<br>
+    					Visa ending **** 1234
+<!--						{{ paymentList[-1].get_cardno() }}-->
+						<br>
     					{{ shippingList[-1].get_email() }}
     				</address>
     			</div>
     			<div class="col-xs-6 text-right">
     				<address>
     					<strong>Order Date:</strong><br>
-    					March 7, 2014<br><br>
+    					11 February 2020<br><br>
     				</address>
     			</div>
     		</div>

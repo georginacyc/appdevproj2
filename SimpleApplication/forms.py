@@ -67,10 +67,10 @@ class ContactUsForm(Form):
     text = StringField("Inquiries",[validators.Length(min=1, max=500),validators.DataRequired()],render_kw={"placeholder": "Didn't receive order..."})
 
 class PaymentForm(Form):
-    fname = StringField("Name",[validators.Length(min=1, max=150),validators.DataRequired()])
-    cardno= EmailField('Card Number', [validators.InputRequired(), validators.Length(16)],render_kw={"placeholder": "0000 0000 0000 0000"})
-    date = StringField("Valid Thru",[validators.Length(5),validators.DataRequired()],render_kw={"placeholder": "MM/YY"})
-    cvv = StringField("CVV / CVC *",[validators.Length(3),validators.DataRequired()])
+    name = StringField("Name",[validators.Length(min=1, max=150),validators.DataRequired()])
+    cardno= StringField('Card Number', [validators.InputRequired(), validators.Length(min=16, max=16)],render_kw={"placeholder": "0000 0000 0000 0000"})
+    date = StringField("Valid Thru",[validators.Length(min=5, max=5),validators.DataRequired()],render_kw={"placeholder": "MM/YY"})
+    cvv = StringField("CVV / CVC *",[validators.Length(min=3, max=3),validators.DataRequired()])
 
 class ShippingForm(Form):
     fname = StringField("First Name", [validators.InputRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "John"})

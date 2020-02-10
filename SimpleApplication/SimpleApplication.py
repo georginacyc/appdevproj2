@@ -1,13 +1,15 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.utils import secure_filename
-from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm, ShowDetailsForm, PaymentForm, ShippingForm
+from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm, ShowDetailsForm, PaymentForm, ShippingForm, UpdateUserDetailsForm
 
 from Cart import Cart, addtocartForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping
+import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping, Payment
+
 # import os, pygal
-# from pygal.style import LightStyle, CleanStyle
+# from pygal.style import CleanStyle, LightStyle
+
 
 UPLOAD_FOLDER = 'static/files'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -36,6 +38,46 @@ def retrieveFiles():
 @app.route('/')
 def home():
     return render_template('home.html')
+
+@app.route('/invoice')
+def invoice():
+    cartDict = {}
+    db = shelve.open('storage.db', 'r')
+    cartDict = db['Cart']
+    db.close()
+
+    cartList = []
+    for key in cartDict:
+        item = cartDict.get(key)
+        cartList.append(item)
+
+
+    shippingDict = {}
+    db = shelve.open('storage.db', 'r')
+    shippingDict = db['Shipping']
+    db.close()
+
+    shippingList = []
+    for email in shippingDict:
+        shipping = shippingDict.get(email)
+        shippingList.append(shipping)
+
+
+    paymentDict = {}
+    db = shelve.open('storage.db', 'r')
+    paymentDict = db['Payment']
+    db.close()
+
+    paymentList = []
+    for cardno in paymentDict:
+        shipping = paymentDict.get(cardno)
+        paymentList.append(shipping)
+
+
+
+    return render_template('invoice.html', cartList=cartList, shippingList=shippingList, paymentList=paymentList)
+
+
 
 @app.route('/testcart', methods=['GET', 'POST'])
 def testcart():
@@ -71,42 +113,72 @@ def deletetestCart(cart):
 
 
 
-@app.route('/cart', methods=['GET', 'POST'])
-def cart():
-    global db
-    cartDict = {}
-    try:
-        db = shelve.open('storage.db', 'r')
-        cartDict = db['Cart']
-    except:
-        print("Error")
-    finally:
+# @app.route('/cart', methods=['GET', 'POST'])
+# def cart():
+#     global db
+#     cartDict = {}
+#     try:
+#         db = shelve.open('storage.db', 'r')
+#         cartDict = db['Cart']
+#     except:
+#         print("Error")
+#     finally:
+#         db.close()
+#
+#     cartList = []
+#     for key in cartDict:
+#         item = cartDict.get(key)
+#         cartList.append(item)
+#     return render_template('cart.html', cartList=cartList, count=len(cartList))
+#
+#
+# @app.route('/deleteCart/<cart>/', methods=['GET', 'POST'])
+# def deleteCart(cart):
+#     cartDict = {}
+#     db = shelve.open('storage.db', 'w')
+#     cartDict = db['Cart']
+#
+#     cartDict.pop(cart)  # action of removing the record
+#     db['Cart'] = cartDict  # put back to persistence
+#     db.close()
+#
+#     # after we delete successfully
+#     return redirect(url_for('cart'))
+
+
+@app.route('/checkout', methods=['GET', 'POST'])
+def checkout():
+
+    paymentForm = PaymentForm(request.form)
+
+    if request.method == 'POST' and paymentForm.validate():
+        paymentDict = {}
+        db = shelve.open('storage.db', 'c')
+        try:
+            paymentDict = db['Payment']
+        except:
+            print("Error in retrieving Items from storage.db.")
+        payment = Payment.Payment(paymentForm.name.data, paymentForm.cardno.data,
+                                    paymentForm.date.data, paymentForm.cvv.data)
+        paymentDict[payment.get_name()] = payment
+        db['Payment'] = paymentDict
         db.close()
+        return redirect(url_for('invoice'))
+    return render_template('checkout.html', form=paymentForm)
 
-    cartList = []
-    for key in cartDict:
-        item = cartDict.get(key)
-        cartList.append(item)
-    return render_template('cart.html', cartList=cartList, count=len(cartList))
-
-
-@app.route('/deleteCart/<cart>/', methods=['GET', 'POST'])
-def deleteCart(cart):
-    cartDict = {}
-    db = shelve.open('storage.db', 'w')
-    cartDict = db['Cart']
-
-    cartDict.pop(cart)  # action of removing the record
-    db['Cart'] = cartDict  # put back to persistence
+@app.route('/retrievepayment')
+def retrievePayment():
+    paymentDict = {}
+    db = shelve.open('storage.db', 'r')
+    paymentDict = db['Payment']
     db.close()
 
-    # after we delete successfully
-    return redirect(url_for('cart'))
+    paymentList = []
+    for cardno in paymentDict:
+        shipping = paymentDict.get(cardno)
+        paymentList.append(shipping)
 
-
-@app.route('/checkout')
-def checkout():
-    return render_template('checkout.html')
+    return render_template('retrievepayment.html', paymentList=paymentList)
 
 
 @app.route('/address', methods=['GET', 'POST'])
@@ -125,7 +197,7 @@ def address():
         shippingDict[shipping.get_email()] = shipping
         db['Shipping'] = shippingDict
         db.close()
-        return redirect(url_for('home'))
+        return redirect(url_for('checkout'))
     return render_template('address.html', form=shippingForm)
 
 @app.route('/retrieveAddress')
@@ -408,7 +480,41 @@ def updateUser(email):
 
         return render_template('updateUser.html', form=updateUserForm)
 
+@app.route('/userDetails/<email>/', methods=['GET', 'POST'])
+def userDetails(email):
+    updateUserDetailsForm = UpdateUserDetailsForm(request.form)
 
+    if request.method == 'POST' and updateUserDetailsForm.validate():
+
+        userDict = {}
+        db = shelve.open('storage.db', 'w')
+        try:
+            userDict = db['Users']
+        except:
+            print("Error in retrieving User from storage.db")
+        user = userDict.get(email)
+        user.set_firstName(updateUserDetailsForm.firstName.data)
+        user.set_lastName(updateUserDetailsForm.lastName.data)
+        user.set_gender(updateUserDetailsForm.gender.data)
+        user.set_email(updateUserDetailsForm.email.data)
+        userDict[email] = user
+        db['Users'] = userDict
+
+        db.close()
+
+        return redirect(url_for('userDetails'))
+    else:
+        userDict = {}
+        db = shelve.open('storage.db', 'r')
+        userDict = db['Users']
+        db.close()
+        user = userDict.get(email)
+        updateUserDetailsForm.firstName.data = user.get_firstName()
+        updateUserDetailsForm.lastName.data = user.get_lastName()
+        updateUserDetailsForm.gender.data = user.get_gender()
+        updateUserDetailsForm.email.data = user.get_email()
+
+        return render_template('userDetails.html', form=updateUserDetailsForm)
 
 @app.route('/deleteUser/<email>/', methods=['GET', 'POST'])
 def deleteUser(email):
