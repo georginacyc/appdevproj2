@@ -1,24 +1,92 @@
 {% extends "staffBase.html" %}
-{% block title %}monoqlo - announcements{% endblock %}
-
+{% block title %}Sales Reports{% endblock %}
 {% block content %}
-<h1 class="display-4">Announcements</h1>
-<div>
-    <table class="table  table-hover table-dark">
+<h1 class="display-4">Revenue Reports</h1>
+<ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link active" data-toggle="tab" href="#Daily">Daily</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="tab" href="#Monthly">Monthly</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="tab" href="#Yearly">Yearly</a>
+  </li>
+</ul>
+<div class="tab-content">
+  <div class="tab-pane container-fluid active" id="Daily">
+      <table class="table table-striped">
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Subtotal</th>
+                <th>Date (DD/MM/YYYY)</th>
+                <th>Revenue</th>
             </tr>
         </thead>
-        <tbody>
-         {% for x in subtotalsList %}
+          <tbody>
+          {% for sale in salesList %}
             <tr>
-                <td class="saleDate">{{ x.get_date() }}</td>
-                <td class="saleSubtotal">{{ x.get_title() }}</td>
+                <td>sale.get_saleDate()</td>
+                <td>sale.get_saleAmt()</td>
             </tr>
-         {% endfor %}
-        </tbody>
-    </table>
+          {% endfor %}
+          </tbody>
+      </table>
+  </div>
+    <div class="tab-pane container-fluid" id="Monthly">
+      <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date (MM/YYYY)</th>
+                <th>Revenue</th>
+                <th>Orders</th>
+            </tr>
+        </thead>
+          <tbody>
+            <tr>
+                <td>11/2019</td>
+                <td>$16,441.5‬</td>
+                <td>206</td>
+                <td><a href="#" class="btn btn-warning">Update</a></td>
+                <td><a href="#" class="btn btn-danger">Delete</a></td>
+            </tr>
+          </tbody>
+      </table>
+  </div>
+
+  <div class="tab-pane container-fluid" id="Yearly">
+      <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date (YYYY)</th>
+                <th>Revenue</th>
+                <th>Orders</th>
+            </tr>
+        </thead>
+          <tbody>
+            <tr>
+                <td>2019</td>
+                <td>$16,441.5‬</td>
+                <td>206</td>
+                <td><a href="#" class="btn btn-info">Update</a></td>
+                <td><a href="#" class="btn btn-danger">Delete</a></td>
+            </tr>
+          </tbody>
+      </table>
+  </div>
+    <html>
+<head>
+
+</head>
+<body>
+<h1 class="display-4">Sales Chart</h1>
+<div class="lines">
+   <div class="chart">
+      <embed type="image/svg+xml" src={{ chart|safe }}>
+   </div>
 </div>
+</body>
+</html>
+</div>
+
 {% endblock %}
+

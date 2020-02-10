@@ -81,3 +81,12 @@ class ShippingForm(Form):
     address2 = TextAreaField("Address 2(Optional)", default="")
     postal = StringField("Postal Code", [validators.InputRequired()], render_kw={"placeholder": "544915"})
 
+class createtestdataForm(Form):
+    saleDate = DateField("Order Date ( d-m-Y )", format='%d-%m-%Y')
+    saleAmt = StringField("Sale Amt")
+
+class CreateAboutUsForm(Form):
+    aboutUsName = StringField("Name", [validators.InputRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "John"})
+    aboutUsRole = StringField("Role", [validators.InputRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "CEO"})
+
+
