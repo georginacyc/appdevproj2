@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}About Us{% endblock %}
+{% block content %}
+<style>
+    img {
+    width:500px;
+    height:500px;
+    }
+</style>
+<body>
+{% for item in itemList %}
+<h2>{{ item.get_itemName() }}</h2>
+<p>Serial No. {{ item.get_itemSerial() }}</p>
+<div><img src="/static/files/{{item.get_itemSerial() + '.jpg'}}" alt="imagePic"></div>
+<br>
+<h3>{{"$" + "%0.2f" %item.get_itemPrice()}}</h3>
+<br>
+{% if item.get_itemStockStatus() == "Out of Stock" %}
+<input type="submit" value="Out of Stock" class="btn" disabled>
+{% else %}
+<form method="POST" action="">
+    <input type="submit" value="Add to Cart" class="btn btn-success" onclick="return confirm('Add this item to cart?')">
+</form>
+{% endif %}
+<br><br>
+<a href="/catalogueHis" class="btn btn-info">Back</a>
+{% endfor %}
+</body>
+{% endblock %}

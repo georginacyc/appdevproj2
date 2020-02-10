@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from werkzeug.utils import secure_filename
-from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm, ShowDetailsForm, PaymentForm, ShippingForm
+from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm, ShowDetailsForm, PaymentForm, ShippingForm, createtestdataForm, CreateAboutUsForm
 
 from Cart import Cart, addtocartForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping, Payment
+import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping, Payment, Sale, AboutUs
 import json
 
 # import os, pygal
@@ -1018,22 +1018,28 @@ def deleteAnnouncement(id):  # for admin to delete annnouncements
 
 @app.route('/salesReports', methods=["GET"])
 def salesReports():
-    subtotalsDict={}
     try:
         db = shelve.open("storage.db", "r")
-        subtotalsDict = db["Subtotals"]
+        salesDict = db["Sales"]
     except:
         print("db error")
     else:
         db.close()
 
-    #  loop through dict to save in list
-    subtotalsList = []
-    for key in subtotalsDict:
-        subtotal = subtotalsDict.get(key)
-        subtotalsList.append(subtotal)
-    return render_template('salesReports.html',list=subtotalsList)
+    salesList = []
+    for key in salesDict:
+        sales = salesDict.get(key)
+        salesList.append(sales)
 
+    from datetime import datetime, timedelta
+    date_chart = pygal.Line(x_label_rotation=20)
+    date_chart.x_labels = map(lambda d: d.strftime('%Y-%m-%d'), [
+    datetime(2020, 2, 9),
+    datetime(2020, 2, 10),
+    datetime(2020, 2,11)])
+    date_chart.add("Sales", [136, 207, 57])
+    date_chart.render()
+    return render_template('salesReports.html', date_chart=date_chart, salesList=salesList)
 
 @app.route('/catalogueHis')
 def catalogueHis():
@@ -1135,22 +1141,72 @@ def itemDetailsHers(id):
         db.close()
     return render_template('catalogueItemDetailsHers.html', itemList=itemList, count=len(itemList))
 
-@app.route('/postmethod', methods = ['POST'])
-def get_post_javascript_data():
+@app.route('/createtestdata', methods=['GET', 'POST'])
+def createtestdata():
+    CreatetestdataForm=createtestdataForm(request.form)
+
     if request.method == 'POST':
-        subtotalsDict={}
-        jsdata = request.form['javascript_data']
+        salesDict = {}
         db = shelve.open('storage.db', 'c')
         try:
-            subtotalsDict= db['Subtotals']
-            print("created")
+            salesDict = db['Sales']
+        except IOError:
+            print("IOError")
         except:
-            print("Error in retrieving subtotals from storage db.")
-        subtotalsDict.append(jsdata)
-        db["Subtotals"]=subtotalsDict
+            print("Error in retrieving the order from storage.db.")
+
+        sale = Sale.Sale(CreatetestdataForm.saleDate.data, CreatetestdataForm.saleAmt.data)
+        salesDict[sale.get_saleDate()]=[sale.get_saleAmt()]
+        db['Sales'] = salesDict
+        print(db['Sales'])
         db.close()
-    return json.loads(jsdata)
+    return render_template('createtestdata.html', form=CreatetestdataForm)
 
+@app.route('/createAboutUs', methods=['GET', 'POST'])
+def createAboutUs():
+    createAboutUsForm=CreateAboutUsForm(request.form)
 
+    if request.method == 'POST':
+        aboutUsDict = {}
+        db = shelve.open('storage.db', 'c')
+        try:
+            aboutUsDict = db['AboutUs']
+        except IOError:
+            print("IOError")
+        except:
+            print("Error in retrieving the info from storage.db.")
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(str(createAboutUsForm.name.data + ".jpg"))
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+            aboutUs = AboutUs.AboutUs(createAboutUsForm.name.data, createAboutUsForm.itemName.data)
+            aboutUs[aboutUs.get_aboutUsName()] = aboutUs
+            db['AboutUs'] = aboutUsDict
+            db.close()
+
+    return render_template('/createAboutUs.html', form=createAboutUsForm)
+
+@app.route('/aboutUs',methods=['GET'])
+def aboutUs():
+    aboutUsDict = {}
+    db = shelve.open('storage.db', 'r')
+    aboutUsDict = db['AboutUs']
+    db.close()
+
+    PersonList=[]
+    for key in aboutUsDict:
+        person=aboutUsDict.get(key)
+        PersonList.append(person)
+
+    return render_template('aboutUs.html',list=PersonList)
 if __name__ == '__main__':
     app.run()
