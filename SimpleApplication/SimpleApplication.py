@@ -6,11 +6,7 @@ from Cart import Cart, addtocartForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping
-import os
-import plotly.graph_objects as go
-import dash, pygal
-import dash_core_components as dcc
-import dash_html_components as html
+import os, pygal
 
 
 
