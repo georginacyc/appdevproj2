@@ -640,15 +640,17 @@ def customerDemo():
         ageCount[x] = ageCount.get(x, 0) + 1
     print(ageCount)
 
-    # pie2 = pygal.Pie()
-    # pie2.title = "Proportion of Customer Ages"
-    # for age, count in ageCount.items():
-    #     print("yeet")
-    #     pie2.add(age, count)
-    #     print("yeet2")
-    # pie2 = pie2.render()
+    pie2 = pygal.Pie()
+    pie2.title = "Proportion of Customer Ages"
+    for age, count in ageCount.items():
+        age = str(age)
+        count = str(count)
+        print("yeet")
+        pie2.add(age, count)
+        print("yeet2")
+    pie2 = pie2.render()
 
-    return render_template("customerDemo.html", chart = pie)
+    return render_template("customerDemo.html", chart = pie, chart2 = pie2)
 
 
 @app.route('/createStaff', methods=['GET', 'POST'])
