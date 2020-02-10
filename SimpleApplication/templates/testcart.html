@@ -462,6 +462,18 @@ a:hover {
   function saveTotal() {
   var totalprice = document.getElementById("totalprice").textContent;
   sessionStorage.setItem("total", totalprice);
+
+  var subtotal = document.getElementById("subtotal").textContent;
+  sessionStorage.setItem("subtotal", subtotal);
+
+  var tax = document.getElementById("tax").textContent;
+  sessionStorage.setItem("tax", tax);
+
+  var quantity = document.getElementById("qt").textContent;
+  sessionStorage.setItem("quantity", quantity );
+
+  var xprice = document.getElementById("xprice").textContent;
+  sessionStorage.setItem("fullprice", xprice );
 }
 
 
@@ -503,10 +515,10 @@ a:hover {
       <footer class="content">
         <span class="qt-minus">-</span>
 <!--        <span class="qt">{{ cart.get_itemCartQuantity()  }}</span>-->
-        <span class="qt">1</span>
+        <span class="qt" id="qt">1</span>
         <span class="qt-plus">+</span>
 
-        <h2 class="full-price">
+        <h2 class="full-price" id="xprice">
           {{ cart.get_itemPrice() }}
         </h2>
 
@@ -525,8 +537,8 @@ a:hover {
   <div class="container clearfix">
 
     <div class="left">
-      <h2 class="subtotal">Subtotal: $<span>0.00</span></h2>
-      <h3 class="tax">GST (7%): $<span>0.00</span></h3>
+      <h2 class="subtotal">Subtotal: $<span id="subtotal">0.00</span></h2>
+      <h3 class="tax">GST (7%): $<span id="tax">0.00</span></h3>
       <h3 class="shipping">Shipping: $<span>5.00</span></h3>
     </div>
 

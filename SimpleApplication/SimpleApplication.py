@@ -38,6 +38,33 @@ def retrieveFiles():
 def home():
     return render_template('home.html')
 
+@app.route('/invoice')
+def invoice():
+    cartDict = {}
+    db = shelve.open('storage.db', 'r')
+    cartDict = db['Cart']
+    db.close()
+
+    cartList = []
+    for key in cartDict:
+        item = cartDict.get(key)
+        cartList.append(item)
+
+
+    shippingDict = {}
+    db = shelve.open('storage.db', 'r')
+    shippingDict = db['Shipping']
+    db.close()
+
+    shippingList = []
+    for email in shippingDict:
+        shipping = shippingDict.get(email)
+        shippingList.append(shipping)
+
+    return render_template('invoice.html', cartList=cartList, shippingList=shippingList)
+
+
+
 @app.route('/testcart', methods=['GET', 'POST'])
 def testcart():
     global db
@@ -72,37 +99,37 @@ def deletetestCart(cart):
 
 
 
-@app.route('/cart', methods=['GET', 'POST'])
-def cart():
-    global db
-    cartDict = {}
-    try:
-        db = shelve.open('storage.db', 'r')
-        cartDict = db['Cart']
-    except:
-        print("Error")
-    finally:
-        db.close()
-
-    cartList = []
-    for key in cartDict:
-        item = cartDict.get(key)
-        cartList.append(item)
-    return render_template('cart.html', cartList=cartList, count=len(cartList))
-
-
-@app.route('/deleteCart/<cart>/', methods=['GET', 'POST'])
-def deleteCart(cart):
-    cartDict = {}
-    db = shelve.open('storage.db', 'w')
-    cartDict = db['Cart']
-
-    cartDict.pop(cart)  # action of removing the record
-    db['Cart'] = cartDict  # put back to persistence
-    db.close()
-
-    # after we delete successfully
-    return redirect(url_for('cart'))
+# @app.route('/cart', methods=['GET', 'POST'])
+# def cart():
+#     global db
+#     cartDict = {}
+#     try:
+#         db = shelve.open('storage.db', 'r')
+#         cartDict = db['Cart']
+#     except:
+#         print("Error")
+#     finally:
+#         db.close()
+#
+#     cartList = []
+#     for key in cartDict:
+#         item = cartDict.get(key)
+#         cartList.append(item)
+#     return render_template('cart.html', cartList=cartList, count=len(cartList))
+#
+#
+# @app.route('/deleteCart/<cart>/', methods=['GET', 'POST'])
+# def deleteCart(cart):
+#     cartDict = {}
+#     db = shelve.open('storage.db', 'w')
+#     cartDict = db['Cart']
+#
+#     cartDict.pop(cart)  # action of removing the record
+#     db['Cart'] = cartDict  # put back to persistence
+#     db.close()
+#
+#     # after we delete successfully
+#     return redirect(url_for('cart'))
 
 
 @app.route('/checkout')
@@ -126,7 +153,7 @@ def address():
         shippingDict[shipping.get_email()] = shipping
         db['Shipping'] = shippingDict
         db.close()
-        return redirect(url_for('home'))
+        return redirect(url_for('invoice'))
     return render_template('address.html', form=shippingForm)
 
 @app.route('/retrieveAddress')
