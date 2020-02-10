@@ -5,9 +5,10 @@ from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, Up
 from Cart import Cart, addtocartForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
-import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping
-import os, pygal
-from pygal.style import CleanStyle, LightStyle
+import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping, Payment
+
+# import os, pygal
+# from pygal.style import CleanStyle, LightStyle
 
 
 
@@ -134,9 +135,25 @@ def deletetestCart(cart):
 #     return redirect(url_for('cart'))
 
 
-@app.route('/checkout')
+@app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
-    return render_template('checkout.html')
+
+    paymentForm = PaymentForm(request.form)
+
+    if request.method == 'POST' and paymentForm.validate():
+        paymentDict = {}
+        db = shelve.open('storage.db', 'c')
+        try:
+            paymentDict = db['Payment']
+        except:
+            print("Error in retrieving Items from storage.db.")
+        payment = Payment.Payment(paymentForm.name.data, paymentForm.cardno.data,
+                                    paymentForm.date.data, paymentForm.cvv.data)
+        paymentDict[payment.get_name()] = payment
+        db['Payment'] = paymentDict
+        db.close()
+        return redirect(url_for('address'))
+    return render_template('checkout.html', form=paymentForm)
 
 
 @app.route('/address', methods=['GET', 'POST'])
