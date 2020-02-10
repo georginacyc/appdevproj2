@@ -6,8 +6,8 @@ from Cart import Cart, addtocartForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping
-# import os, pygal
-
+import os, pygal
+from pygal.style import LightStyle, CleanStyle
 
 
 UPLOAD_FOLDER = 'static/files'
@@ -606,6 +606,7 @@ def customerDemo():
     maleCount = 0
 
     usersDict = {}
+    ageList = []
 
     db = shelve.open('storage.db', 'c')
     usersDict = db["Users"]
@@ -616,13 +617,34 @@ def customerDemo():
         elif x.get_gender() == "M" or x.get_gender() == "Male":
             maleCount += 1
 
-    pie = pygal.Pie()
+    for x in usersDict.values():
+        dob = str(x.get_DOB())
+        splitted = dob.split("-")
+        year = splitted[0]
+
+        age = 2020 - int(year)
+
+        ageList.append(age)
+
+    pie = pygal.Pie(style=LightStyle)
     pie.title = "Proportion of Male and Female Customers"
     pie.add("Female", femCount)
     pie.add("Male", maleCount)
-    pie = pie.render()
+    pie = pie.render_data_uri()
 
-    return render_template("customerDemo.html", chart = pie)
+    ageCount = {}
+    for x in ageList:
+        ageCount[x] = ageCount.get(x, 0) + 1
+
+    pie2 = pygal.Pie(style=CleanStyle)
+    pie2.title = "Proportion of Customer Ages"
+    for age, count in ageCount.items():
+        age = str(age)
+        pie2.add(age, count)
+    pie2 = pie2.render_data_uri()
+
+    return render_template("customerDemo.html", chart = pie, chart2 = pie2)
+
 
 
 @app.route('/createStaff', methods=['GET', 'POST'])
@@ -875,7 +897,6 @@ def createAnnouncement():
         annDict[Announcement.Announcement.count] = announcement
 
         sort = dict(sorted(annDict.items(), key=lambda x: x[0], reverse=True))
-        print(sort.keys())
 
         db['Announcements'] = sort
         db['annCount'] = Announcement.Announcement.count
