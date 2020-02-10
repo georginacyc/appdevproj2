@@ -279,7 +279,7 @@ def createStockOrder():
         stockorderDict = {}
         db = shelve.open('storage.db', 'c')
         try:
-            stockorderDict = int(db['StockOrder'])
+            stockorderDict = db['StockOrder']
             StockOrder.StockOrder.countID = db['stockordercount']
         except IOError:
             print("IOError")
@@ -311,7 +311,7 @@ def updateStockOrder(id):
         stockorderDict = db['StockOrder']
 
         stockorder = stockorderDict.get(id)
-        stockorder.set_shipmentStatus(updateStockOrderForm.shipmentStatus.data)
+        stockorder.set_shipmentStatus("Received")
         stockorder.set_receivedDate(updateStockOrderForm.receivedDate.data)
         db['StockOrder'] = stockorderDict
         db.close()
@@ -327,7 +327,6 @@ def updateStockOrder(id):
         print(stockorder)
         updateStockOrderForm.stockorderDate.data = stockorder.get_stockorderDate()
         updateStockOrderForm.shipmentDate.data = stockorder.get_shipmentDate()
-        updateStockOrderForm.shipmentStatus.data = stockorder.get_shipmentStatus()
         updateStockOrderForm.receivedDate.data = stockorder.get_receivedDate()
         updateStockOrderForm.stockItemSerial.data = stockorder.get_stockItemSerial()
         updateStockOrderForm.stockorderQuantity.data = stockorder.get_stockorderQuantity()

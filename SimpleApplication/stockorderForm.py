@@ -36,7 +36,7 @@ class UpdateStockOrderForm(Form):
     stockorderNumber = StockOrder.stockorderN
     stockorderDate = DateField("Order Date ( d-m-Y )", render_kw={'disabled':''})
     shipmentDate = DateField("Shipment Date ( d-m-Y )", render_kw={'disabled':''})
-    shipmentStatus = SelectField("Shipment Status", [validators.DataRequired()],choices=[('Received', 'Received')], render_kw={"placeholder": "Ordered"})
+    shipmentStatus = "Received"
     receivedDate = DateField("Received Date ( d-m-Y )", [validators.DataRequired()], format='%d-%m-%Y')
     stockItemSerial = StringField("Item Serial", render_kw={'disabled':''})
     stockorderQuantity = IntegerField("Order Quantity", render_kw={'disabled':''})
