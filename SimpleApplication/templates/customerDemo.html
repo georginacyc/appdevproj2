@@ -1,7 +1,30 @@
 {% extends "staffBase.html" %}
 {% block title %}monoqolo - new staff{% endblock %}
 {% block content %}
-{% from "includes/_formhelper.html" import render_field %}
+<style>
+   .chart {
+      width: 45%;
+      margin-left: auto;
+      margin-right: auto;
+      display: inline-block;
+   }
+   .pies {
+      margin-left: auto;
+      margin-right: auto;
+   }
+   .yeet {
+      right: 0;
+   }
+</style>
 
+<div class="pies">
+   <div class="chart">
+      <embed type="image/svg+xml" src={{ chart|safe }}>
+   </div>
+
+   <div class="chart yeet">
+      <embed type="image/svg+xml" src={{ chart2|safe }}>
+   </div>
+</div>
 
 {% endblock %}
