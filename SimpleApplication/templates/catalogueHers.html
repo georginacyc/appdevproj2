@@ -21,7 +21,7 @@
     }
 
 .card {
-    height:250px;
+    height:500px;
     position: relative;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     padding: 16px;
@@ -35,15 +35,15 @@
 .card h4 {
     margin-bottom:auto;
     }
-.card p {
-    position:absolute;
-    bottom:100px;
-    left:50%;
-    margin-left:-7.5%;
-    }
+
 
 .card:hover {
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    }
+
+.card img {
+    width:13%;
+    height:60%
     }
 
 @media screen and (max-width: 600px) {
@@ -72,44 +72,18 @@
 </style>
 <h2>Ladies'</h2>
 <hr><br>
-<div id="topsContainer">
-    <div class="categoryLabel">
-        <h1>Clothes</h1>
-    </div>
-    <br>
-    <h2>Ladies'</h2>
-    <hr><br>
-    <div class="cardRows">
-        {% for item in itemList %}
-          <div class="column">
-            <div class="card">
-    <!--            <div class="productImage" style="background-image: url(static/files/81331919TM.jpg);"></div>-->
-                <img src="static/files/{{item.get_itemSerial() + '.jpg'}}" alt="imagePic" style="width:100%">
-                <h4>{{item.get_itemName()}}</h4>
-                <p>{{"$" + "%0.2f" % item.get_itemPrice()}}</p>
-                <br>
-                <a href="/catalogueItemDetailsHers/{{item.get_itemSerial()}}" class="btn btn-info">View Item Details</a>
-            </div>
-          </div>
-        {% endfor %}
-    </div>
+<div class="cardRows">
+    {% for item in itemList %}
+      <div class="column">
+        <div class="card">
+<!--            <div class="productImage" style="background-image: url(static/files/81331919TM.jpg);"></div>-->
+            <img src="static/files/{{item.get_itemSerial() + '.jpg'}}" alt="imagePic" style="width:100%">
+            <h4>{{item.get_itemName()}}</h4>
+            <p>{{"$" + "%0.2f" % item.get_itemPrice()}}</p>
+            <br>
+            <a href="/catalogueItemDetailsHers/{{item.get_itemSerial()}}" class="btn btn-info">View Item Details</a>
+        </div>
+      </div>
+    {% endfor %}
 </div>
-<!--<div id="botsContainer">
-    <div class="categoryLabel">
-        <h1>Bottoms</h1>
-    </div>
-    <br>
-    <div class="cardRows">
-        {% for item in itemBotsList %}
-            <div class="column">
-                <div class="card">
-                    <h4>{{item.get_itemName()}}</h4>
-                    <p>${{item.get_itemPrice()}}</p>
-                    <br>
-                    <a href="/catalogueItemDetailsHers/{{item.get_itemSerial()}}" class="btn btn-info">View Item Details</a>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-</div>-->
 {% endblock %}

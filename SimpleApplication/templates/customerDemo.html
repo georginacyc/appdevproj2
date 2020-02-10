@@ -1,9 +1,18 @@
 {% extends "staffBase.html" %}
 {% block title %}monoqolo - new staff{% endblock %}
 {% block content %}
+<style>
+   #chart {
+      width: 50%;
+   }
+</style>
 
 <div id="chart">
    <embed type="image/svg+xml" src={{ chart|safe }}>
+</div>
+
+<div id="chart2">
+   <embed type="image/svg+xml" src={{ chart2|safe }}>
 </div>
 
 {% endblock %}
