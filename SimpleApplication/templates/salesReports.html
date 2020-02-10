@@ -2,7 +2,6 @@
 {% block title %}Sales Reports{% endblock %}
 {% block content %}
 <h1 class="display-4">Revenue Reports</h1>
-<p><a href="/createNewReport">+Create new entry</a></p>
 <ul class="nav nav-tabs">
   <li class="nav-item">
     <a class="nav-link active" data-toggle="tab" href="#Daily">Daily</a>
@@ -29,20 +28,6 @@
                 <td>20/11/2019</td>
                 <td>$7318.40</td>
                 <td>83</td>
-                <td><a href="#" class="btn btn-info">Update</a></td>
-                <td><a href="#" class="btn btn-danger">Delete</a></td>
-            </tr>
-            <tr>
-                <td>19/11/2019</td>
-                <td>$1771.10</td>
-                <td>29</td>
-                <td><a href="#" class="btn btn-info">Update</a></td>
-                <td><a href="#" class="btn btn-danger">Delete</a></td>
-            </tr>
-            <tr>
-                <td>18/11/2019</td>
-                <td>$7352</td>
-                <td>94</td>
                 <td><a href="#" class="btn btn-info">Update</a></td>
                 <td><a href="#" class="btn btn-danger">Delete</a></td>
             </tr>
@@ -92,43 +77,10 @@
   </div>
     <html>
 <head>
-<script>
-window.onload = function () {
 
-var chart = new CanvasJS.Chart("chartContainer", {
-	animationEnabled: true,
-	theme: "light2",
-	title:{
-		text: "Revenue by day"
-	},
-	axisY:{
-		includeZero: false
-	},
-	data: [{
-		type: "line",
-		dataPoints: [
-			{ y: 450 },
-			{ y: 520, indexLabel: "highest",markerColor: "red", markerType: "triangle" },
-			{ y: 460 },
-			{ y: 450 },
-			{ y: 500 },
-			{ y: 480 },
-			{ y: 480 },
-			{ y: 410 , indexLabel: "lowest",markerColor: "DarkSlateGrey", markerType: "cross" },
-			{ y: 500 },
-			{ y: 480 },
-			{ y: 510 }
-		]
-	}]
-});
-chart.render();
-
-}
-</script>
 </head>
 <body>
-<div id="chartContainer" style="height: 370px; width: 100%;"></div>
-<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
 </body>
 </html>
 </div>
