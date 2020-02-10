@@ -7,7 +7,7 @@ from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping
 import os, pygal
-from collections import Counter
+from pygal.style import CleanStyle, LightStyle
 
 
 
@@ -629,26 +629,22 @@ def customerDemo():
 
         ageList.append(age)
 
-    pie = pygal.Pie()
+    pie = pygal.Pie(style=LightStyle)
     pie.title = "Proportion of Male and Female Customers"
     pie.add("Female", femCount)
     pie.add("Male", maleCount)
-    pie = pie.render()
+    pie = pie.render_data_uri()
 
     ageCount = {}
     for x in ageList:
         ageCount[x] = ageCount.get(x, 0) + 1
-    print(ageCount)
 
-    pie2 = pygal.Pie()
+    pie2 = pygal.Pie(style=CleanStyle)
     pie2.title = "Proportion of Customer Ages"
     for age, count in ageCount.items():
         age = str(age)
-        count = str(count)
-        print("yeet")
         pie2.add(age, count)
-        print("yeet2")
-    pie2 = pie2.render()
+    pie2 = pie2.render_data_uri()
 
     return render_template("customerDemo.html", chart = pie, chart2 = pie2)
 
@@ -903,7 +899,6 @@ def createAnnouncement():
         annDict[Announcement.Announcement.count] = announcement
 
         sort = dict(sorted(annDict.items(), key=lambda x: x[0], reverse=True))
-        print(sort.keys())
 
         db['Announcements'] = sort
         db['annCount'] = Announcement.Announcement.count
