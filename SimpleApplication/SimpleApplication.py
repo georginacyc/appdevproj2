@@ -619,9 +619,7 @@ def customerDemo():
 
     for x in usersDict.values():
         dob = str(x.get_DOB())
-        print(dob)
         splitted = dob.split("-")
-        print(splitted)
         year = splitted[0]
 
         age = 2020 - int(year)
@@ -899,7 +897,6 @@ def createAnnouncement():
         annDict[Announcement.Announcement.count] = announcement
 
         sort = dict(sorted(annDict.items(), key=lambda x: x[0], reverse=True))
-        print(sort.keys())
 
         db['Announcements'] = sort
         db['annCount'] = Announcement.Announcement.count
