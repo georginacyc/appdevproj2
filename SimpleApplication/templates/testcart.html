@@ -155,7 +155,7 @@ a:hover {
 
 .product header h3 {
 	background: #53b5aa;
-	color: #fff;
+	color: white;
 	font-size: 22px;
 	font-weight: 300;
 	line-height: 49px;
@@ -165,6 +165,7 @@ a:hover {
 	bottom: -50px;
 	right: 0;
 	left: 0;
+	text-align: center;
 
 	-webkit-transition: bottom .2s linear;
 	-moz-transition: bottom .2s linear;
@@ -175,6 +176,7 @@ a:hover {
 
 .remove {
 	cursor: pointer;
+	color: #ff0000;
 }
 
 .product .content {
@@ -377,8 +379,8 @@ a:hover {
     var qt = parseFloat(el.parent().children(".qt").html());
     var price = parseFloat(el.parent().children(".price").html());
     var eq = Math.round(price * qt * 100) / 100;
-
-    el.parent().children(".full-price").html( eq + "$" );
+    var eqq = eq.toFixed(1);
+    el.parent().children(".full-price").html( eqq );
 
     changeTotal();
   }
@@ -417,7 +419,7 @@ a:hover {
             el.parent().parent().remove();
             if($(".product").length == 0) {
               if(check) {
-                $("#cart").html("<h1>The shop does not function, yet!</h1><p>If you liked my shopping cart, please take a second and heart this Pen on <a href='https://codepen.io/ziga-miklic/pen/xhpob'>CodePen</a>. Thank you!</p>");
+                $("#cart").html("");
               } else {
                 $("#cart").html("<h1>No products!</h1>");
               }
@@ -478,12 +480,12 @@ a:hover {
     <article class="product">
       <header>
         <a class="remove">
-          <img src="http://www.astudio.si/preview/blockedwp/wp-content/uploads/2012/08/1.jpg" alt="">
+          <img src="/static/files/{{cart.get_itemSerial() + '.jpg'}}" alt="imagePic">
 
 <!--          <h3>Remove product</h3>-->
           <h3><form action="{{ url_for('deletetestCart', cart=cart.get_itemSerial())}}" method="POST">
-                    <input type="submit" value="Remove product" class="remove" onclick>
-                </form>
+                    <input type="submit" value="Remove Item" class="remove" onclick>
+              </form>
         </h3>
         </a>
 

@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block title %}monoqlo - Checkout{% endblock %}
+{% block content %}
+{% from "includes/_formhelper.html" import render_field %}
+<style>
+
+  * {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-family: 'Montserrat', sans-serif;
+  font-size-adjust: u
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background: #eeeeee;
+  justify-content: center;
+  align-items: center;
+}
+.checkout-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 810px;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .2);
+  position: relative;
+  margin: auto;
+}
+.panel-body {
+  padding: 45px 45px 0;
+  flex: 2;
+}
+
+.title {
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 40px;
+  color: #2e2e2e;
+  text-align: center;
+  font: 300 3em/1.4 "Lato", sans-serif;
+}
+
+.input-fields {
+  display: flex;
+  justify-content: center;
+
+}
+
+.input-fields label {
+  display: block;
+  margin-bottom: 10px;
+  color: #b4b4b4;
+}
+
+.info {
+  font-size: 12px;
+  font-weight: 300;
+  display: block;
+  margin-top: 50px;
+  opacity: .5;
+  color: #2e2e2e;
+}
+
+
+.btn {
+  font-size: 16px;
+  width: 163px;
+  height: 48px;
+  cursor: pointer;
+  transition: all .2s ease-in-out;
+  letter-spacing: 1px;
+  border: none;
+  border-radius: 23px;
+  margin-top: 45px;
+  margin-left: 25px;
+  text-align: center;
+}
+
+.back-btn {
+  color: #1abc9c;
+  background: #fff;
+}
+
+.next-btn {
+  color: #fff;
+  background: #1abc9c;
+}
+
+.btn:focus {
+  outline: none;
+}
+
+.btn:hover {
+  transform: scale(1.1);
+}
+.blue-border {
+  border: 1px solid rgb(110, 178, 251);
+}
+
+</style>
+<script>
+
+</script>
+<!--<button onclick="showTotal()"> Retrieve Total</button>-->
+<!--<div id="totalshow"></div>-->
+<div class="checkout-panel">
+  <div class="panel-body">
+    <h2 class="title">Shipping Details</h2>
+
+
+
+    <div class="input-fields">
+      <form method="POST" action="">
+         <div class="form-group">
+          {{ render_field(form.fname, class="form-control") }}
+         </div>
+         <div class="form-group">
+          {{ render_field(form.lname, class="form-control") }}
+         </div>
+         <div class="form-group">
+          {{ render_field(form.email, class="form-check") }}
+         </div>
+         <div class="form-group">
+          {{ render_field(form.hp, class="form-control") }}
+         </div>
+        <div class="form-group">
+          {{ render_field(form.address, class="form-control") }}
+         </div>
+        <div class="form-group">
+          {{ render_field(form.address2, class="form-control") }}
+         </div>
+        <div class="form-group">
+          {{ render_field(form.postal, class="form-control") }}
+         </div>
+         <input type="submit" value="Confirm" class="btn next-btn"/>
+        </form>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}

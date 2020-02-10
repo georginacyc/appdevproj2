@@ -17,6 +17,14 @@ class UpdateUserForm(Form):
     lastName = StringField("Last Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Doe"})
     gender = RadioField('Gender', [validators.DataRequired()],choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Others')],default='')
     email= EmailField('Email', [validators.InputRequired()])
+
+class UpdateUserDetailsForm(Form):
+    firstName = StringField("First Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"readonly": True})
+    lastName = StringField("Last Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"readonly" : True})
+    gender = StringField('Gender', [validators.DataRequired()],choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Others')],default='', render_kw={"readonly": True})
+    email= StringField('Email', [validators.InputRequired()])
+    pw = PasswordField("Old Password", [validators.InputRequired()], render_kw={"readonly": True})
+    newpw = PasswordField("New Password", [validators.InputRequired()])
 class CreateStaffForm(Form):
     fname = StringField("First Name", [validators.InputRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "John"})
     lname = StringField("Last Name", [validators.InputRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "Doe"})
@@ -63,3 +71,19 @@ class ContactUsForm(Form):
     lname = StringField("Last Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"placeholder": "Doe"})
     email= EmailField('Email', [validators.InputRequired()])
     text = StringField("Inquiries",[validators.Length(min=1, max=500),validators.DataRequired()],render_kw={"placeholder": "Didn't receive order..."})
+
+class PaymentForm(Form):
+    fname = StringField("Name",[validators.Length(min=1, max=150),validators.DataRequired()])
+    cardno= EmailField('Card Number', [validators.InputRequired(), validators.Length(16)],render_kw={"placeholder": "0000 0000 0000 0000"})
+    date = StringField("Valid Thru",[validators.Length(5),validators.DataRequired()],render_kw={"placeholder": "MM/YY"})
+    cvv = StringField("CVV / CVC *",[validators.Length(3),validators.DataRequired()])
+
+class ShippingForm(Form):
+    fname = StringField("First Name", [validators.InputRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "John"})
+    lname = StringField("Last Name", [validators.InputRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "Doe"})
+    email= EmailField('Email', [validators.InputRequired()])
+    hp = StringField("Contact Number", [validators.InputRequired()], render_kw={"placeholder": "65500999"})
+    address = StringField("Address 1", [validators.InputRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "1 Ang Mo Kio Ave"})
+    address2 = TextAreaField("Address 2(Optional)", default="")
+    postal = StringField("Postal Code", [validators.InputRequired()], render_kw={"placeholder": "544915"})
+

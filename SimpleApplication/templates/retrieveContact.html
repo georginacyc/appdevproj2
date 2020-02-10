@@ -31,7 +31,8 @@
             <td>{{ contact.get_text() }}</td>
             <td>
                 <form action="{{ url_for('deleteContact', email=contact.get_email()) }}" method="POST">
-                    <input type="submit" value="Resolve" class="btn btn-primary" onclick="return confirm('Are you sure you want to delete this inquiry?')">
+<!--                    <input type="submit" value="Resolve" class="btn btn-primary" onclick="return confirm('Are you sure you want to delete this inquiry?')">-->
+                    <a href="mailto: {{ contact.get_email() }}">Resolve</a>
                 </form>
             </td>
         </tr>
