@@ -8,6 +8,6 @@
 'annCount', (19968, 5)
 'StockOrder', (96768, 620)
 'stockordercount', (96256, 5)
-'Cart', (89600, 892)
+'Cart', (89600, 6)
 'Contact', (58880, 235)
-'Shipping', (91648, 707)
+'Shipping', (91648, 1017)

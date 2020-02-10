@@ -18,13 +18,7 @@ class UpdateUserForm(Form):
     gender = RadioField('Gender', [validators.DataRequired()],choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Others')],default='')
     email= EmailField('Email', [validators.InputRequired()])
 
-class UpdateUserDetailsForm(Form):
-    firstName = StringField("First Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"readonly": True})
-    lastName = StringField("Last Name",[validators.Length(min=1, max=150),validators.DataRequired()],render_kw={"readonly" : True})
-    gender = StringField('Gender', [validators.DataRequired()],choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Others')],default='', render_kw={"readonly": True})
-    email= StringField('Email', [validators.InputRequired()])
-    pw = PasswordField("Old Password", [validators.InputRequired()], render_kw={"readonly": True})
-    newpw = PasswordField("New Password", [validators.InputRequired()])
+
 class CreateStaffForm(Form):
     fname = StringField("First Name", [validators.InputRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "John"})
     lname = StringField("Last Name", [validators.InputRequired(), validators.Length(min=1, max=150)], render_kw={"placeholder": "Doe"})
