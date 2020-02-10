@@ -10,5 +10,5 @@
 'stockordercount', (96256, 5)
 'Cart', (89600, 555)
 'Contact', (58880, 235)
-'Shipping', (101376, 1282)
-'Payment', (100864, 192)
+'Shipping', (101376, 1406)
+'Payment', (100864, 270)
