@@ -1,14 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.utils import secure_filename
-from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, \
-    ContactUsForm, ShowDetailsForm, PaymentForm, ShippingForm, UpdateUserDetailsForm
+from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm, ShowDetailsForm, PaymentForm, ShippingForm, UpdateUserDetailsForm
+
 from Cart import Cart, addtocartForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping
 import os, pygal
 from pygal.style import LightStyle, CleanStyle
-
 
 UPLOAD_FOLDER = 'static/files'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -991,11 +990,18 @@ def catalogueHis():
     db.close()
 
     itemList = []
+    itemTopsList = []
+    itemBotsList = []
     for key in itemDict:
         if key[9] == "M":
             item = itemDict.get(key)
             itemList.append(item)
-    return render_template('catalogueHis.html', itemList=itemList, count=len(itemList))
+            if key[8] == "T":
+                itemTopsList.append(item)
+            elif key[8] == "B":
+                itemBotsList.append(item)
+    return render_template('catalogueHis.html', itemList=itemList, itemTopsList=itemTopsList,
+                           itemBotsList=itemBotsList, count=len(itemList))
 
 
 @app.route('/catalogueHers')
@@ -1075,7 +1081,6 @@ def itemDetailsHers(id):
         print(cartDict.keys())
         db.close()
     return render_template('catalogueItemDetailsHers.html', itemList=itemList, count=len(itemList))
-
 
 if __name__ == '__main__':
     app.run()
