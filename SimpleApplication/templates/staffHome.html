@@ -1,6 +1,29 @@
 {% extends "staffBase.html" %}
 {% block title %}monoqlo - staff home{% endblock %}
 {% block content %}
+<style>
+    #homeAnnounce {
+        width: 50%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    #homeAnnounce p {
+        text-align: center;
+        font-weight: bold;
+    }
+    .annDate {
+        color: grey;
+    }
+    .annTitle {
+        font-weight: bold;
+    }
+    .annDesc {
+        font-style: italic;
+    }
+    #staffNav {
+        color: black;
+    }
+</style>
 <h1 class="display-4">welcome back, {{ session["name"] }}!</h1>
 
 <br>
