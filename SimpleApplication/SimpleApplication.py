@@ -8,6 +8,10 @@ from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs
 import os
 import plotly.graph_objects as go
+import dash, pygal
+import dash_core_components as dcc
+import dash_html_components as html
+
 
 
 UPLOAD_FOLDER = 'static/files'
@@ -528,14 +532,18 @@ def customerDemo():
     usersDict = db["Users"]
 
     for x in usersDict.values():
-        if x.get_gender() == "F":
+        if x.get_gender() == "F" or x.get_gender() == "Female":
             femCount += 1
-        else:
+        elif x.get_gender() == "M" or x.get_gender() == "Male":
             maleCount += 1
 
+    pie = pygal.Pie()
+    pie.title = "Proportion of Male and Female Customers"
+    pie.add("Female", femCount)
+    pie.add("Male", maleCount)
+    pie = pie.render()
 
-
-    return render_template("customerDemo.html")
+    return render_template("customerDemo.html", chart = pie)
 
 
 @app.route('/createStaff', methods=['GET', 'POST'])
