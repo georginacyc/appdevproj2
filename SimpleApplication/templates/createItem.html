@@ -1,7 +1,19 @@
 {% extends "staffBase.html" %}
 {% block title %}Create Item{% endblock %}
 {% block content %}
-{% include 'includes/_staffItemNav.html' %}
+
+<h1 class="display-4">Items</h1>
+<hr>
+<nav  class="navbar navbar-expand-lg bg-light">
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+            <a class="nav-link" href="/itempage"> view items</a>
+        </li>
+        <li class="disabled" style="">
+            <a class="nav-link" style="text-decoration: underline;font-weight:bold"> create item</a>
+        </li>
+    </ul>
+</nav>
 {% from "includes/_formhelper.html" import render_field %}
 
 <form method="POST" action="" enctype=multipart/form-data>
@@ -28,7 +40,7 @@
   {{ render_field(form.itemDescription, class="form-control") }}
  </div>
  <div class="picture">
-  <input type="file" name = file class = "form-control">
+  <input  type="file" name = file class = "form-control">
  </div>
  <div id="prof">
  </div>
