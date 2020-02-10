@@ -1,7 +1,21 @@
 {% extends "staffbase.html" %}
 {% block title %}View Stock{% endblock %}
 {% block content %}
-{% include 'includes/_staffInventoryNav.html' %}
+<h1 class="display-4">Inventory</h1>
+<hr>
+<nav  class="navbar navbar-expand-lg bg-light">
+    <ul class="navbar-nav mr-auto">
+        <li class="disabled">
+            <a class="nav-link" style="text-decoration: underline;font-weight:bold"> view stock on hand</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/viewStockOrders"> view stock orders</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/createStockOrder"> order stock</a>
+        </li>
+    </ul>
+</nav>
 
 <div>
     <table class="table table-striped">
