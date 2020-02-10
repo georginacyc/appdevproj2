@@ -308,7 +308,7 @@ def createStockOrder():
         stockorderDict = {}
         db = shelve.open('storage.db', 'c')
         try:
-            stockorderDict = db['StockOrder']
+            stockorderDict = int(db['StockOrder'])
             StockOrder.StockOrder.countID = db['stockordercount']
         except IOError:
             print("IOError")
