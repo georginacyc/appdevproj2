@@ -1,7 +1,18 @@
 {% extends "staffbase.html" %}
 {% block title %}Item{% endblock %}
 {% block content %}
-{% include 'includes/_staffItemNav.html' %}
+<h1 class="display-4">Items</h1>
+<hr>
+<nav  class="navbar navbar-expand-lg bg-light">
+    <ul class="navbar-nav mr-auto">
+        <li class="disabled">
+            <a class="nav-link" style="text-decoration: underline;font-weight:bold" > view items</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/createItem"> create item</a>
+        </li>
+    </ul>
+</nav>
 
 <div>
     {% if count == 0 %}
