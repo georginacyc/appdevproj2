@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from werkzeug.utils import secure_filename
 from forms import CreateUserForm, CreateStaffForm, LogInForm, UpdateUserForm, UpdateStaffForm, CreateAnnouncement, ContactUsForm, ShowDetailsForm, PaymentForm, ShippingForm
 
@@ -6,9 +6,10 @@ from Cart import Cart, addtocartForm
 from stockorderForm import CreateStockOrderForm, UpdateStockOrderForm
 from itemForm import CreateItemForm, serialcheck
 import shelve, User, Item, itemForm, Staff, StockOrder, os, uuid, Announcement, string, random, Cart, ContactUs, Shipping, Payment
+import json
 
-# import os, pygal
-# from pygal.style import CleanStyle, LightStyle
+import os, pygal
+from pygal.style import CleanStyle, LightStyle
 
 
 UPLOAD_FOLDER = 'static/files'
@@ -1001,15 +1002,23 @@ def deleteAnnouncement(id):  # for admin to delete annnouncements
     # after we delete successfully
     return redirect(url_for('retrieveAnnouncements'))
 
-
-@app.route('/createNewReport')
-def createNewReport():
-    return render_template('create.html')
-
-
-@app.route('/salesReports')
+@app.route('/salesReports', methods=["GET"])
 def salesReports():
-    return render_template('salesReports.html')
+    subtotalsDict={}
+    try:
+        db = shelve.open("storage.db", "r")
+        subtotalsDict = db["Subtotals"]
+    except:
+        print("db error")
+    else:
+        db.close()
+
+    #  loop through dict to save in list
+    subtotalsList = []
+    for key in subtotalsDict:
+        subtotal = subtotalsDict.get(key)
+        subtotalsList.append(subtotal)
+    return render_template('salesReports.html',list=subtotalsList)
 
 
 @app.route('/catalogueHis')
@@ -1111,6 +1120,23 @@ def itemDetailsHers(id):
         print(cartDict.keys())
         db.close()
     return render_template('catalogueItemDetailsHers.html', itemList=itemList, count=len(itemList))
+
+@app.route('/postmethod', methods = ['POST'])
+def get_post_javascript_data():
+    if request.method == 'POST':
+        subtotalsDict={}
+        jsdata = request.form['javascript_data']
+        db = shelve.open('storage.db', 'c')
+        try:
+            subtotalsDict= db['Subtotals']
+            print("created")
+        except:
+            print("Error in retrieving subtotals from storage db.")
+        subtotalsDict.append(jsdata)
+        db["Subtotals"]=subtotalsDict
+        db.close()
+    return json.loads(jsdata)
+
 
 if __name__ == '__main__':
     app.run()
