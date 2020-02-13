@@ -463,11 +463,11 @@ def updateUser(email):
 
     if request.method == 'POST' and updateUserForm.validate():
 
-        email = session["useremail"]
+
         userDict = {}
         db = shelve.open('storage.db', 'w')
         try:
-            userDict = db['useremail']
+            userDict = db['Users']
         except:
             print("Error in retrieving User from storage.db")
         user = userDict.get(email)
