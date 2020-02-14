@@ -463,11 +463,11 @@ def updateUser(email):
 
     if request.method == 'POST' and updateUserForm.validate():
 
-        email = session["useremail"]
+
         userDict = {}
         db = shelve.open('storage.db', 'w')
         try:
-            userDict = db['useremail']
+            userDict = db['Users']
         except:
             print("Error in retrieving User from storage.db")
         user = userDict.get(email)
@@ -993,14 +993,14 @@ def retrieveNormalAnnouncements():  # to display announcements for normal staff
 @app.before_request
 def deleteDict():  # to use for deletion of any persistence
     dict = {}
-    #db = shelve.open("storage.db", "w")
-    #db["itemcount"] = dict
+    # db = shelve.open("storage.db", "w")
+    # db["Shipping"] = dict
     #db["Items"] = dict
     #db["StockOrder"] = dict
     #db["stockordercount"] = dict
     # # db["staffCount"] = dict
-    #db.close()
-    #print("Cleared")
+    # db.close()
+    # print("Cleared")
 
 
 @app.route('/deleteAnnouncement/<int:id>', methods=['GET', 'POST'])
